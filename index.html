@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plan Entrenamiento – Fernando #CalvoMalvado</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#090909;color:#e5e7eb;font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{height:4px;width:4px}
+::-webkit-scrollbar-track{background:#111}
+::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+a{text-decoration:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.25s ease}
+iframe{border:none}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// YouTube search map
+const YT = {
+  "Fondos en silla/banco (puente paralelas)": "bench dips triceps how to",
+  "Fondos en paralelas": "parallel bar dips how to form",
+  "Fondos en paralelas con peso": "weighted dips calisthenics technique",
+  "Fondos explosivos en paralelas": "explosive dips calisthenics power",
+  "Fondos rusos en paralelas": "russian dips calisthenics tutorial",
+  "Fondos de tríceps en banco con peso": "triceps bench dips weighted",
+  "Fondos en paralelas con peso máximo": "weighted dips heavy calisthenics",
+  "Flexiones": "push ups perfect form tutorial",
+  "Flexiones con manos en diamante": "diamond push ups triceps tutorial",
+  "Flexiones archer un brazo asistido": "archer push up one arm progression",
+  "Pike push-up": "pike push ups shoulder press tutorial",
+  "Elevaciones laterales con mancuerna": "dumbbell lateral raises how to",
+  "Elevaciones frontales y laterales con mancuerna superset": "dumbbell front lateral raise superset",
+  "Extensión de tríceps con mancuerna sobre la cabeza": "overhead triceps extension dumbbell",
+  "Dominadas asistidas": "assisted pull ups chair tutorial beginners",
+  "Dominadas pronas pull-up": "pull up perfect form tutorial",
+  "Dominadas supinas chin-up": "chin up supinated grip tutorial biceps",
+  "Dominadas con peso": "weighted pull ups calisthenics tutorial",
+  "Muscle-up o tirón explosivo máximo": "muscle up progression tutorial beginners",
+  "Muscle-up negativo": "muscle up negative eccentric tutorial",
+  "Muscle-up trabajo de calidad": "muscle up strict clean form",
+  "Remo con mancuerna un brazo": "dumbbell single arm row technique",
+  "Remo con mancuerna un brazo estilo Yates": "yates row dumbbell back form",
+  "Remo explosivo con mancuerna un brazo": "explosive dumbbell row power back",
+  "Remo con mancuerna bilateral inclinado": "bent over dumbbell row both arms",
+  "Remo inclinado con mancuerna": "bent over dumbbell row form tutorial",
+  "Remo australiano bajo la barra": "australian pull ups inverted row tutorial",
+  "Curl de bíceps alterno con mancuerna": "alternating dumbbell bicep curl form",
+  "Curl de bíceps con mancuerna": "dumbbell bicep curl tutorial",
+  "Curl de concentración con mancuerna": "concentration curl dumbbell bicep peak",
+  "Curl martillo con mancuerna": "hammer curl dumbbell forearm brachialis",
+  "Curl 21s con mancuerna": "21s bicep curl dumbbell technique",
+  "Curl 21s y press Arnold superset": "21s biceps arnold press superset",
+  "Press de pecho con mancuerna en suelo": "dumbbell floor press chest tutorial",
+  "Press de pecho explosivo con mancuerna en suelo": "explosive floor press chest power",
+  "Press de hombro con mancuerna": "dumbbell shoulder press form tutorial",
+  "Press de hombro Arnold con mancuerna": "arnold press shoulder dumbbell tutorial",
+  "Encogimiento de hombros con mancuerna": "dumbbell shrugs traps form",
+  "Encogimiento de hombros pesado con mancuerna": "heavy dumbbell shrugs traps",
+  "Face pull con banda de resistencia": "face pull band resistance rear delt",
+  "Plancha": "plank perfect form tutorial core",
+  "Plancha lateral": "side plank form obliques tutorial",
+  "Plancha con toque de hombro": "plank shoulder tap core stability",
+  "Superman": "superman exercise lower back glutes form",
+  "Dragon flag negativo": "dragon flag negative eccentric tutorial",
+  "L-sit con rodillas dobladas en paralelas": "tuck l-sit parallettes tutorial",
+  "L-sit en paralelas": "l-sit parallettes tutorial progression",
+  "Elevación de rodillas en barra": "hanging knee raises abs tutorial",
+  "Elevación de rodillas colgado": "hanging knee raises pull up bar abs",
+  "Ciclismo indoor zona 2 nivel 3–4": "zone 2 cardio indoor cycling training",
+  "Ciclismo cadencia alta nivel 2": "high cadence cycling spin bike rpm",
+  "Ciclismo HIIT Tabata 20s/10s": "tabata cycling spin bike workout",
+  "Ciclismo HIIT bloques de carrera 2min/3min": "cycling interval training enduro simulation",
+  "Sprint final ciclismo nivel 9": "all out sprint spin bike max effort",
+  "Ciclismo pirámide nivel 4→5→6→7→6→5→4": "pyramid cycling spin bike interval training",
+  "Ciclismo fondo estable nivel 4": "steady state cycling endurance spin bike",
+  "Sprints en bici de pie nivel 7": "standing climb sprints spin bike cycling",
+  "Ciclismo fondo nivel 5 constante": "endurance cycling spin bike long session",
+  "Series de subida en bici de pie nivel 8": "standing climb intervals spin bike high intensity",
+  "Ciclismo indoor fondo aeróbico nivel 4": "aerobic base cycling spin bike zone 2",
+  "Ciclismo recuperación activa nivel 2": "active recovery cycling spin bike easy",
+  "Ciclismo HIIT Tabata extendido 30s/10s": "advanced tabata cycling 30 seconds intervals",
+  "Ciclismo zona 2 fondo libre": "zone 2 recovery cycling fat burn",
+  "Ciclismo vuelta a la calma nivel 1": "cool down cycling spin bike",
+  "Movilidad de cadera y espalda suave": "hip mobility exercises athletes lower back",
+  "Movilidad de cadera y espalda": "hip mobility athletes lower back pain relief",
+  "Descanso activo y movilidad suave": "active recovery stretching rest day",
+  "Descanso y recuperación total": "rest day muscle recovery importance",
+  "Descanso total semanal — para siempre": "rest day importance muscle growth recovery",
+  "Circuito metabólico completo – 4 rondas": "metabolic circuit training dumbbell fat loss",
+  "Circuito metabólico avanzado – 5 rondas": "advanced metabolic circuit dumbbell training",
+  "Circuito metabólico completo fase 3": "full body metabolic circuit advanced dumbbell",
+  "Salida en bici de enduro MTB": "enduro mtb trail ride gopro downhill",
+  "Ciclismo gran fondo spinning 90 min": "90 minute spin bike workout cycling",
+  "Puente de glúteo isométrico": "glute bridge isometric hold tutorial hip",
+  "Plancha lateral con elevación de pierna": "side plank hip abduction leg raise gluteus medius",
+  "Sentadilla isométrica en pared (wall-sit)": "wall sit isometric quad exercise tutorial",
+  "Almeja con banda (clamshell)": "clamshell exercise glute medius resistance band",
+};
+
+function getYTSearch(name) {
+  const q = YT[name] || (name + " exercise tutorial form");
+  return "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+}
+function getYTEmbed(name) {
+  const q = YT[name] || (name + " exercise tutorial form");
+  return "https://www.youtube.com/embed?listType=search&list=" + encodeURIComponent(q) + "&rel=0&modestbranding=1";
+}
+
+
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const phases = [
+  { id:1, name:"FASE 1", sub:"Adaptación + Activar metabolismo", weeks:"Semanas 1–4", color:"#00d4aa", desc:"Aprende los movimientos con técnica perfecta. El cuerpo se despierta tras el parón. Empezamos a quemar grasa con la bici en zona 2. Sin ego con los pesos." },
+  { id:2, name:"FASE 2", sub:"Hipertrofia + Quema de grasa activa", weeks:"Semanas 5–8", color:"#f59e0b", desc:"Aquí empieza la recomposición real. Más volumen, más intensidad en bici, circuito metabólico. La barriga empieza a irse y el músculo aparece." },
+  { id:3, name:"FASE 3", sub:"Intensificación + Rendimiento Enduro", weeks:"Semanas 9–12", color:"#ef4444", desc:"Máxima intensidad. HIIT de verdad, calistenia avanzada, fondo enduro serio. Al final de esta fase estás listo para cualquier ruta." },
+  { id:4, name:"FASE 4+", sub:"Mantenimiento indefinido", weeks:"Semana 13 en adelante", color:"#a855f7", desc:"Plan para siempre. Mantienes la forma, sigues progresando, preparas salidas de enduro reales. Aquí ya eres atleta." },
+];
+
+const DAYS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const DAYS_S = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+const DAY_EMOJI = { Lunes:"🔥", Martes:"🚴", Miércoles:"⚡", Jueves:"🔥", Viernes:"🚴", Sábado:"🏔️", Domingo:"😴" };
+
+const dd = {
+  phase1: {
+    Lunes: {
+      title:"PUSH – Pecho, Hombros, Tríceps", tipo:"💪 Fuerza", duration:"45–55 min",
+      warmup:"5 min bici nivel 2 + rotaciones hombros y muñecas",
+      exercises:[
+        { name:"Fondos en silla/banco (puente paralelas)", sets:"3", reps:"12–15", rest:"75s", note:"Manos atrás en el borde, pies apoyados en el suelo", muscles:"Tríceps · Pecho · Hombro frontal" },
+        { name:"Fondos en paralelas", sets:"3", reps:"Máx (aunque sean 2–4)", rest:"2 min", note:"Si no llegas a 3, salta arriba y baja en 5s (negativa)", muscles:"Pecho · Tríceps · Hombros" },
+        { name:"Flexiones", sets:"3", reps:"Máx", rest:"60s", note:"Con rodillas si hace falta. Sin problema", muscles:"Pecho · Tríceps · Core" },
+        { name:"Elevaciones laterales con mancuerna", sets:"3", reps:"15", rest:"60s", note:"Empieza con 4–5kg. Sin balancear el cuerpo", muscles:"Deltoides lateral" },
+        { name:"Extensión de tríceps con mancuerna sobre la cabeza", sets:"3", reps:"12", rest:"60s", note:"Un brazo a la vez, 5–6kg. Codo apunta al techo siempre", muscles:"Tríceps cabeza larga" },
+      ],
+      cooldown:"Estiramiento pectoral en pared 2 min + hombros cruzados",
+      hip_note:"✅ Sin impacto en cadera. Todo tren superior.",
+      nutrition:"🥗 Día de fuerza: proteína en la comida post-entreno. Huevos, pollo, atún, legumbres.",
+    },
+    Martes: {
+      title:"ZONA 2 – Quema de grasa + Base enduro", tipo:"🚴 Spinning", duration:"40–45 min",
+      warmup:"5 min nivel 1–2 muy suave",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 3–4", sets:"—", reps:"30–35 min", rest:"—", note:"Puedes mantener una conversación. Sudas pero no te ahogas", muscles:"Sistema aeróbico · Quema de grasa · Base cardiovascular" },
+        { name:"Ciclismo cadencia alta nivel 2", sets:"—", reps:"5 min finales", rest:"—", note:"90–100 pedaladas por minuto. Poca resistencia, muchas rpm", muscles:"Coordinación neuromuscular · Gemelos · Cadera" },
+      ],
+      cooldown:"5 min nivel 1 + estiramiento cuádriceps y gemelos",
+      hip_note:"💡 Sillín alto para reducir flexión de cadera.",
+      music:"🎵 Para zona 2: rap castellano suave, podcast, Nadie Sabe Nada.",
+      nutrition:"☕ Ideal en ayunas o con café solo. Maximiza la quema de grasa.",
+    },
+    Miércoles: {
+      title:"PULL – Espalda, Bíceps, Agarre", tipo:"💪 Fuerza", duration:"45–55 min",
+      warmup:"Rotaciones de escápulas + colgarse 20s de la barra suave",
+      exercises:[
+        { name:"Dominadas asistidas", sets:"4", reps:"6–8", rest:"2 min", note:"Un pie en la silla para ayudarte a subir. Baja siempre lento 3s", muscles:"Dorsal ancho · Bíceps · Agarre · Romboides" },
+        { name:"Remo con mancuerna un brazo", sets:"3", reps:"12 c/lado", rest:"75s", note:"8kg, codo bien atrás como si arrancases una motosierra", muscles:"Dorsal · Trapecio · Bíceps" },
+        { name:"Curl de bíceps alterno con mancuerna", sets:"3", reps:"12", rest:"60s", note:"6–8kg. Codos pegados al cuerpo, sin balanceo", muscles:"Bíceps · Braquial" },
+        { name:"Face pull con banda de resistencia", sets:"3", reps:"15", rest:"60s", note:"Con toalla en el pomo de una puerta si no tienes banda", muscles:"Deltoides posterior · Manguito rotador · Romboides" },
+        { name:"Encogimiento de hombros con mancuerna", sets:"3", reps:"15", rest:"60s", note:"10kg c/mano. Aguanta 1 segundo arriba apretando", muscles:"Trapecio superior · Cuello" },
+      ],
+      cooldown:"Colgarse de la barra 30s pasivo + estiramiento dorsal en suelo",
+      hip_note:"✅ Sin impacto cadera.",
+      nutrition:"💪 Segundo día de fuerza. Proteína importante hoy también.",
+    },
+    Jueves: {
+      title:"CIRCUITO METABÓLICO – Quema grasa + músculo", tipo:"🔥 Metabólico", duration:"40–50 min",
+      warmup:"5 min bici nivel 2 + movilidad general",
+      exercises:[
+        { name:"Circuito metabólico completo – 4 rondas", sets:"4 rondas", reps:"0s entre ejercicios / 60s entre rondas", rest:"60s entre rondas", note:"Haz los 5 ejercicios seguidos sin parar", muscles:"Cuerpo completo · Sistema cardiovascular · Quema de grasa" },
+        { name:"Flexiones", sets:"—", reps:"10", rest:"0s", note:"Primera estación del circuito", muscles:"Pecho · Tríceps" },
+        { name:"Curl de bíceps con mancuerna", sets:"—", reps:"12", rest:"0s", note:"6kg. Segunda estación", muscles:"Bíceps · Antebrazo" },
+        { name:"Elevación de rodillas en barra", sets:"—", reps:"12", rest:"0s", note:"Cuelgas de la barra o usas apoyabrazos. Rodillas al pecho", muscles:"Abdominales · Flexores de cadera · Core" },
+        { name:"Press de hombro con mancuerna", sets:"—", reps:"10", rest:"0s", note:"6–8kg. Cuarta estación", muscles:"Deltoides · Tríceps" },
+        { name:"Remo inclinado con mancuerna", sets:"—", reps:"12", rest:"60s (fin ronda)", note:"Inclinado hacia adelante, tira los codos hacia atrás", muscles:"Dorsal · Trapecio · Bíceps" },
+      ],
+      cooldown:"5 min bici nivel 1 + estiramiento completo 5 min",
+      hip_note:"✅ Sin sentadillas ni ejercicios de cadera con carga.",
+      nutrition:"🔥 Buen desayuno antes. Post-entreno proteína + carbohidrato.",
+    },
+    Viernes: {
+      title:"ZONA 2 LARGA + CORE – Enduro base", tipo:"🚴 Spinning + Core", duration:"50–60 min",
+      warmup:"5 min nivel 1",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 3–4", sets:"—", reps:"35 min", rest:"—", note:"Mismo ritmo conversacional del martes. Ya notarás que cuesta menos", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Plancha", sets:"3", reps:"20–30s", rest:"45s", note:"Cuerpo recto de cabeza a talones. Sin subir el culo", muscles:"Core completo · Lumbar · Glúteos" },
+        { name:"Plancha lateral", sets:"3", reps:"15–20s c/lado", rest:"45s", note:"Apoyado en codo y pie lateral. Sin dejar caer la cadera", muscles:"Oblicuos · Core lateral" },
+        { name:"Superman", sets:"3", reps:"15", rest:"45s", note:"Boca abajo, levantas brazos y piernas a la vez. Aguanta 2s arriba", muscles:"Lumbar · Glúteos · Isquios · Trapecios" },
+      ],
+      cooldown:"Estiramiento completo 8 min.",
+      hip_note:"💡 Si la cadera molesta en la bici hoy, reduce a 25 minutos.",
+      music:"🎵 Viernes: Marea, Barricada, Los Suaves. Rock castellano para aguantar.",
+    },
+    Sábado: {
+      title:"GRAN FONDO ENDURO – La sesión de la semana", tipo:"🏔️ Enduro", duration:"60–70 min",
+      warmup:"8 min progresivo nivel 1→2→3",
+      exercises:[
+        { name:"Ciclismo indoor fondo aeróbico nivel 4", sets:"—", reps:"40 min", rest:"—", note:"La sesión más importante de la semana. No te la saltes nunca", muscles:"Sistema aeróbico completo · Cuádriceps · Isquios · Glúteos" },
+        { name:"Sprints en bici de pie nivel 7", sets:"4", reps:"20s", rest:"90s nivel 2", note:"Levanta el culo del sillín. Simula superar un obstáculo o rampa corta", muscles:"Sistema anaeróbico · Glúteos · Cuádriceps · Potencia" },
+        { name:"Ciclismo vuelta a la calma nivel 1", sets:"—", reps:"5 min", rest:"—", note:"Nunca pares de golpe tras un sprint", muscles:"Recuperación activa" },
+      ],
+      cooldown:"Estiramiento completo tren inferior 10 min.",
+      hip_note:"💡 Sillín bien alto. Si de pie molesta la cadera, quédate sentado.",
+      music:"🎵 Sábado épico: Tool, Gojira, Trivium, Parkway Drive. O EWS Highlights en YouTube.",
+      nutrition:"🍌 Antes come carbohidratos: plátano, avena, tostadas.",
+    },
+    Domingo: {
+      title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min de ejercicio",
+      warmup:"—",
+      exercises:[
+        { name:"Descanso activo y movilidad suave", sets:"—", reps:"10–15 min opcional", rest:"—", note:"Estiramientos suaves o paseo. Sin intensidad", muscles:"Recuperación y adaptación muscular" },
+      ],
+      cooldown:"—",
+      hip_note:"💡 Hidratación y buena comida hoy.",
+      nutrition:"🌙 Come bien, sin restricciones exageradas. Tu cuerpo lo necesita para el lunes.",
+    },
+  },
+  phase2: {
+    Lunes: {
+      title:"PUSH HIPERTROFIA – Más carga, más volumen", tipo:"💪 Fuerza", duration:"55–65 min",
+      warmup:"5 min bici + activación articular hombros",
+      exercises:[
+        { name:"Fondos en paralelas", sets:"4", reps:"8–10", rest:"2 min", note:"Ya sin silla. Si llegas a 8 reps limpias, añade mochila la siguiente semana", muscles:"Pecho · Tríceps · Hombros" },
+        { name:"Fondos en paralelas con peso", sets:"4", reps:"6–8", rest:"2 min", note:"Mochila con 5–10kg cuando hagas 10 reps limpias sin peso", muscles:"Pecho · Tríceps · Hombros" },
+        { name:"Press de pecho con mancuerna en suelo", sets:"4", reps:"10", rest:"90s", note:"8–10kg c/brazo. Tumbado, codos a 45°", muscles:"Pecho · Hombro frontal · Tríceps" },
+        { name:"Elevaciones frontales y laterales con mancuerna superset", sets:"3", reps:"10+10", rest:"75s", note:"Sin descanso entre frontales y laterales. 5–6kg", muscles:"Deltoides frontal y lateral completo" },
+        { name:"Fondos de tríceps en banco con peso", sets:"4", reps:"12", rest:"75s", note:"Con una mancuerna en el regazo para añadir peso", muscles:"Tríceps · Hombro frontal" },
+      ],
+      cooldown:"Estiramiento pecho en pared + hombros cruzados 3 min",
+      hip_note:"✅ Todo tren superior. Sin impacto cadera.",
+      nutrition:"💪 Objetivo: 172g de proteína diaria total (2g × 86kg).",
+    },
+    Martes: {
+      title:"HIIT BICI – Quema grasa máxima", tipo:"🚴 HIIT", duration:"40–45 min",
+      warmup:"5 min nivel 2 progresivo",
+      exercises:[
+        { name:"Ciclismo HIIT Tabata 20s/10s", sets:"8 rondas = 4 min", reps:"×3 bloques", rest:"2 min nivel 1 entre bloques", note:"Nivel 7–8 en los 20s. Todo lo que tengas", muscles:"Sistema cardiovascular · Potencia · Quema de grasa prolongada" },
+        { name:"Ciclismo zona 2 recuperación", sets:"—", reps:"10 min", rest:"—", note:"Nivel 2–3 suave para eliminar el lactato", muscles:"Recuperación activa · Oxidación de grasas" },
+      ],
+      cooldown:"8 min nivel 1 + estiramiento cuádriceps y gemelos",
+      hip_note:"💡 En los sprints, si de pie molesta la cadera, hazlos sentado a nivel 8.",
+      music:"🔥 Beast Mode Spotify, rap con BPM alto, Recycled J a tope.",
+      nutrition:"☕ Ideal en ayunas o solo con café.",
+    },
+    Miércoles: {
+      title:"PULL HIPERTROFIA – Espalda densa", tipo:"💪 Fuerza", duration:"55–65 min",
+      warmup:"Pull-aparts con toalla × 15 + colgarse 30s",
+      exercises:[
+        { name:"Dominadas supinas chin-up", sets:"4", reps:"6–8", rest:"2 min", note:"Palmas mirando hacia ti. Si no llegas: negativas lentas 5s bajada", muscles:"Bíceps · Dorsal · Core" },
+        { name:"Dominadas pronas pull-up", sets:"4", reps:"6–8", rest:"2 min", note:"Palmas hacia afuera. Objetivo: pecho a la barra", muscles:"Dorsal ancho · Trapecio · Romboides" },
+        { name:"Remo con mancuerna un brazo estilo Yates", sets:"4", reps:"10 c/lado", rest:"90s", note:"10kg, tronco a 45°", muscles:"Trapecio medio · Romboides · Dorsal" },
+        { name:"Curl de concentración con mancuerna", sets:"3", reps:"12 c/brazo", rest:"60s", note:"Sentado, codo apoyado en el interior del muslo", muscles:"Bíceps pico" },
+        { name:"Encogimiento de hombros pesado con mancuerna", sets:"4", reps:"15", rest:"75s", note:"10kg c/mano. Aguanta 1s arriba", muscles:"Trapecio superior · Cuello" },
+      ],
+      cooldown:"Colgarse pasivo barra 2×30s + estiramiento dorsal en suelo",
+      hip_note:"✅ Sin impacto cadera.",
+      nutrition:"💪 Proteína post-entreno en la hora siguiente.",
+    },
+    Jueves: {
+      title:"CIRCUITO METABÓLICO AVANZADO", tipo:"🔥 Metabólico", duration:"50–55 min",
+      warmup:"5 min bici + movilidad articular",
+      exercises:[
+        { name:"Circuito metabólico avanzado – 5 rondas", sets:"5 rondas", reps:"0s entre ejercicios / 45s entre rondas", rest:"45s entre rondas", note:"Una ronda más que en fase 1 y menos descanso", muscles:"Cuerpo completo · Quema de grasa máxima" },
+        { name:"Flexiones con manos en diamante", sets:"—", reps:"10", rest:"0s", note:"Manos juntas formando triángulo. Codos hacia atrás", muscles:"Tríceps · Pecho central" },
+        { name:"Remo con mancuerna bilateral inclinado", sets:"—", reps:"12", rest:"0s", note:"Inclinado, dos mancuernas a la vez tirando codos atrás", muscles:"Dorsal · Trapecio · Bíceps" },
+        { name:"L-sit con rodillas dobladas en paralelas", sets:"—", reps:"15s aguante", rest:"0s", note:"En las barras paralelas, sube las rodillas al pecho y aguanta", muscles:"Core · Flexores de cadera · Hombros · Tríceps" },
+        { name:"Press de hombro Arnold con mancuerna", sets:"—", reps:"10", rest:"0s", note:"Palmas hacia ti abajo, giras al subir hasta palmas afuera arriba", muscles:"Deltoides completo" },
+        { name:"Curl martillo con mancuerna", sets:"—", reps:"12", rest:"45s (fin ronda)", note:"Palmas enfrentadas todo el tiempo como sujetando un martillo", muscles:"Braquiorradial · Bíceps · Antebrazo" },
+      ],
+      cooldown:"5 min bici nivel 1 + estiramiento completo",
+      hip_note:"✅ Circuito sin ejercicios de cadera con carga.",
+      nutrition:"🔥 Desayuno fuerte antes, proteína después.",
+    },
+    Viernes: {
+      title:"ZONA 2 + CORE AVANZADO", tipo:"🚴 Spinning + Core", duration:"55–65 min",
+      warmup:"5 min nivel 1",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 4", sets:"—", reps:"40 min", rest:"—", note:"5 minutos más que en fase 1. Deberías notarlo más fácil", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Dragon flag negativo", sets:"3", reps:"5–6", rest:"90s", note:"Tumbado, agárrate a algo fijo detrás de la cabeza. Sube recto y baja en 5s", muscles:"Core completo · Lumbar · Abdominales" },
+        { name:"Plancha con toque de hombro", sets:"3", reps:"10 toques c/lado", rest:"60s", note:"En plancha, levanta una mano y toca el hombro contrario alternando", muscles:"Core · Estabilidad · Oblicuos" },
+        { name:"Elevación de rodillas colgado", sets:"4", reps:"15", rest:"75s", note:"Colgado de la barra de dominadas, sube las rodillas al pecho", muscles:"Abdominales · Flexores de cadera · Agarre" },
+      ],
+      cooldown:"Estiramiento completo 8 min.",
+      hip_note:"💡 Dragon flag: lumbar completamente pegada al suelo durante todo el movimiento.",
+      music:"🎵 Recycled J, Maka, Canserbero para los 40 minutos de bici.",
+    },
+    Sábado: {
+      title:"GRAN FONDO + PIRÁMIDE ENDURO", tipo:"🏔️ Enduro", duration:"70–80 min",
+      warmup:"10 min progresivo nivel 1→2→3→4",
+      exercises:[
+        { name:"Ciclismo pirámide nivel 4→5→6→7→6→5→4", sets:"—", reps:"3 min cada nivel = 21 min", rest:"—", note:"Simula una subida larga de trail que va cambiando de pendiente", muscles:"Fuerza aeróbica · Umbral anaeróbico" },
+        { name:"Ciclismo fondo estable nivel 4", sets:"—", reps:"20 min", rest:"—", note:"Después de la pirámide las piernas van cargadas. Aguanta el ritmo", muscles:"Resistencia muscular · Mentalidad · Aeróbico" },
+        { name:"Sprints en bici de pie nivel 7", sets:"6", reps:"1 min", rest:"90s nivel 2", note:"Levanta el culo del sillín. 2 series más que en fase 1", muscles:"Glúteos · Cuádriceps · Core · Potencia" },
+      ],
+      cooldown:"10 min nivel 1 + estiramiento completo tren inferior 10 min",
+      hip_note:"💡 El sábado es el día más importante. Si te lo saltas pierdes el 40% del fondo enduro.",
+      music:"🎵 Gojira, Tool, Mastodon. O EWS Highlights de YouTube.",
+      nutrition:"🍌 Come bien antes: avena + plátano + café. Post: arroz con pollo.",
+    },
+    Domingo: {
+      title:"DESCANSO ACTIVO", tipo:"😴 Recuperación", duration:"20–30 min opcional",
+      warmup:"—",
+      exercises:[
+        { name:"Movilidad de cadera y espalda suave", sets:"—", reps:"20–30 min", rest:"—", note:"YouTube: Hip Mobility for Athletes Athlean-X. Con cuidado del choque", muscles:"Cadera · Flexores · Movilidad articular" },
+      ],
+      cooldown:"—",
+      hip_note:"⚠️ Movilidad de cadera: solo lo que no duela.",
+      nutrition:"🌙 Come sin restricción. Glucógeno y aminoácidos para la semana siguiente.",
+    },
+  },
+  phase3: {
+    Lunes: {
+      title:"PUSH MÁXIMA INTENSIDAD", tipo:"💪 Fuerza", duration:"60–70 min",
+      warmup:"5 min bici + activación articular completa",
+      exercises:[
+        { name:"Fondos en paralelas con peso máximo", sets:"5", reps:"6–8", rest:"2.5 min", note:"Mochila con el máximo peso que permita 6 reps limpias", muscles:"Pecho · Tríceps · Hombros" },
+        { name:"Flexiones archer un brazo asistido", sets:"4", reps:"5 c/lado", rest:"2 min", note:"Manos muy separadas. Todo el peso en un brazo, el otro casi estirado de apoyo", muscles:"Pecho · Tríceps · Core · Estabilidad" },
+        { name:"Press de pecho explosivo con mancuerna en suelo", sets:"4", reps:"8", rest:"90s", note:"Sube lo más rápido posible. Baja en 3 segundos contando", muscles:"Pecho · Hombros · Tríceps · Potencia" },
+        { name:"Pike push-up", sets:"4", reps:"10–12", rest:"75s", note:"Culo muy arriba formando V invertida. Baja la cabeza entre las manos", muscles:"Deltoides · Tríceps · Trapecios" },
+        { name:"Fondos explosivos en paralelas", sets:"3", reps:"10", rest:"90s", note:"Al subir, hazlo tan rápido que las manos casi despeguen de las barras", muscles:"Tríceps · Pecho · Potencia explosiva" },
+      ],
+      cooldown:"Estiramiento completo tren superior 8 min",
+      hip_note:"✅ Todo tren superior. Cadera descansa.",
+      nutrition:"💪 Fase 3 es la más exigente. Proteína en cada comida. Mínimo 160g diarios.",
+    },
+    Martes: {
+      title:"HIIT MÁXIMO – Race Simulation Enduro", tipo:"🚴 HIIT", duration:"45 min",
+      warmup:"5 min progresivo",
+      exercises:[
+        { name:"Ciclismo HIIT bloques de carrera 2min/3min", sets:"5 bloques = 25 min", reps:"—", rest:"—", note:"2min nivel 8 de pie / 3min nivel 3. Simula una etapa de enduro real", muscles:"Sistema cardiovascular completo · Potencia · Resistencia a la fatiga" },
+        { name:"Sprint final ciclismo nivel 9", sets:"1", reps:"90 segundos", rest:"—", note:"Todo lo que te quede. Como el sprint de llegada a meta", muscles:"Potencia máxima anaeróbica" },
+      ],
+      cooldown:"8 min nivel 1 absoluto. Respira.",
+      hip_note:"💡 De pie en nivel 8: si la cadera molesta, hazlo sentado a nivel 9.",
+      music:"🔥 Slipknot, Bring Me The Horizon, lo que más te active.",
+      nutrition:"☕ En ayunas o con café.",
+    },
+    Miércoles: {
+      title:"PULL MÁXIMA INTENSIDAD", tipo:"💪 Fuerza", duration:"60–70 min",
+      warmup:"Colgarse barra 30s + pull-aparts toalla × 20",
+      exercises:[
+        { name:"Muscle-up o tirón explosivo máximo", sets:"5", reps:"3–5 o máx intentos", rest:"3 min", note:"Si no sale: tirón explosivo llevando el pecho a la barra + baja controlado", muscles:"Dorsal · Bíceps · Tríceps · Core · Coordinación total" },
+        { name:"Dominadas con peso", sets:"4", reps:"5–6", rest:"2.5 min", note:"Mochila con 10–15kg", muscles:"Dorsal · Trapecio · Bíceps · Agarre" },
+        { name:"Remo explosivo con mancuerna un brazo", sets:"4", reps:"8 c/lado", rest:"2 min", note:"10kg. Tirón rápido y explosivo. Bajada lenta 2s", muscles:"Dorsal · Trapecio · Bíceps" },
+        { name:"Curl 21s con mancuerna", sets:"3", reps:"21 (7+7+7)", rest:"75s", note:"7 reps rango bajo + 7 rango alto + 7 completo. Sin parar", muscles:"Bíceps completo en todos los ángulos" },
+      ],
+      cooldown:"Colgarse pasivo barra 2×30s + estiramiento dorsal completo",
+      hip_note:"✅ Tren superior puro.",
+      nutrition:"💪 Post-entreno en la primera hora.",
+    },
+    Jueves: {
+      title:"RECUPERACIÓN ACTIVA + MOVILIDAD", tipo:"🧘 Recovery", duration:"30–40 min",
+      warmup:"—",
+      exercises:[
+        { name:"Ciclismo recuperación activa nivel 2", sets:"—", reps:"20 min", rest:"—", note:"Muy suave. Activa la circulación sin añadir fatiga", muscles:"Recuperación activa · Circulación" },
+        { name:"Movilidad de cadera y espalda", sets:"—", reps:"15 min", rest:"—", note:"YouTube: Hip Mobility for Athletes Athlean-X. Con cuidado de la cadera derecha", muscles:"Cadera · Espalda · Flexibilidad" },
+      ],
+      cooldown:"—",
+      hip_note:"⚠️ Jueves de fase 3 es recuperación OBLIGATORIA. Sin negociar.",
+      nutrition:"🌙 Come bien con carbohidratos. Mañana es día duro.",
+    },
+    Viernes: {
+      title:"FULLBODY CALISTENIA AVANZADA", tipo:"💪 Calistenia", duration:"65–70 min",
+      warmup:"Movilidad articular completa 10 min",
+      exercises:[
+        { name:"L-sit en paralelas", sets:"5", reps:"20–30s", rest:"90s", note:"Piernas extendidas horizontales. Si no llegas: rodillas dobladas (tuck)", muscles:"Core profundo · Flexores de cadera · Hombros · Tríceps" },
+        { name:"Muscle-up negativo", sets:"4", reps:"5", rest:"2 min", note:"Salta a la posición de arriba. Baja en 5 segundos controlado", muscles:"Dorsal · Tríceps · Core · Coordinación" },
+        { name:"Fondos rusos en paralelas", sets:"3", reps:"8", rest:"2 min", note:"Baja hasta que los antebrazos toquen las barras, luego extiende codos atrás", muscles:"Tríceps · Hombros · Pecho" },
+        { name:"Remo australiano bajo la barra", sets:"4", reps:"15", rest:"75s", note:"Cuelgas debajo de la barra con pies en el suelo. Tiras el pecho hacia la barra", muscles:"Dorsal · Bíceps · Romboides · Agarre" },
+        { name:"Curl 21s y press Arnold superset", sets:"3", reps:"21 + 10", rest:"90s", note:"21s de bíceps seguidos inmediatamente de 10 press Arnold", muscles:"Bíceps completo · Deltoides completo" },
+      ],
+      cooldown:"15 min stretching completo + respiración diafragmática 5 min",
+      hip_note:"✅ Todo tren superior. Cadera en reposo total.",
+      nutrition:"💪 Cena buena hoy. Mañana es la sesión más dura de todo el plan.",
+    },
+    Sábado: {
+      title:"THE BEAST SESSION – Test de fondo total", tipo:"🏔️ Enduro", duration:"80–90 min",
+      warmup:"10 min progresivo nivel 1→2→3→4",
+      exercises:[
+        { name:"Ciclismo fondo nivel 5 constante", sets:"—", reps:"50 min", rest:"—", note:"Antes 40 min nivel 4, ahora 50 min nivel 5. Ese es el progreso.", muscles:"Sistema aeróbico completo · Resistencia total" },
+        { name:"Series de subida en bici de pie nivel 8", sets:"8", reps:"90s", rest:"90s nivel 2", note:"8 series. Si completas las 8, estás listo para cualquier ruta de la zona", muscles:"Potencia · Glúteos · Cuádriceps · Mentalidad" },
+        { name:"Ciclismo cooldown activo nivel 1", sets:"—", reps:"10 min", rest:"—", note:"Baja pulsaciones gradualmente", muscles:"Recuperación" },
+      ],
+      cooldown:"15 min estiramiento completo. Lo mereces.",
+      hip_note:"💡 Si la cadera protesta en las series de pie, hazlas sentado.",
+      music:"🏔️ Tool Lateralus, Gojira From Mars to Sirius, Mastodon Crack the Skye.",
+      nutrition:"🍌🍌 Desayuno grande. Post: arroz + proteína.",
+    },
+    Domingo: {
+      title:"DESCANSO TOTAL 🏆", tipo:"😴 Recuperación", duration:"0 min",
+      warmup:"—",
+      exercises:[
+        { name:"Descanso y recuperación total", sets:"—", reps:"—", rest:"—", note:"12 semanas completadas. Come bien, hidrátate y duerme.", muscles:"🏆 Recuperación total merecida" },
+      ],
+      cooldown:"—",
+      hip_note:"🏆 Si has llegado aquí cumpliendo el plan, estás en el mejor estado físico de tu vida adulta.",
+      nutrition:"🍕 Hoy come lo que quieras. Te lo has ganado.",
+    },
+  },
+  phase4: {
+    Lunes: { title:"PUSH PROGRESIÓN INDEFINIDA", tipo:"💪 Fuerza", duration:"55–60 min", warmup:"5 min bici + activación",
+      exercises:[
+        { name:"Fondos en paralelas con peso máximo", sets:"4", reps:"6–8", rest:"2 min", note:"Cada 2 semanas intenta añadir 2.5kg más a la mochila", muscles:"Pecho · Tríceps · Hombros" },
+        { name:"Flexión un brazo", sets:"4", reps:"5 c/lado", rest:"2 min", note:"Objetivo de fase 4: la flexión completa de un solo brazo", muscles:"Pecho · Tríceps · Core" },
+        { name:"Press de hombro Arnold con mancuerna", sets:"3", reps:"10+10", rest:"90s", note:"Los ejercicios que más te hayan funcionado", muscles:"Pecho · Deltoides" },
+      ],
+      cooldown:"Estiramiento tren superior", hip_note:"✅ Sin impacto cadera.", nutrition:"💪 Si quieres ganar músculo: ligero superávit calórico. Si quieres perder grasa: déficit moderado.",
+    },
+    Martes: { title:"HIIT AVANZADO + ENDURO", tipo:"🚴 HIIT", duration:"50 min", warmup:"5 min progresivo",
+      exercises:[
+        { name:"Ciclismo HIIT Tabata extendido 30s/10s", sets:"6 rondas = 4 min", reps:"×3 bloques", rest:"90s entre bloques", note:"30s en lugar de 20s. Tu cuerpo ya está adaptado al tabata estándar", muscles:"Sistema cardiovascular · Potencia · Quema de grasa" },
+        { name:"Ciclismo zona 2 fondo libre", sets:"—", reps:"15 min", rest:"—", note:"Zona 2-3 suave después del HIIT", muscles:"Aeróbico · Recuperación activa" },
+      ],
+      cooldown:"8 min suave + estiramiento", hip_note:"💡 Ajusta según cómo llegues.", music:"🔥 Tus favoritos. Ya sabes lo que te funciona.",
+    },
+    Miércoles: { title:"PULL PROGRESIÓN INDEFINIDA", tipo:"💪 Fuerza", duration:"55–60 min", warmup:"Colgarse + pull-aparts",
+      exercises:[
+        { name:"Muscle-up trabajo de calidad", sets:"5", reps:"3–5 limpios", rest:"3 min", note:"Trabaja calidad y potencia. Muscle-ups explosivos y controlados", muscles:"Dorsal · Bíceps · Tríceps · Core" },
+        { name:"Dominadas con peso máximo", sets:"4", reps:"5", rest:"2.5 min", note:"Máximo peso posible. Progresión cada 2 semanas", muscles:"Dorsal · Trapecio · Bíceps" },
+        { name:"Remo con mancuerna superset espalda-bíceps", sets:"3", reps:"10+10", rest:"90s", note:"Los ejercicios que más te gusten", muscles:"Dorsal · Bíceps · Trapecio" },
+      ],
+      cooldown:"Colgarse + estiramiento espalda", hip_note:"✅ Tren superior.", nutrition:"💪 La nutrición decide si sigues ganando músculo o perdiendo grasa.",
+    },
+    Jueves: { title:"CIRCUITO O DESCANSO ACTIVO", tipo:"🔥 Flexible", duration:"0–50 min según energía", warmup:"Según elijas",
+      exercises:[
+        { name:"Circuito metabólico completo fase 3", sets:"5 rondas", reps:"Como en fase 3", rest:"45s", note:"Si tienes energía y quieres seguir perdiendo grasa", muscles:"Cuerpo completo" },
+        { name:"Movilidad de cadera y espalda suave", sets:"—", reps:"20–30 min", rest:"—", note:"Si llegas cargado. Escucha al cuerpo", muscles:"Recuperación activa" },
+      ],
+      cooldown:"Según elijas", hip_note:"💡 En fase 4 ya tienes criterio para decidir.",
+    },
+    Viernes: { title:"ZONA 2 + CORE MANTENIMIENTO", tipo:"🚴 Spinning + Core", duration:"55–65 min", warmup:"5 min nivel 1",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 4–5", sets:"—", reps:"40 min", rest:"—", note:"Lo que en fase 1 era nivel 4 con esfuerzo, ahora es nivel 5 cómodo", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"L-sit en paralelas", sets:"4", reps:"A elección", rest:"75s", note:"L-sit, dragon flag, plancha con variaciones. Lo que más necesites", muscles:"Core completo" },
+      ],
+      cooldown:"Estiramiento completo", hip_note:"💡 Si algo molesta en la cadera, para y descansa.",
+    },
+    Sábado: { title:"SALIDA REAL O GRAN FONDO", tipo:"🏔️ Enduro", duration:"Variable", warmup:"10 min progresivo",
+      exercises:[
+        { name:"Salida en bici de enduro MTB", sets:"—", reps:"Lo que aguantes", rest:"—", note:"Para esto has entrenado. Sal al trail.", muscles:"Todo. Fondo real en terreno real." },
+        { name:"Ciclismo gran fondo spinning 90 min", sets:"—", reps:"90 min", rest:"—", note:"Si no puedes salir: 90 min en la Cecotec con pirámides y sprints", muscles:"Sistema aeróbico completo" },
+      ],
+      cooldown:"Estiramiento completo", hip_note:"⚠️ En descensos técnicos la cadera puede protestar. Escúchala.", music:"🏔️ En la salida real no necesitas música, tienes el trail.", nutrition:"🍌🍌 Carbohidratos antes, gel o plátano durante, proteína + carbos después.",
+    },
+    Domingo: { title:"DESCANSO — SIEMPRE", tipo:"😴 Recuperación", duration:"0 min", warmup:"—",
+      exercises:[
+        { name:"Descanso total semanal — para siempre", sets:"—", reps:"—", rest:"—", note:"El domingo de descanso es para siempre. No lo negocies nunca.", muscles:"Recuperación · Sostenibilidad a largo plazo" },
+      ],
+      cooldown:"—", hip_note:"💡 Fase 4 no tiene fin. El domingo de descanso es la única regla inamovible.", nutrition:"🌙 Domingo: come sin culpa. Eres un atleta.",
+    },
+  },
+};
+
+const getKey = (id) => ["phase1","phase2","phase3","phase4"][id-1];
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+
+
+
+// ─── DEPLOY GUIDE COMPONENT ───────────────────────────────────────────────────
+function DeployGuide({col}) {
+  const steps = [
+    {n:"1", t:"Crea cuenta en GitHub (gratis)", d:"Ve a github.com → Sign up → rellena usuario, email y contraseña → Verify account"},
+    {n:"2", t:"Crea un repositorio nuevo", d:'Botón verde "New" o "+" arriba → New repository → Nombre: mi-plan-entrenamiento → Public → Create repository'},
+    {n:"3", t:"Sube este archivo HTML", d:'"Add file" → "Upload files" → arrastra el archivo plan_fernando.html → Cámbiale el nombre a index.html → "Commit changes"'},
+    {n:"4", t:"Activa GitHub Pages", d:'Settings (arriba derecha) → Pages (menú izquierdo) → Source: Deploy from branch → Branch: main → / (root) → Save'},
+    {n:"5", t:"Tu URL pública en 2 minutos", d:"La URL aparece en el mismo Settings → Pages. Será: tuusuario.github.io/mi-plan-entrenamiento"},
+    {n:"6", t:"Abre en el móvil", d:"Copia la URL y ábrela en el móvil. Funciona como una app. Puedes añadirla a la pantalla de inicio."},
+  ];
+  return (
+    <div style={{padding:"14px"}}>
+      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>PUBLICAR EN INTERNET – GRATIS Y EN 5 MINUTOS</div>
+      <div style={{fontSize:"11px",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
+        Con GitHub Pages tienes una URL pública para este plan. Lo puedes compartir con quien quieras. Solo necesitas una cuenta en github.com (es gratis).
+      </div>
+      {steps.map((s,i)=>(
+        <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"8px",display:"flex",gap:"12px",alignItems:"flex-start"}}>
+          <div style={{background:`${col}25`,color:col,width:"28px",height:"28px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"900",flexShrink:0}}>{s.n}</div>
+          <div>
+            <div style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6",marginBottom:"4px"}}>{s.t}</div>
+            <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{s.d}</div>
+          </div>
+        </div>
+      ))}
+      <div style={{marginTop:"8px",padding:"10px 12px",background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",fontSize:"11px",color:"#93c5fd",lineHeight:"1.6"}}>
+        <strong>VS Code Live Server:</strong> Abre VS Code → File → Open File → selecciona plan_fernando.html → botón derecho sobre el archivo en el explorador → "Open with Live Server" → se abre automáticamente en el navegador. Si no tienes Live Server: instala la extensión "Live Server" de Ritwick Dey en VS Code Extensions.
+      </div>
+      <div style={{marginTop:"8px",padding:"10px 12px",background:"#0a0a0a",border:"1px solid #222",borderRadius:"4px",fontSize:"11px",color:"#6b7280",lineHeight:"1.6"}}>
+        <strong>Sin instalar nada:</strong> Doble clic sobre el archivo .html → se abre en el navegador directamente. El Tutorial IA y los vídeos requieren conexión a internet.
+      </div>
+    </div>
+  );
+}
+
+// ─── EXERCISE VIDEO + AI CARD ─────────────────────────────────────────────────
+function ExCard({ex, i, col}) {
+  const [open, setOpen] = useState(false);
+  const [panel, setPanel] = useState(null);
+  const [aiData, setAiData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleAI() {
+    setPanel(panel === "ai" ? null : "ai");
+    if (!aiData && !loading) {
+      setLoading(true);
+      try {
+        const prompt = `Eres un coach de calistenia y enduro MTB profesional. Fernando tiene 38 años, 1,79m, 86kg, artrosis con choque femoroacetabular en cadera derecha (dolor crónico). Explícale el ejercicio "${ex.name}" en español de forma directa.\n\nResponde SOLO con JSON válido (sin markdown):\n{"como_hacerlo":["paso 1","paso 2","paso 3","paso 4"],"errores_comunes":["error 1","error 2","error 3"],"cue_activacion":"frase corta para sentir el músculo","cadera":"nota sobre la cadera de Fernando","nivel_dificultad":"Principiante / Intermedio / Avanzado"}`;
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:800,messages:[{role:"user",content:prompt}]})
+        });
+        const data = await res.json();
+        const text = data.content?.find(b=>b.type==="text")?.text||"{}";
+        setAiData(JSON.parse(text.replace(/```json|```/g,"").trim()));
+      } catch(e) { setAiData(null); }
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div style={{background:"#111",border:`1px solid ${open?col+"45":"#1f1f1f"}`,borderRadius:"6px",overflow:"hidden",marginBottom:"6px",transition:"border-color 0.2s"}}>
+      <div onClick={()=>setOpen(!open)} style={{padding:"11px 12px",display:"flex",gap:"10px",alignItems:"flex-start",cursor:"pointer"}}>
+        <div style={{background:`${col}25`,color:col,width:"26px",height:"26px",borderRadius:"4px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:"900",flexShrink:0}}>{i+1}</div>
+        <div style={{flex:1}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+            <div style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6",flex:1,lineHeight:"1.3"}}>{ex.name}</div>
+            <span style={{color:col,fontSize:"13px",marginLeft:"8px",flexShrink:0}}>{open?"▲":"▼"}</span>
+          </div>
+          <div style={{display:"flex",gap:"8px",marginTop:"5px",flexWrap:"wrap"}}>
+            {ex.sets!=="—"&&<span style={{fontSize:"10px",color:col,fontWeight:"700",letterSpacing:"1px"}}>{ex.sets} series</span>}
+            {ex.reps!=="—"&&<span style={{fontSize:"10px",color:"#e5e7eb",letterSpacing:"1px"}}>{ex.reps} reps</span>}
+            {ex.rest!=="—"&&<span style={{fontSize:"10px",color:"#6b7280",letterSpacing:"1px"}}>💤 {ex.rest}</span>}
+          </div>
+          {ex.note&&<div style={{fontSize:"10px",color:"#6b7280",marginTop:"3px",fontStyle:"italic"}}>→ {ex.note}</div>}
+        </div>
+      </div>
+      {open&&(
+        <div style={{borderTop:`1px solid ${col}20`,padding:"12px 12px 12px 48px"}}>
+          {ex.muscles&&<div style={{display:"inline-block",background:`${col}15`,border:`1px solid ${col}30`,color:col,padding:"3px 8px",borderRadius:"3px",fontSize:"9px",letterSpacing:"1px",textTransform:"uppercase",fontWeight:"700",marginBottom:"10px"}}>💪 {ex.muscles}</div>}
+          <div style={{display:"flex",gap:"6px",marginBottom:"10px"}}>
+            <button onClick={handleAI} style={{flex:1,padding:"9px 8px",background:panel==="ai"?`${col}25`:`${col}12`,border:`1px solid ${col}${panel==="ai"?"80":"40"}`,color:col,borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"11px",letterSpacing:"1px"}}>
+              🤖 Tutorial IA
+            </button>
+            <button onClick={()=>setPanel(panel==="video"?null:"video")} style={{flex:1,padding:"9px 8px",background:panel==="video"?"#1a0505":"transparent",border:`1px solid ${panel==="video"?"#ef4444":"#3a1010"}`,color:"#ef4444",borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"11px",letterSpacing:"1px"}}>
+              ▶️ Ver Vídeo
+            </button>
+          </div>
+          {panel==="ai"&&(
+            <div style={{background:"#0a0a0a",border:`1px solid ${col}25`,borderRadius:"4px",padding:"12px",marginBottom:"8px"}}>
+              {loading&&<div style={{display:"flex",alignItems:"center",gap:"8px",color:"#6b7280",fontSize:"11px",padding:"8px 0"}}><div style={{width:"14px",height:"14px",border:`2px solid ${col}`,borderTopColor:"transparent",borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>Generando tutorial personalizado...</div>}
+              {!loading&&aiData&&(
+                <div>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
+                    <span style={{fontSize:"9px",color:"#4b5563",letterSpacing:"2px",textTransform:"uppercase"}}>TUTORIAL PASO A PASO</span>
+                    <span style={{background:`${col}20`,color:col,padding:"2px 8px",borderRadius:"3px",fontSize:"9px",fontWeight:"700"}}>{aiData.nivel_dificultad}</span>
+                  </div>
+                  {(aiData.como_hacerlo||[]).map((p,idx)=>(
+                    <div key={idx} style={{display:"flex",gap:"8px",marginBottom:"6px",alignItems:"flex-start"}}>
+                      <div style={{background:`${col}30`,color:col,width:"20px",height:"20px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"900",flexShrink:0,marginTop:"1px"}}>{idx+1}</div>
+                      <div style={{fontSize:"12px",color:"#d1d5db",lineHeight:"1.6"}}>{p}</div>
+                    </div>
+                  ))}
+                  {aiData.cue_activacion&&<div style={{background:`${col}10`,border:`1px solid ${col}30`,borderRadius:"4px",padding:"8px 10px",margin:"10px 0"}}>
+                    <div style={{fontSize:"9px",color:col,textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>💡 CLAVE PARA SENTIRLO</div>
+                    <div style={{fontSize:"11px",color:"#d1d5db",lineHeight:"1.5",fontStyle:"italic"}}>"{aiData.cue_activacion}"</div>
+                  </div>}
+                  {(aiData.errores_comunes||[]).length>0&&<div style={{marginBottom:"8px"}}>
+                    <div style={{fontSize:"9px",color:"#ef4444",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"5px"}}>⚠️ ERRORES COMUNES</div>
+                    {(aiData.errores_comunes||[]).map((e,idx)=>(
+                      <div key={idx} style={{fontSize:"10px",color:"#9ca3af",marginBottom:"3px",paddingLeft:"8px",borderLeft:"2px solid #ef444430"}}>✗ {e}</div>
+                    ))}
+                  </div>}
+                  {aiData.cadera&&<div style={{background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",padding:"8px 10px"}}>
+                    <div style={{fontSize:"9px",color:"#93c5fd",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>🦴 TU CADERA</div>
+                    <div style={{fontSize:"10px",color:"#93c5fd",lineHeight:"1.5"}}>{aiData.cadera}</div>
+                  </div>}
+                </div>
+              )}
+              {!loading&&!aiData&&<div style={{fontSize:"11px",color:"#ef4444",padding:"8px"}}>Error al cargar. Comprueba conexión a internet y vuelve a intentar.</div>}
+            </div>
+          )}
+          {panel==="video"&&(
+            <div style={{marginBottom:"8px"}}>
+              <div style={{position:"relative",paddingBottom:"56.25%",height:0,borderRadius:"6px",overflow:"hidden",background:"#000",border:"1px solid #333"}}>
+                <iframe style={{position:"absolute",top:0,left:0,width:"100%",height:"100%"}} src={getYTEmbed(ex.name)} allowFullScreen title={ex.name}/>
+              </div>
+              <a href={getYTSearch(ex.name)} target="_blank" rel="noreferrer" style={{display:"block",marginTop:"6px",padding:"8px",background:"#0a0a0a",border:"1px solid #ef444430",borderRadius:"4px",color:"#ef4444",fontSize:"10px",textAlign:"center",fontWeight:"700",letterSpacing:"1px"}}>
+                🔗 Abrir búsqueda completa en YouTube →
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ─── NUTRICIÓN ────────────────────────────────────────────────────────────────
+const nutricionTips = [
+  {icon:"🥩",title:"Proteína diaria",text:"172g mínimo (2g × 86kg). Distribuida en 4–5 comidas. El batido de Whey Prime post-entreno cuenta (~25g). Sin esto el músculo no crece aunque entrenes perfecto."},
+  {icon:"🥜",title:"Cantidades que engañan",text:"Crema de cacahuete: máximo 10–15g (cucharada de postre). Avena: 30–40g. Queso fresco batido: siempre 0% MG. Son la diferencia entre un desayuno de 450 kcal y uno de 800."},
+  {icon:"🍚",title:"Carbohidratos",text:"No los elimines. Más carbos los días de spinning y sábado. Menos los días de descanso."},
+  {icon:"🥑",title:"Grasas saludables",text:"Aguacate, huevos, aceite de oliva, frutos secos. Son las que quemas en zona 2."},
+  {icon:"💧",title:"Hidratación",text:"Mínimo 3 litros diarios. Días de bici: 500ml antes, 500ml durante, 500ml después."},
+  {icon:"😴",title:"Sueño",text:"7–8 horas. El músculo crece mientras duermes. Sin sueño el plan funciona al 50%."},
+  {icon:"📉",title:"Déficit calórico",text:"Para perder grasa: déficit de 300–400 calorías diarias. No más. Con déficit agresivo pierdes músculo."},
+  {icon:"⏰",title:"Timing post-entreno",text:"Proteína + carbohidrato en la hora siguiente a entrenar fuerza. Huevos + tostada, atún + arroz."},
+];
+const tests2 = [
+  {semana:"Sem 4",test:"¿Cuántas dominadas seguidas sin ayuda?",objetivo:"Mínimo 3 limpias"},
+  {semana:"Sem 4",test:"¿Cuánto aguantas en bici nivel 4?",objetivo:"Mínimo 30 min sin parar"},
+  {semana:"Sem 8",test:"¿Cuántas dominadas pronas seguidas?",objetivo:"Mínimo 6–8 limpias"},
+  {semana:"Sem 8",test:"Bici nivel 4, ¿cuánto tiempo?",objetivo:"Mínimo 40 min sin parar"},
+  {semana:"Sem 12",test:"¿Dominadas lastradas con 10kg?",objetivo:"Mínimo 5 reps limpias"},
+  {semana:"Sem 12",test:"¿Muscle-up limpio?",objetivo:"Al menos 1 o progresión clara"},
+  {semana:"Sem 12",test:"Perímetro cintura vs semana 1",objetivo:"Reducción de 4–6cm"},
+];
+
+// ─── EXTRAS: PROTOCOLO MAÑANA + SUPLEMENTOS + CADERA ─────────────────────────
+const protocoloManana = [
+  {n:"1", t:"Al levantarte", d:"1 vaso GRANDE de agua + 5 min de movilidad suave de cadera (balanceos de pierna, círculos). La articulación necesita líquido y calentar antes de moverse en ayunas."},
+  {n:"2", t:"Entreno en ayunas", d:"Válido y quema grasa. Si notas mareo o bajón: medio plátano antes, no arruina nada. Si la cadera duele más de lo normal ese día → solo movilidad y bici suave."},
+  {n:"3", t:"Nada más terminar: EL BATIDO", d:"1 cazo de Whey Prime 100% (~25g proteína) + 3g de Creapure en agua o leche. La insulina del batido mete la creatina en el músculo. Es el mejor momento del día para tomarla."},
+  {n:"4", t:"45–60 min después: desayuno medido", d:"Café con leche + queso fresco batido 0% + 30–40g de copos de avena + 10–15g de crema de cacahuete. Total ~450–500 kcal. Si no pesas la crema y la avena, se va a 800 kcal y adiós déficit."},
+  {n:"5", t:"Días de descanso: la creatina NO se salta", d:"3g de Creapure con cualquier comida. La creatina funciona por saturación diaria, no por timing. Si la saltas los domingos, pierdes el efecto acumulado."},
+];
+
+const suplementos = [
+  {icon:"⚡", title:"Creatina Creapure (Prozis) — 3g/día, TODOS los días", text:"El suplemento con más evidencia para ganar fuerza y masa muscular. Post-entreno con el batido; en descanso, con una comida. Efectos visibles a partir de la semana 3–4. Bebe mínimo 2,5–3L de agua al día con ella. No necesita fase de carga."},
+  {icon:"🥛", title:"Whey Prime 100% (Prozis) — 25–30g post-entreno", text:"1 cazo nada más entrenar. También vale como merienda para llegar a los 172g de proteína diaria. No es magia: es comida en polvo, cuenta dentro de tus calorías."},
+  {icon:"🐟", title:"Omega-3 (EPA/DHA) — para la cadera", text:"Antiinflamatorio natural con buena evidencia en dolor articular. 2–3g diarios con las comidas. De lo mejor que puedes darle a esa artrosis aparte del músculo."},
+  {icon:"🦴", title:"Colágeno + Vitamina C — para el cartílago", text:"Colágeno hidrolizado (10g) + vitamina C en ayunas o antes de entrenar. Efecto lento: se nota a los 3–6 meses de constancia. No cura, pero ayuda a mantener lo que queda."},
+  {icon:"🌶️", title:"Cúrcuma + pimienta negra — antiinflamatorio de base", text:"La curcumina con piperina reduce inflamación de base. Útil para el dolor crónico. Con una comida con grasa para absorberla mejor."},
+];
+
+const caderaExercises = [
+  { name:"Puente de glúteo isométrico", sets:"3", reps:"30–45s aguante", rest:"60s", note:"Tumbado boca arriba, rodillas dobladas, peso en los talones. Sube la cadera y APRIETA el glúteo arriba", muscles:"Glúteo mayor · El amortiguador nº1 de tu cadera" },
+  { name:"Plancha lateral con elevación de pierna", sets:"3", reps:"8–10 c/lado", rest:"60s", note:"De lado sobre el antebrazo. Sube la pierna de arriba recta, baja controlado", muscles:"Glúteo medio · Estabiliza la cadera al andar" },
+  { name:"Sentadilla isométrica en pared (wall-sit)", sets:"3", reps:"30–60s aguante", rest:"75s", note:"Espalda en la pared, baja SOLO hasta donde no duela. No hace falta llegar a 90°", muscles:"Cuádriceps · Sin fuerza de empuje en la cadera" },
+  { name:"Almeja con banda (clamshell)", sets:"3", reps:"15 c/lado", rest:"45s", note:"Tumbado de lado, rodillas dobladas, pies juntos. Abre la rodilla de arriba como una almeja", muscles:"Glúteo medio y menor · Rotadores de cadera" },
+];
+
+function ExtrasTab({col}) {
+  return (
+    <div style={{padding:"14px"}}>
+      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>PROTOCOLO DE LA MAÑANA — ENTRENO EN AYUNAS</div>
+      {protocoloManana.map((s,i)=>(
+        <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"8px",display:"flex",gap:"12px",alignItems:"flex-start"}}>
+          <div style={{background:`${col}25`,color:col,width:"28px",height:"28px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"900",flexShrink:0}}>{s.n}</div>
+          <div>
+            <div style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6",marginBottom:"4px"}}>{s.t}</div>
+            <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{s.d}</div>
+          </div>
+        </div>
+      ))}
+
+      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>SUPLEMENTACIÓN</div>
+      {suplementos.map((t,i)=>(
+        <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
+          <div style={{fontSize:"14px",marginBottom:"4px"}}>{t.icon} <span style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6"}}>{t.title}</span></div>
+          <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{t.text}</div>
+        </div>
+      ))}
+
+      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>🦴 BLINDAJE DE CADERA — 2–3× POR SEMANA</div>
+      <div style={{fontSize:"11px",color:"#93c5fd",marginBottom:"10px",lineHeight:"1.65",padding:"10px 12px",background:"#080e1a",borderRadius:"4px",border:"1px solid #1d3a6a35"}}>
+        El músculo es tu mejor faja: glúteos y cuádriceps fuertes descargan la cabeza del fémur y reducen la fricción diaria.
+        <strong> Regla de oro: dolor agudo en la articulación = STOP · quemazón muscular = OK.</strong> Hazlos tras el entreno de fuerza o en días de descanso.
+      </div>
+      {caderaExercises.map((ex,i)=>(
+        <ExCard key={i} ex={ex} i={i} col={col}/>
+      ))}
+      <div style={{marginTop:"10px",padding:"10px 12px",background:"#0a0a0a",borderRadius:"4px",border:"1px solid #222",fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>
+        🔥❄️ <strong style={{color:"#e5e7eb"}}>Calor antes, hielo después:</strong> 10 min de calor seco en la cadera antes de entrenar afloja la cápsula. 15–20 min de hielo (con paño, nunca directo) al terminar corta la inflamación del día.
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [activePhase, setActivePhase] = useState(1);
+  const [activeDay, setActiveDay] = useState(0);
+  const [tab, setTab] = useState("plan");
+
+  const phase = phases[activePhase-1];
+  const phaseKey = getKey(activePhase);
+  const dayName = DAYS[activeDay];
+  const day = dd[phaseKey][dayName];
+  const col = phase.color;
+
+  return (
+    <div style={{minHeight:"100vh",background:"#090909",color:"#e5e7eb",fontFamily:"'Barlow Condensed','Arial Narrow',Arial,sans-serif"}}>
+      <div style={{background:"#111",borderBottom:`2px solid ${col}30`,padding:"16px 20px 12px",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,right:0,width:"140px",height:"100%",background:`linear-gradient(135deg,transparent 40%,${col}10 100%)`}}/>
+        <div style={{fontSize:"10px",letterSpacing:"4px",color:"#4b5563",textTransform:"uppercase"}}>Fernando #CalvoMalvado · Enduro MTB + Calistenia</div>
+        <div style={{fontSize:"26px",fontWeight:"900",letterSpacing:"2px",color:"#fff",marginTop:"2px"}}>PLAN DEFINITIVO</div>
+        <div style={{fontSize:"12px",color:"#6b7280",marginTop:"2px"}}>1,79m · 86kg · Cadera blindada · Creapure + Whey diarios · Plan indefinido</div>
+      </div>
+
+      <div style={{display:"flex",background:"#0d0d0d",borderBottom:"1px solid #1a1a1a"}}>
+        {[["plan","📋 Plan"],["nutricion","🥗 Nutrición"],["extras","💊 Extras"],["test","📊 Tests"],["deploy","🌐 Publicar"]].map(([id,label])=>(
+          <button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:"10px 2px",background:"transparent",border:"none",borderBottom:tab===id?`2px solid ${col}`:"2px solid transparent",color:tab===id?col:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"10px",letterSpacing:"0.5px"}}>{label}</button>
+        ))}
+      </div>
+
+      {tab==="nutricion"&&(
+        <div style={{padding:"14px"}}>
+          <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>NUTRICIÓN PARA RECOMPOSICIÓN</div>
+          <div style={{fontSize:"11px",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
+            Recomposición = perder grasa + ganar músculo a la vez. Clave: déficit calórico moderado + proteína alta + fuerza.
+          </div>
+          {nutricionTips.map((t,i)=>(
+            <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
+              <div style={{fontSize:"14px",marginBottom:"4px"}}>{t.icon} <span style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6"}}>{t.title}</span></div>
+              <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{t.text}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab==="test"&&(
+        <div style={{padding:"14px"}}>
+          <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>TESTS DE PROGRESO</div>
+          {tests2.map((t,i)=>(
+            <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px",display:"flex",gap:"10px",alignItems:"flex-start"}}>
+              <div style={{background:`${col}20`,color:col,padding:"3px 8px",borderRadius:"3px",fontSize:"9px",fontWeight:"700",letterSpacing:"1px",flexShrink:0,whiteSpace:"nowrap"}}>{t.semana}</div>
+              <div>
+                <div style={{fontSize:"12px",fontWeight:"700",color:"#f3f4f6"}}>{t.test}</div>
+                <div style={{fontSize:"10px",color:col,marginTop:"3px"}}>→ {t.objetivo}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{marginTop:"10px",padding:"10px 12px",background:"#0a0a0a",borderRadius:"4px",border:"1px solid #141414",fontSize:"10px",color:"#4b5563"}}>
+            💡 Mídete la cintura cada 4 semanas. Es el indicador más honesto de pérdida de grasa abdominal.
+          </div>
+        </div>
+      )}
+
+      {tab==="extras"&&<ExtrasTab col={col}/>}
+
+      {tab==="deploy"&&<DeployGuide col={col}/>}
+
+      {tab==="plan"&&(
+        <>
+          <div style={{display:"flex",borderBottom:"1px solid #1a1a1a",overflowX:"auto",scrollbarWidth:"none"}}>
+            {phases.map(p=>(
+              <button key={p.id} onClick={()=>{setActivePhase(p.id);setActiveDay(0);}} style={{flexShrink:0,padding:"10px 14px",background:activePhase===p.id?"#141414":"transparent",border:"none",borderBottom:activePhase===p.id?`2px solid ${p.color}`:"2px solid transparent",color:activePhase===p.id?p.color:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:"900",fontSize:"10px",letterSpacing:"1.5px",textTransform:"uppercase"}}>
+                <div>{p.name}</div>
+                <div style={{fontSize:"8px",fontWeight:"400",opacity:0.7}}>{p.weeks}</div>
+              </button>
+            ))}
+          </div>
+          <div style={{padding:"10px 18px",background:"#0c0c0c",borderBottom:"1px solid #141414",fontSize:"11px",color:"#9ca3af",borderLeft:`3px solid ${col}`}}>{phase.desc}</div>
+          <div style={{display:"flex",background:"#0d0d0d",borderBottom:"1px solid #141414",overflowX:"auto",scrollbarWidth:"none"}}>
+            {DAYS.map((d,i)=>(
+              <button key={d} onClick={()=>setActiveDay(i)} style={{flexShrink:0,padding:"8px 12px",background:activeDay===i?"#141414":"transparent",border:"none",borderBottom:activeDay===i?`2px solid ${col}`:"2px solid transparent",color:activeDay===i?col:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:activeDay===i?"900":"400",fontSize:"10px",letterSpacing:"1px",textTransform:"uppercase"}}>
+                {DAY_EMOJI[d]} {DAYS_S[i]}
+              </button>
+            ))}
+          </div>
+          <div style={{padding:"14px 14px 60px"}}>
+            <div style={{background:"#111",border:"1px solid #1a1a1a",borderTop:`3px solid ${col}`,borderRadius:"6px",padding:"14px",marginBottom:"12px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px"}}>
+                <div>
+                  <div style={{fontSize:"9px",color:"#4b5563",letterSpacing:"3px",textTransform:"uppercase"}}>{dayName} · {phase.name} · {day.tipo}</div>
+                  <div style={{fontSize:"18px",fontWeight:"900",color:"#fff",letterSpacing:"1px",marginTop:"3px"}}>{day.title}</div>
+                </div>
+                <div style={{background:`${col}20`,border:`1px solid ${col}40`,color:col,padding:"5px 10px",borderRadius:"4px",fontSize:"11px",fontWeight:"700",flexShrink:0}}>⏱ {day.duration}</div>
+              </div>
+              {day.warmup&&day.warmup!=="—"&&(
+                <div style={{marginTop:"10px",padding:"7px 10px",background:"#0a0a0a",borderRadius:"3px",fontSize:"11px",color:"#9ca3af",borderLeft:"2px solid #222"}}>
+                  <span style={{color:"#4b5563",textTransform:"uppercase",fontSize:"9px"}}>Calentamiento: </span>{day.warmup}
+                </div>
+              )}
+            </div>
+            <div style={{padding:"8px 12px",background:"#080f08",border:"1px solid #14532430",borderRadius:"4px",marginBottom:"12px",fontSize:"10px",color:"#86efac",display:"flex",alignItems:"center",gap:"8px"}}>
+              <span>🤖</span><span>Pulsa cualquier ejercicio → <strong>Tutorial IA</strong> para instrucciones paso a paso · <strong>▶️ Ver Vídeo</strong> para ver cómo se hace</span>
+            </div>
+            {day.exercises.map((ex,i)=>(
+              <ExCard key={`${activePhase}-${activeDay}-${i}`} ex={ex} i={i} col={col}/>
+            ))}
+            {day.cooldown&&day.cooldown!=="—"&&<div style={{background:"#0d0d0d",border:"1px solid #1a1a1a",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#9ca3af",borderLeft:"2px solid #222",marginTop:"6px"}}><span style={{color:"#4b5563",fontSize:"9px",textTransform:"uppercase"}}>Enfriamiento: </span>{day.cooldown}</div>}
+            {day.hip_note&&<div style={{background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#93c5fd"}}>{day.hip_note}</div>}
+            {day.music&&<div style={{background:"#0c0a18",border:"1px solid #6d28d930",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#c4b5fd"}}>{day.music}</div>}
+            {day.nutrition&&<div style={{background:"#080f08",border:"1px solid #14532430",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#86efac"}}>{day.nutrition}</div>}
+            <div style={{marginTop:"10px",padding:"10px 12px",background:"#080808",borderRadius:"4px",border:"1px solid #111",fontSize:"10px",color:"#374151"}}>
+              <div style={{color:"#1f2937",textTransform:"uppercase",letterSpacing:"2px",fontSize:"9px",marginBottom:"4px"}}>PROGRESIÓN {phase.name}</div>
+              {activePhase===1&&"Sem 1–2: aprende técnica, no el peso. Sem 3: añade 1 serie. Sem 4: sube peso donde llegues a 15 reps fácil."}
+              {activePhase===2&&"Sem 5–6: volumen máximo. Sem 7: añade peso en paralelas y dominadas. Sem 8: test de máximas reps."}
+              {activePhase===3&&"Sem 9–10: pesos máximos. Sem 11: muscle-up o negativas explosivas. Sem 12: test total del plan."}
+              {activePhase===4&&"Fase 4 indefinida: añade peso o reps cada 2 semanas en al menos un ejercicio. Sin progresión = estancamiento."}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+
+</script>
+</body>
+</html>
