@@ -3,17 +3,52 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#090909"/>
 <title>Plan Entrenamiento – Fernando #CalvoMalvado</title>
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
+/* ── Escala tipográfica: los estilos inline usan var(--fs-N).
+   En móvil valen N px; en tablet (≥700px) la escala entera sube. ── */
+:root{
+  color-scheme:dark;
+  --fs-8:8px;--fs-9:9px;--fs-10:10px;--fs-11:11px;--fs-12:12px;
+  --fs-13:13px;--fs-14:14px;--fs-18:18px;--fs-26:26px;
+}
+@media(min-width:700px){
+  :root{
+    --fs-8:10px;--fs-9:11px;--fs-10:12px;--fs-11:13px;--fs-12:14px;
+    --fs-13:15px;--fs-14:17px;--fs-18:23px;--fs-26:36px;
+  }
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#090909;color:#e5e7eb;font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:#090909;color:#e5e7eb;font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;-webkit-font-smoothing:antialiased;touch-action:manipulation}
 ::-webkit-scrollbar{height:4px;width:4px}
 ::-webkit-scrollbar-track{background:#111}
 ::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
 a{text-decoration:none}
+button,a{-webkit-tap-highlight-color:transparent}
+button:hover,a:hover{filter:brightness(1.35)}
+button:focus-visible,a:focus-visible{outline:2px solid #00d4aa;outline-offset:-2px}
+h1,h2,h3{text-wrap:balance}
+
+/* ── Contenedor: en tablet la app se centra con ancho máximo
+   en vez de estirarse de borde a borde ── */
+@media(min-width:700px){
+  .app-inner{max-width:900px;margin:0 auto;border-left:1px solid #1a1a1a;border-right:1px solid #1a1a1a}
+  .tab-btn{padding:14px 4px !important;letter-spacing:1.5px !important}
+  .day-btn{flex:1;padding:12px 14px !important}
+  .phase-btn{flex:1;padding:12px 16px !important}
+}
+
+/* ── Rejilla de tarjetas: 1 columna en móvil, 2 en tablet ── */
+.grid2{display:block}
+@media(min-width:700px){
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .grid2>*{margin-bottom:0 !important;height:100%}
+}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn 0.25s ease}
@@ -479,23 +514,25 @@ function DeployGuide({col}) {
   ];
   return (
     <div style={{padding:"14px"}}>
-      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>PUBLICAR EN INTERNET – GRATIS Y EN 5 MINUTOS</div>
-      <div style={{fontSize:"11px",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>PUBLICAR EN INTERNET – GRATIS Y EN 5 MINUTOS</div>
+      <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
         Con GitHub Pages tienes una URL pública para este plan. Lo puedes compartir con quien quieras. Solo necesitas una cuenta en github.com (es gratis).
       </div>
+      <div className="grid2">
       {steps.map((s,i)=>(
         <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"8px",display:"flex",gap:"12px",alignItems:"flex-start"}}>
-          <div style={{background:`${col}25`,color:col,width:"28px",height:"28px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"900",flexShrink:0}}>{s.n}</div>
+          <div style={{background:`${col}25`,color:col,width:"28px",height:"28px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--fs-12)",fontWeight:"900",flexShrink:0}}>{s.n}</div>
           <div>
-            <div style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6",marginBottom:"4px"}}>{s.t}</div>
-            <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{s.d}</div>
+            <div style={{fontSize:"var(--fs-13)",fontWeight:"700",color:"#f3f4f6",marginBottom:"4px"}}>{s.t}</div>
+            <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",lineHeight:"1.6"}}>{s.d}</div>
           </div>
         </div>
       ))}
-      <div style={{marginTop:"8px",padding:"10px 12px",background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",fontSize:"11px",color:"#93c5fd",lineHeight:"1.6"}}>
+      </div>
+      <div style={{marginTop:"8px",padding:"10px 12px",background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",fontSize:"var(--fs-11)",color:"#93c5fd",lineHeight:"1.6"}}>
         <strong>VS Code Live Server:</strong> Abre VS Code → File → Open File → selecciona plan_fernando.html → botón derecho sobre el archivo en el explorador → "Open with Live Server" → se abre automáticamente en el navegador. Si no tienes Live Server: instala la extensión "Live Server" de Ritwick Dey en VS Code Extensions.
       </div>
-      <div style={{marginTop:"8px",padding:"10px 12px",background:"#0a0a0a",border:"1px solid #222",borderRadius:"4px",fontSize:"11px",color:"#6b7280",lineHeight:"1.6"}}>
+      <div style={{marginTop:"8px",padding:"10px 12px",background:"#0a0a0a",border:"1px solid #222",borderRadius:"4px",fontSize:"var(--fs-11)",color:"#6b7280",lineHeight:"1.6"}}>
         <strong>Sin instalar nada:</strong> Doble clic sobre el archivo .html → se abre en el navegador directamente. El Tutorial IA y los vídeos requieren conexión a internet.
       </div>
     </div>
@@ -530,63 +567,63 @@ function ExCard({ex, i, col}) {
   return (
     <div style={{background:"#111",border:`1px solid ${open?col+"45":"#1f1f1f"}`,borderRadius:"6px",overflow:"hidden",marginBottom:"6px",transition:"border-color 0.2s"}}>
       <div onClick={()=>setOpen(!open)} style={{padding:"11px 12px",display:"flex",gap:"10px",alignItems:"flex-start",cursor:"pointer"}}>
-        <div style={{background:`${col}25`,color:col,width:"26px",height:"26px",borderRadius:"4px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:"900",flexShrink:0}}>{i+1}</div>
+        <div style={{background:`${col}25`,color:col,width:"26px",height:"26px",borderRadius:"4px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--fs-11)",fontWeight:"900",flexShrink:0}}>{i+1}</div>
         <div style={{flex:1}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-            <div style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6",flex:1,lineHeight:"1.3"}}>{ex.name}</div>
-            <span style={{color:col,fontSize:"13px",marginLeft:"8px",flexShrink:0}}>{open?"▲":"▼"}</span>
+            <div style={{fontSize:"var(--fs-13)",fontWeight:"700",color:"#f3f4f6",flex:1,lineHeight:"1.3"}}>{ex.name}</div>
+            <span style={{color:col,fontSize:"var(--fs-13)",marginLeft:"8px",flexShrink:0}}>{open?"▲":"▼"}</span>
           </div>
           <div style={{display:"flex",gap:"8px",marginTop:"5px",flexWrap:"wrap"}}>
-            {ex.sets!=="—"&&<span style={{fontSize:"10px",color:col,fontWeight:"700",letterSpacing:"1px"}}>{ex.sets} series</span>}
-            {ex.reps!=="—"&&<span style={{fontSize:"10px",color:"#e5e7eb",letterSpacing:"1px"}}>{ex.reps} reps</span>}
-            {ex.rest!=="—"&&<span style={{fontSize:"10px",color:"#6b7280",letterSpacing:"1px"}}>💤 {ex.rest}</span>}
+            {ex.sets!=="—"&&<span style={{fontSize:"var(--fs-10)",color:col,fontWeight:"700",letterSpacing:"1px"}}>{ex.sets} series</span>}
+            {ex.reps!=="—"&&<span style={{fontSize:"var(--fs-10)",color:"#e5e7eb",letterSpacing:"1px"}}>{ex.reps} reps</span>}
+            {ex.rest!=="—"&&<span style={{fontSize:"var(--fs-10)",color:"#6b7280",letterSpacing:"1px"}}>💤 {ex.rest}</span>}
           </div>
-          {ex.note&&<div style={{fontSize:"10px",color:"#6b7280",marginTop:"3px",fontStyle:"italic"}}>→ {ex.note}</div>}
+          {ex.note&&<div style={{fontSize:"var(--fs-10)",color:"#6b7280",marginTop:"3px",fontStyle:"italic"}}>→ {ex.note}</div>}
         </div>
       </div>
       {open&&(
         <div style={{borderTop:`1px solid ${col}20`,padding:"12px 12px 12px 48px"}}>
-          {ex.muscles&&<div style={{display:"inline-block",background:`${col}15`,border:`1px solid ${col}30`,color:col,padding:"3px 8px",borderRadius:"3px",fontSize:"9px",letterSpacing:"1px",textTransform:"uppercase",fontWeight:"700",marginBottom:"10px"}}>💪 {ex.muscles}</div>}
+          {ex.muscles&&<div style={{display:"inline-block",background:`${col}15`,border:`1px solid ${col}30`,color:col,padding:"3px 8px",borderRadius:"3px",fontSize:"var(--fs-9)",letterSpacing:"1px",textTransform:"uppercase",fontWeight:"700",marginBottom:"10px"}}>💪 {ex.muscles}</div>}
           <div style={{display:"flex",gap:"6px",marginBottom:"10px"}}>
-            <button onClick={handleAI} style={{flex:1,padding:"9px 8px",background:panel==="ai"?`${col}25`:`${col}12`,border:`1px solid ${col}${panel==="ai"?"80":"40"}`,color:col,borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"11px",letterSpacing:"1px"}}>
+            <button onClick={handleAI} style={{flex:1,padding:"9px 8px",background:panel==="ai"?`${col}25`:`${col}12`,border:`1px solid ${col}${panel==="ai"?"80":"40"}`,color:col,borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-11)",letterSpacing:"1px"}}>
               🤖 Tutorial IA
             </button>
-            <button onClick={()=>setPanel(panel==="video"?null:"video")} style={{flex:1,padding:"9px 8px",background:panel==="video"?"#1a0505":"transparent",border:`1px solid ${panel==="video"?"#ef4444":"#3a1010"}`,color:"#ef4444",borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"11px",letterSpacing:"1px"}}>
+            <button onClick={()=>setPanel(panel==="video"?null:"video")} style={{flex:1,padding:"9px 8px",background:panel==="video"?"#1a0505":"transparent",border:`1px solid ${panel==="video"?"#ef4444":"#3a1010"}`,color:"#ef4444",borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-11)",letterSpacing:"1px"}}>
               ▶️ Ver Vídeo
             </button>
           </div>
           {panel==="ai"&&(
             <div style={{background:"#0a0a0a",border:`1px solid ${col}25`,borderRadius:"4px",padding:"12px",marginBottom:"8px"}}>
-              {loading&&<div style={{display:"flex",alignItems:"center",gap:"8px",color:"#6b7280",fontSize:"11px",padding:"8px 0"}}><div style={{width:"14px",height:"14px",border:`2px solid ${col}`,borderTopColor:"transparent",borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>Generando tutorial personalizado...</div>}
+              {loading&&<div style={{display:"flex",alignItems:"center",gap:"8px",color:"#6b7280",fontSize:"var(--fs-11)",padding:"8px 0"}}><div style={{width:"14px",height:"14px",border:`2px solid ${col}`,borderTopColor:"transparent",borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>Generando tutorial personalizado...</div>}
               {!loading&&aiData&&(
                 <div>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <span style={{fontSize:"9px",color:"#4b5563",letterSpacing:"2px",textTransform:"uppercase"}}>TUTORIAL PASO A PASO</span>
-                    <span style={{background:`${col}20`,color:col,padding:"2px 8px",borderRadius:"3px",fontSize:"9px",fontWeight:"700"}}>{aiData.nivel_dificultad}</span>
+                    <span style={{fontSize:"var(--fs-9)",color:"#4b5563",letterSpacing:"2px",textTransform:"uppercase"}}>TUTORIAL PASO A PASO</span>
+                    <span style={{background:`${col}20`,color:col,padding:"2px 8px",borderRadius:"3px",fontSize:"var(--fs-9)",fontWeight:"700"}}>{aiData.nivel_dificultad}</span>
                   </div>
                   {(aiData.como_hacerlo||[]).map((p,idx)=>(
                     <div key={idx} style={{display:"flex",gap:"8px",marginBottom:"6px",alignItems:"flex-start"}}>
-                      <div style={{background:`${col}30`,color:col,width:"20px",height:"20px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:"900",flexShrink:0,marginTop:"1px"}}>{idx+1}</div>
-                      <div style={{fontSize:"12px",color:"#d1d5db",lineHeight:"1.6"}}>{p}</div>
+                      <div style={{background:`${col}30`,color:col,width:"20px",height:"20px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--fs-9)",fontWeight:"900",flexShrink:0,marginTop:"1px"}}>{idx+1}</div>
+                      <div style={{fontSize:"var(--fs-12)",color:"#d1d5db",lineHeight:"1.6"}}>{p}</div>
                     </div>
                   ))}
                   {aiData.cue_activacion&&<div style={{background:`${col}10`,border:`1px solid ${col}30`,borderRadius:"4px",padding:"8px 10px",margin:"10px 0"}}>
-                    <div style={{fontSize:"9px",color:col,textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>💡 CLAVE PARA SENTIRLO</div>
-                    <div style={{fontSize:"11px",color:"#d1d5db",lineHeight:"1.5",fontStyle:"italic"}}>"{aiData.cue_activacion}"</div>
+                    <div style={{fontSize:"var(--fs-9)",color:col,textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>💡 CLAVE PARA SENTIRLO</div>
+                    <div style={{fontSize:"var(--fs-11)",color:"#d1d5db",lineHeight:"1.5",fontStyle:"italic"}}>"{aiData.cue_activacion}"</div>
                   </div>}
                   {(aiData.errores_comunes||[]).length>0&&<div style={{marginBottom:"8px"}}>
-                    <div style={{fontSize:"9px",color:"#ef4444",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"5px"}}>⚠️ ERRORES COMUNES</div>
+                    <div style={{fontSize:"var(--fs-9)",color:"#ef4444",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"5px"}}>⚠️ ERRORES COMUNES</div>
                     {(aiData.errores_comunes||[]).map((e,idx)=>(
-                      <div key={idx} style={{fontSize:"10px",color:"#9ca3af",marginBottom:"3px",paddingLeft:"8px",borderLeft:"2px solid #ef444430"}}>✗ {e}</div>
+                      <div key={idx} style={{fontSize:"var(--fs-10)",color:"#9ca3af",marginBottom:"3px",paddingLeft:"8px",borderLeft:"2px solid #ef444430"}}>✗ {e}</div>
                     ))}
                   </div>}
                   {aiData.cadera&&<div style={{background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",padding:"8px 10px"}}>
-                    <div style={{fontSize:"9px",color:"#93c5fd",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>🦴 TU CADERA</div>
-                    <div style={{fontSize:"10px",color:"#93c5fd",lineHeight:"1.5"}}>{aiData.cadera}</div>
+                    <div style={{fontSize:"var(--fs-9)",color:"#93c5fd",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>🦴 TU CADERA</div>
+                    <div style={{fontSize:"var(--fs-10)",color:"#93c5fd",lineHeight:"1.5"}}>{aiData.cadera}</div>
                   </div>}
                 </div>
               )}
-              {!loading&&!aiData&&<div style={{fontSize:"11px",color:"#ef4444",padding:"8px"}}>Error al cargar. Comprueba conexión a internet y vuelve a intentar.</div>}
+              {!loading&&!aiData&&<div style={{fontSize:"var(--fs-11)",color:"#ef4444",padding:"8px"}}>Error al cargar. Comprueba conexión a internet y vuelve a intentar.</div>}
             </div>
           )}
           {panel==="video"&&(
@@ -594,7 +631,7 @@ function ExCard({ex, i, col}) {
               <div style={{position:"relative",paddingBottom:"56.25%",height:0,borderRadius:"6px",overflow:"hidden",background:"#000",border:"1px solid #333"}}>
                 <iframe style={{position:"absolute",top:0,left:0,width:"100%",height:"100%"}} src={getYTEmbed(ex.name)} allowFullScreen title={ex.name}/>
               </div>
-              <a href={getYTSearch(ex.name)} target="_blank" rel="noreferrer" style={{display:"block",marginTop:"6px",padding:"8px",background:"#0a0a0a",border:"1px solid #ef444430",borderRadius:"4px",color:"#ef4444",fontSize:"10px",textAlign:"center",fontWeight:"700",letterSpacing:"1px"}}>
+              <a href={getYTSearch(ex.name)} target="_blank" rel="noreferrer" style={{display:"block",marginTop:"6px",padding:"8px",background:"#0a0a0a",border:"1px solid #ef444430",borderRadius:"4px",color:"#ef4444",fontSize:"var(--fs-10)",textAlign:"center",fontWeight:"700",letterSpacing:"1px"}}>
                 🔗 Abrir búsqueda completa en YouTube →
               </a>
             </div>
@@ -654,34 +691,36 @@ const caderaExercises = [
 function ExtrasTab({col}) {
   return (
     <div style={{padding:"14px"}}>
-      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>PROTOCOLO DE LA MAÑANA — ENTRENO EN AYUNAS</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>PROTOCOLO DE LA MAÑANA — ENTRENO EN AYUNAS</div>
       {protocoloManana.map((s,i)=>(
         <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"8px",display:"flex",gap:"12px",alignItems:"flex-start"}}>
-          <div style={{background:`${col}25`,color:col,width:"28px",height:"28px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"900",flexShrink:0}}>{s.n}</div>
+          <div style={{background:`${col}25`,color:col,width:"28px",height:"28px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"var(--fs-12)",fontWeight:"900",flexShrink:0}}>{s.n}</div>
           <div>
-            <div style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6",marginBottom:"4px"}}>{s.t}</div>
-            <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{s.d}</div>
+            <div style={{fontSize:"var(--fs-13)",fontWeight:"700",color:"#f3f4f6",marginBottom:"4px"}}>{s.t}</div>
+            <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",lineHeight:"1.6"}}>{s.d}</div>
           </div>
         </div>
       ))}
 
-      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>SUPLEMENTACIÓN</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>SUPLEMENTACIÓN</div>
+      <div className="grid2">
       {suplementos.map((t,i)=>(
         <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
-          <div style={{fontSize:"14px",marginBottom:"4px"}}>{t.icon} <span style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6"}}>{t.title}</span></div>
-          <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{t.text}</div>
+          <div style={{fontSize:"var(--fs-14)",marginBottom:"4px"}}>{t.icon} <span style={{fontSize:"var(--fs-13)",fontWeight:"700",color:"#f3f4f6"}}>{t.title}</span></div>
+          <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",lineHeight:"1.6"}}>{t.text}</div>
         </div>
       ))}
+      </div>
 
-      <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>🦴 BLINDAJE DE CADERA — 2–3× POR SEMANA</div>
-      <div style={{fontSize:"11px",color:"#93c5fd",marginBottom:"10px",lineHeight:"1.65",padding:"10px 12px",background:"#080e1a",borderRadius:"4px",border:"1px solid #1d3a6a35"}}>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>🦴 BLINDAJE DE CADERA — 2–3× POR SEMANA</div>
+      <div style={{fontSize:"var(--fs-11)",color:"#93c5fd",marginBottom:"10px",lineHeight:"1.65",padding:"10px 12px",background:"#080e1a",borderRadius:"4px",border:"1px solid #1d3a6a35"}}>
         El músculo es tu mejor faja: glúteos y cuádriceps fuertes descargan la cabeza del fémur y reducen la fricción diaria.
         <strong> Regla de oro: dolor agudo en la articulación = STOP · quemazón muscular = OK.</strong> Hazlos tras el entreno de fuerza o en días de descanso.
       </div>
       {caderaExercises.map((ex,i)=>(
         <ExCard key={i} ex={ex} i={i} col={col}/>
       ))}
-      <div style={{marginTop:"10px",padding:"10px 12px",background:"#0a0a0a",borderRadius:"4px",border:"1px solid #222",fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>
+      <div style={{marginTop:"10px",padding:"10px 12px",background:"#0a0a0a",borderRadius:"4px",border:"1px solid #222",fontSize:"var(--fs-11)",color:"#9ca3af",lineHeight:"1.6"}}>
         🔥❄️ <strong style={{color:"#e5e7eb"}}>Calor antes, hielo después:</strong> 10 min de calor seco en la cadera antes de entrenar afloja la cápsula. 15–20 min de hielo (con paño, nunca directo) al terminar corta la inflamación del día.
       </div>
     </div>
@@ -700,48 +739,52 @@ function App() {
   const col = phase.color;
 
   return (
-    <div style={{minHeight:"100vh",background:"#090909",color:"#e5e7eb",fontFamily:"'Barlow Condensed','Arial Narrow',Arial,sans-serif"}}>
+    <div className="app-inner" style={{minHeight:"100vh",background:"#090909",color:"#e5e7eb",fontFamily:"'Barlow Condensed','Arial Narrow',Arial,sans-serif"}}>
       <div style={{background:"#111",borderBottom:`2px solid ${col}30`,padding:"16px 20px 12px",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,right:0,width:"140px",height:"100%",background:`linear-gradient(135deg,transparent 40%,${col}10 100%)`}}/>
-        <div style={{fontSize:"10px",letterSpacing:"4px",color:"#4b5563",textTransform:"uppercase"}}>Fernando #CalvoMalvado · Enduro MTB + Calistenia</div>
-        <div style={{fontSize:"26px",fontWeight:"900",letterSpacing:"2px",color:"#fff",marginTop:"2px"}}>PLAN DEFINITIVO</div>
-        <div style={{fontSize:"12px",color:"#6b7280",marginTop:"2px"}}>1,79m · 86kg · Cadera blindada · Creapure + Whey diarios · Plan indefinido</div>
+        <div style={{fontSize:"var(--fs-10)",letterSpacing:"4px",color:"#4b5563",textTransform:"uppercase"}}>Fernando #CalvoMalvado · Enduro MTB + Calistenia</div>
+        <div style={{fontSize:"var(--fs-26)",fontWeight:"900",letterSpacing:"2px",color:"#fff",marginTop:"2px"}}>PLAN DEFINITIVO</div>
+        <div style={{fontSize:"var(--fs-12)",color:"#6b7280",marginTop:"2px"}}>1,79m · 86kg · Cadera blindada · Creapure + Whey diarios · Plan indefinido</div>
       </div>
 
       <div style={{display:"flex",background:"#0d0d0d",borderBottom:"1px solid #1a1a1a"}}>
         {[["plan","📋 Plan"],["nutricion","🥗 Nutrición"],["extras","💊 Extras"],["test","📊 Tests"],["deploy","🌐 Publicar"]].map(([id,label])=>(
-          <button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:"10px 2px",background:"transparent",border:"none",borderBottom:tab===id?`2px solid ${col}`:"2px solid transparent",color:tab===id?col:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"10px",letterSpacing:"0.5px"}}>{label}</button>
+          <button key={id} className="tab-btn" onClick={()=>setTab(id)} style={{flex:1,padding:"10px 2px",background:"transparent",border:"none",borderBottom:tab===id?`2px solid ${col}`:"2px solid transparent",color:tab===id?col:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-10)",letterSpacing:"0.5px"}}>{label}</button>
         ))}
       </div>
 
       {tab==="nutricion"&&(
         <div style={{padding:"14px"}}>
-          <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>NUTRICIÓN PARA RECOMPOSICIÓN</div>
-          <div style={{fontSize:"11px",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
+          <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>NUTRICIÓN PARA RECOMPOSICIÓN</div>
+          <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
             Recomposición = perder grasa + ganar músculo a la vez. Clave: déficit calórico moderado + proteína alta + fuerza.
           </div>
+          <div className="grid2">
           {nutricionTips.map((t,i)=>(
             <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
-              <div style={{fontSize:"14px",marginBottom:"4px"}}>{t.icon} <span style={{fontSize:"13px",fontWeight:"700",color:"#f3f4f6"}}>{t.title}</span></div>
-              <div style={{fontSize:"11px",color:"#9ca3af",lineHeight:"1.6"}}>{t.text}</div>
+              <div style={{fontSize:"var(--fs-14)",marginBottom:"4px"}}>{t.icon} <span style={{fontSize:"var(--fs-13)",fontWeight:"700",color:"#f3f4f6"}}>{t.title}</span></div>
+              <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",lineHeight:"1.6"}}>{t.text}</div>
             </div>
           ))}
+          </div>
         </div>
       )}
 
       {tab==="test"&&(
         <div style={{padding:"14px"}}>
-          <div style={{fontSize:"9px",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>TESTS DE PROGRESO</div>
+          <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>TESTS DE PROGRESO</div>
+          <div className="grid2">
           {tests2.map((t,i)=>(
             <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px",display:"flex",gap:"10px",alignItems:"flex-start"}}>
-              <div style={{background:`${col}20`,color:col,padding:"3px 8px",borderRadius:"3px",fontSize:"9px",fontWeight:"700",letterSpacing:"1px",flexShrink:0,whiteSpace:"nowrap"}}>{t.semana}</div>
+              <div style={{background:`${col}20`,color:col,padding:"3px 8px",borderRadius:"3px",fontSize:"var(--fs-9)",fontWeight:"700",letterSpacing:"1px",flexShrink:0,whiteSpace:"nowrap"}}>{t.semana}</div>
               <div>
-                <div style={{fontSize:"12px",fontWeight:"700",color:"#f3f4f6"}}>{t.test}</div>
-                <div style={{fontSize:"10px",color:col,marginTop:"3px"}}>→ {t.objetivo}</div>
+                <div style={{fontSize:"var(--fs-12)",fontWeight:"700",color:"#f3f4f6"}}>{t.test}</div>
+                <div style={{fontSize:"var(--fs-10)",color:col,marginTop:"3px"}}>→ {t.objetivo}</div>
               </div>
             </div>
           ))}
-          <div style={{marginTop:"10px",padding:"10px 12px",background:"#0a0a0a",borderRadius:"4px",border:"1px solid #141414",fontSize:"10px",color:"#4b5563"}}>
+          </div>
+          <div style={{marginTop:"10px",padding:"10px 12px",background:"#0a0a0a",borderRadius:"4px",border:"1px solid #141414",fontSize:"var(--fs-10)",color:"#4b5563"}}>
             💡 Mídete la cintura cada 4 semanas. Es el indicador más honesto de pérdida de grasa abdominal.
           </div>
         </div>
@@ -755,16 +798,16 @@ function App() {
         <>
           <div style={{display:"flex",borderBottom:"1px solid #1a1a1a",overflowX:"auto",scrollbarWidth:"none"}}>
             {phases.map(p=>(
-              <button key={p.id} onClick={()=>{setActivePhase(p.id);setActiveDay(0);}} style={{flexShrink:0,padding:"10px 14px",background:activePhase===p.id?"#141414":"transparent",border:"none",borderBottom:activePhase===p.id?`2px solid ${p.color}`:"2px solid transparent",color:activePhase===p.id?p.color:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:"900",fontSize:"10px",letterSpacing:"1.5px",textTransform:"uppercase"}}>
+              <button key={p.id} className="phase-btn" onClick={()=>{setActivePhase(p.id);setActiveDay(0);}} style={{flexShrink:0,padding:"10px 14px",background:activePhase===p.id?"#141414":"transparent",border:"none",borderBottom:activePhase===p.id?`2px solid ${p.color}`:"2px solid transparent",color:activePhase===p.id?p.color:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:"900",fontSize:"var(--fs-10)",letterSpacing:"1.5px",textTransform:"uppercase"}}>
                 <div>{p.name}</div>
-                <div style={{fontSize:"8px",fontWeight:"400",opacity:0.7}}>{p.weeks}</div>
+                <div style={{fontSize:"var(--fs-8)",fontWeight:"400",opacity:0.7}}>{p.weeks}</div>
               </button>
             ))}
           </div>
-          <div style={{padding:"10px 18px",background:"#0c0c0c",borderBottom:"1px solid #141414",fontSize:"11px",color:"#9ca3af",borderLeft:`3px solid ${col}`}}>{phase.desc}</div>
+          <div style={{padding:"10px 18px",background:"#0c0c0c",borderBottom:"1px solid #141414",fontSize:"var(--fs-11)",color:"#9ca3af",borderLeft:`3px solid ${col}`}}>{phase.desc}</div>
           <div style={{display:"flex",background:"#0d0d0d",borderBottom:"1px solid #141414",overflowX:"auto",scrollbarWidth:"none"}}>
             {DAYS.map((d,i)=>(
-              <button key={d} onClick={()=>setActiveDay(i)} style={{flexShrink:0,padding:"8px 12px",background:activeDay===i?"#141414":"transparent",border:"none",borderBottom:activeDay===i?`2px solid ${col}`:"2px solid transparent",color:activeDay===i?col:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:activeDay===i?"900":"400",fontSize:"10px",letterSpacing:"1px",textTransform:"uppercase"}}>
+              <button key={d} className="day-btn" onClick={()=>setActiveDay(i)} style={{flexShrink:0,padding:"8px 12px",background:activeDay===i?"#141414":"transparent",border:"none",borderBottom:activeDay===i?`2px solid ${col}`:"2px solid transparent",color:activeDay===i?col:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:activeDay===i?"900":"400",fontSize:"var(--fs-10)",letterSpacing:"1px",textTransform:"uppercase"}}>
                 {DAY_EMOJI[d]} {DAYS_S[i]}
               </button>
             ))}
@@ -773,29 +816,29 @@ function App() {
             <div style={{background:"#111",border:"1px solid #1a1a1a",borderTop:`3px solid ${col}`,borderRadius:"6px",padding:"14px",marginBottom:"12px"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px"}}>
                 <div>
-                  <div style={{fontSize:"9px",color:"#4b5563",letterSpacing:"3px",textTransform:"uppercase"}}>{dayName} · {phase.name} · {day.tipo}</div>
-                  <div style={{fontSize:"18px",fontWeight:"900",color:"#fff",letterSpacing:"1px",marginTop:"3px"}}>{day.title}</div>
+                  <div style={{fontSize:"var(--fs-9)",color:"#4b5563",letterSpacing:"3px",textTransform:"uppercase"}}>{dayName} · {phase.name} · {day.tipo}</div>
+                  <div style={{fontSize:"var(--fs-18)",fontWeight:"900",color:"#fff",letterSpacing:"1px",marginTop:"3px"}}>{day.title}</div>
                 </div>
-                <div style={{background:`${col}20`,border:`1px solid ${col}40`,color:col,padding:"5px 10px",borderRadius:"4px",fontSize:"11px",fontWeight:"700",flexShrink:0}}>⏱ {day.duration}</div>
+                <div style={{background:`${col}20`,border:`1px solid ${col}40`,color:col,padding:"5px 10px",borderRadius:"4px",fontSize:"var(--fs-11)",fontWeight:"700",flexShrink:0}}>⏱ {day.duration}</div>
               </div>
               {day.warmup&&day.warmup!=="—"&&(
-                <div style={{marginTop:"10px",padding:"7px 10px",background:"#0a0a0a",borderRadius:"3px",fontSize:"11px",color:"#9ca3af",borderLeft:"2px solid #222"}}>
-                  <span style={{color:"#4b5563",textTransform:"uppercase",fontSize:"9px"}}>Calentamiento: </span>{day.warmup}
+                <div style={{marginTop:"10px",padding:"7px 10px",background:"#0a0a0a",borderRadius:"3px",fontSize:"var(--fs-11)",color:"#9ca3af",borderLeft:"2px solid #222"}}>
+                  <span style={{color:"#4b5563",textTransform:"uppercase",fontSize:"var(--fs-9)"}}>Calentamiento: </span>{day.warmup}
                 </div>
               )}
             </div>
-            <div style={{padding:"8px 12px",background:"#080f08",border:"1px solid #14532430",borderRadius:"4px",marginBottom:"12px",fontSize:"10px",color:"#86efac",display:"flex",alignItems:"center",gap:"8px"}}>
+            <div style={{padding:"8px 12px",background:"#080f08",border:"1px solid #14532430",borderRadius:"4px",marginBottom:"12px",fontSize:"var(--fs-10)",color:"#86efac",display:"flex",alignItems:"center",gap:"8px"}}>
               <span>🤖</span><span>Pulsa cualquier ejercicio → <strong>Tutorial IA</strong> para instrucciones paso a paso · <strong>▶️ Ver Vídeo</strong> para ver cómo se hace</span>
             </div>
             {day.exercises.map((ex,i)=>(
               <ExCard key={`${activePhase}-${activeDay}-${i}`} ex={ex} i={i} col={col}/>
             ))}
-            {day.cooldown&&day.cooldown!=="—"&&<div style={{background:"#0d0d0d",border:"1px solid #1a1a1a",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#9ca3af",borderLeft:"2px solid #222",marginTop:"6px"}}><span style={{color:"#4b5563",fontSize:"9px",textTransform:"uppercase"}}>Enfriamiento: </span>{day.cooldown}</div>}
-            {day.hip_note&&<div style={{background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#93c5fd"}}>{day.hip_note}</div>}
-            {day.music&&<div style={{background:"#0c0a18",border:"1px solid #6d28d930",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#c4b5fd"}}>{day.music}</div>}
-            {day.nutrition&&<div style={{background:"#080f08",border:"1px solid #14532430",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"11px",color:"#86efac"}}>{day.nutrition}</div>}
-            <div style={{marginTop:"10px",padding:"10px 12px",background:"#080808",borderRadius:"4px",border:"1px solid #111",fontSize:"10px",color:"#374151"}}>
-              <div style={{color:"#1f2937",textTransform:"uppercase",letterSpacing:"2px",fontSize:"9px",marginBottom:"4px"}}>PROGRESIÓN {phase.name}</div>
+            {day.cooldown&&day.cooldown!=="—"&&<div style={{background:"#0d0d0d",border:"1px solid #1a1a1a",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"var(--fs-11)",color:"#9ca3af",borderLeft:"2px solid #222",marginTop:"6px"}}><span style={{color:"#4b5563",fontSize:"var(--fs-9)",textTransform:"uppercase"}}>Enfriamiento: </span>{day.cooldown}</div>}
+            {day.hip_note&&<div style={{background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"var(--fs-11)",color:"#93c5fd"}}>{day.hip_note}</div>}
+            {day.music&&<div style={{background:"#0c0a18",border:"1px solid #6d28d930",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"var(--fs-11)",color:"#c4b5fd"}}>{day.music}</div>}
+            {day.nutrition&&<div style={{background:"#080f08",border:"1px solid #14532430",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"var(--fs-11)",color:"#86efac"}}>{day.nutrition}</div>}
+            <div style={{marginTop:"10px",padding:"10px 12px",background:"#080808",borderRadius:"4px",border:"1px solid #111",fontSize:"var(--fs-10)",color:"#374151"}}>
+              <div style={{color:"#1f2937",textTransform:"uppercase",letterSpacing:"2px",fontSize:"var(--fs-9)",marginBottom:"4px"}}>PROGRESIÓN {phase.name}</div>
               {activePhase===1&&"Sem 1–2: aprende técnica, no el peso. Sem 3: añade 1 serie. Sem 4: sube peso donde llegues a 15 reps fácil."}
               {activePhase===2&&"Sem 5–6: volumen máximo. Sem 7: añade peso en paralelas y dominadas. Sem 8: test de máximas reps."}
               {activePhase===3&&"Sem 9–10: pesos máximos. Sem 11: muscle-up o negativas explosivas. Sem 12: test total del plan."}
