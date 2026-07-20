@@ -1,0 +1,5 @@
+# Secretos locales de Supabase — nunca subir esto (repo público)
+supabase/.env.local
+supabase/.temp/
+.env
+.env.local

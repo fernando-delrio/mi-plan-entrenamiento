@@ -8,6 +8,15 @@
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  // Cliente Supabase — clave publicable, segura de tener aquí (la seguridad
+  // real la da RLS en la base de datos, no el secreto de esta clave).
+  window.sb = supabase.createClient(
+    "https://gtvxdkyqqwzihqhxfydu.supabase.co",
+    "sb_publishable_-8bmfre7GN13o6B8JC4uMw_-X19i1OZ"
+  );
+</script>
 <style>
 /* ── Escala tipográfica: los estilos inline usan var(--fs-N).
    En móvil valen N px; en tablet (≥700px) la escala entera sube. ── */
@@ -147,11 +156,11 @@ const YT = {
   "Ciclismo HIIT corto bici 20s/40s suave": "beginner HIIT spin bike intervals 20 40",
 };
 
-function getYTSearch(name) {
+const getYTSearch = (name) => {
   const q = YT[name] || (name + " exercise tutorial form");
   return "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
 }
-function getYTEmbed(name) {
+const getYTEmbed = (name) => {
   const q = YT[name] || (name + " exercise tutorial form");
   return "https://www.youtube.com/embed?listType=search&list=" + encodeURIComponent(q) + "&rel=0&modestbranding=1";
 }
@@ -615,26 +624,73 @@ const dd = {
 
 const getKey = (id) => ["phase1","phase2","phase3","phase4","phase5","phase6"][id-1];
 
-// ─── PERSISTENCIA LOCAL ────────────────────────────────────────────────────────
-// Un único hook para leer/escribir en localStorage. Todo lo que Fernando registra
-// (peso, dolor, fotos, racha) vive en el navegador — no hay backend ni servidor.
-// En GitHub Pages (https) persiste sin problema. Abierto con doble clic (file://)
-// algunos navegadores lo bloquean: por eso el aviso en la pestaña Objetivos.
-const usePersistentState = (key, initialValue) => {
-  const [state, setState] = useState(() => {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw !== null ? JSON.parse(raw) : initialValue;
-    } catch { return initialValue; }
-  });
-  useEffect(() => {
-    try { localStorage.setItem(key, JSON.stringify(state)); } catch {}
-  }, [key, state]);
-  return [state, setState];
-};
-
 const todayISO = () => new Date().toISOString().slice(0,10);
 const daysBetween = (a,b) => Math.floor((new Date(b) - new Date(a)) / 86400000);
+
+// ─── PERSISTENCIA EN SUPABASE ───────────────────────────────────────────────
+// Todo lo que Fernando registra (turno/fecha de inicio, peso, cintura, dolor,
+// racha, fotos) vive en su cuenta de Supabase — sincronizado entre dispositivos.
+const useProfileSettings = () => {
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await sb.from("profile_settings").select("*").maybeSingle();
+      if (data) { setSettings(data); return; }
+      const defaults = { turno_entreno: "manana", plan_start_date: todayISO() };
+      const { data: created } = await sb.from("profile_settings").insert(defaults).select().single();
+      setSettings(created);
+    };
+    load();
+  }, []);
+
+  const updateSettings = async (patch) => {
+    const { data } = await sb.from("profile_settings").update(patch).eq("user_id", settings.user_id).select().single();
+    setSettings(data);
+  };
+
+  return { settings, updateSettings };
+};
+
+const useBodyMetrics = () => {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = async () => {
+    const { data } = await sb.from("body_metrics").select("*").order("metric_date", { ascending: true });
+    setRows(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { refresh(); }, []);
+
+  const upsertToday = async (patch) => {
+    await sb.from("body_metrics").upsert({ metric_date: todayISO(), ...patch }, { onConflict: "user_id,metric_date" });
+    await refresh();
+  };
+
+  return { rows, loading, upsertToday };
+};
+
+const useTrainedDays = () => {
+  const [dates, setDates] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await sb.from("trained_days").select("training_date");
+      setDates((data || []).map((r) => r.training_date));
+    };
+    load();
+  }, []);
+
+  const markToday = async () => {
+    if (dates.includes(todayISO())) return;
+    await sb.from("trained_days").insert({ training_date: todayISO() });
+    setDates((prev) => [...prev, todayISO()]);
+  };
+
+  return { dates, markToday };
+};
 
 // ─── PERFIL ─────────────────────────────────────────────────────────────────
 const PROFILE = { nombre:"Fernando", edad:38, alturaCm:178, pesoInicialKg:86, consultaMedica:"2026-12-28" };
@@ -722,7 +778,7 @@ const milestones = [
 
 
 // ─── DEPLOY GUIDE COMPONENT ───────────────────────────────────────────────────
-function DeployGuide({col}) {
+const DeployGuide = ({col}) => {
   const steps = [
     {n:"1", t:"Crea cuenta en GitHub (gratis)", d:"Ve a github.com → Sign up → rellena usuario, email y contraseña → Verify account"},
     {n:"2", t:"Crea un repositorio nuevo", d:'Botón verde "New" o "+" arriba → New repository → Nombre: mi-plan-entrenamiento → Public → Create repository'},
@@ -759,25 +815,20 @@ function DeployGuide({col}) {
 }
 
 // ─── EXERCISE VIDEO + AI CARD ─────────────────────────────────────────────────
-function ExCard({ex, i, col}) {
+const ExCard = ({ex, i, col}) => {
   const [open, setOpen] = useState(false);
   const [panel, setPanel] = useState(null);
   const [aiData, setAiData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleAI() {
+  const handleAI = async () => {
     setPanel(panel === "ai" ? null : "ai");
     if (!aiData && !loading) {
       setLoading(true);
       try {
-        const prompt = `Eres un coach de calistenia y enduro MTB profesional, también fisioterapeuta deportivo. Fernando tiene 38 años, 1,78m, 86kg, choque femoroacetabular + artrosis en cadera derecha (dolor crónico, no operado, consulta el 28 de diciembre). Su objetivo es perder grasa, ganar músculo, doler menos y volver al enduro MTB. Explícale el ejercicio "${ex.name}" en español de forma directa.\n\nResponde SOLO con JSON válido (sin markdown):\n{"como_hacerlo":["paso 1","paso 2","paso 3","paso 4"],"objetivo":"por qué este ejercicio le ayuda concretamente a perder grasa, ganar músculo o rendir en enduro","progresion":"cómo progresar la próxima vez: cuándo subir peso, reps o series","errores_comunes":["error 1","error 2","error 3"],"cue_activacion":"frase corta para sentir el músculo","cadera":"nota sobre la cadera de Fernando","nivel_dificultad":"Principiante / Intermedio / Avanzado"}`;
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:800,messages:[{role:"user",content:prompt}]})
-        });
-        const data = await res.json();
-        const text = data.content?.find(b=>b.type==="text")?.text||"{}";
-        setAiData(JSON.parse(text.replace(/```json|```/g,"").trim()));
+        const { data, error } = await sb.functions.invoke("exercise-tutorial", { body: { exerciseName: ex.name } });
+        if (error) throw error;
+        setAiData(data);
       } catch(e) { setAiData(null); }
       setLoading(false);
     }
@@ -915,8 +966,10 @@ const caderaExercises = [
   { name:"Almeja con banda (clamshell)", sets:"3", reps:"15 c/lado", rest:"45s", note:"Tumbado de lado, rodillas dobladas, pies juntos. Abre la rodilla de arriba como una almeja", muscles:"Glúteo medio y menor · Rotadores de cadera" },
 ];
 
-function ExtrasTab({col}) {
-  const [turno, setTurno] = usePersistentState("fp_turno_entreno", "manana");
+const ExtrasTab = ({col}) => {
+  const { settings, updateSettings } = useProfileSettings();
+  const turno = settings?.turno_entreno || "manana";
+  const setTurno = (v) => updateSettings({ turno_entreno: v });
   const schedule = turno === "manana" ? supplementScheduleAM : supplementScheduleTarde;
 
   return (
@@ -976,7 +1029,7 @@ function ExtrasTab({col}) {
 const SCHEDULE_TIPO_ICON = { despertar:"☀️", suplemento:"💊", comida:"🍽️", entreno:"🏋️", movimiento:"🚶", dormir:"🌙" };
 const scheduleTipoColor = (tipo, col) => ({ despertar:"#6b7280", suplemento:col, comida:"#f59e0b", entreno:"#ef4444", movimiento:"#38bdf8", dormir:"#a855f7" }[tipo] || "#6b7280");
 
-function ScheduleRow({ s, col }) {
+const ScheduleRow = ({ s, col }) => {
   const rowColor = scheduleTipoColor(s.tipo, col);
   return (
     <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"11px 12px",marginBottom:"6px",display:"flex",gap:"12px",alignItems:"flex-start"}}>
@@ -1002,10 +1055,12 @@ const restDaySchedule = [
   { hora:"23:30", tipo:"dormir", item:"Dormir", detalle:"7–8h. El domingo de descanso es sagrado, no se negocia." },
 ];
 
-function HorarioTab({ col, phaseKey }) {
+const HorarioTab = ({ col, phaseKey }) => {
   const todayIdx = (new Date().getDay() + 6) % 7; // lunes=0 ... domingo=6
   const [selDay, setSelDay] = useState(todayIdx);
-  const [turno, setTurno] = usePersistentState("fp_turno_entreno", "manana");
+  const { settings, updateSettings } = useProfileSettings();
+  const turno = settings?.turno_entreno || "manana";
+  const setTurno = (v) => updateSettings({ turno_entreno: v });
   const dayName = DAYS[selDay];
   const day = dd[phaseKey][dayName];
   const isRest = dayName === "Domingo";
@@ -1038,7 +1093,7 @@ function HorarioTab({ col, phaseKey }) {
 }
 
 // ─── PROGRESIÓN ──────────────────────────────────────────────────────────────
-function ProgresionTab({ col }) {
+const ProgresionTab = ({ col }) => {
   return (
     <div style={{padding:"14px"}}>
       <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>CUÁNDO SUBIR PESO, REPS O SERIES</div>
@@ -1072,7 +1127,7 @@ const compressImage = (file) => new Promise((resolve, reject) => {
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;
       canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL("image/jpeg", 0.6));
+      canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("No se pudo comprimir la imagen")), "image/jpeg", 0.6);
     };
     img.onerror = reject;
     img.src = e.target.result;
@@ -1081,7 +1136,44 @@ const compressImage = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-function MiniChart({ data, col }) {
+const PHOTOS_LIMIT = 12;
+
+// ─── Fotos en Supabase Storage (bucket privado + enlaces temporales) ────────
+const usePhotos = () => {
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = async () => {
+    const { data: rows } = await sb.from("photos").select("*").order("photo_date", { ascending: false }).limit(PHOTOS_LIMIT);
+    const withUrls = await Promise.all((rows || []).map(async (row) => {
+      const { data } = await sb.storage.from("progress-photos").createSignedUrl(row.storage_path, 3600);
+      return { id: row.id, date: row.photo_date, path: row.storage_path, url: data?.signedUrl };
+    }));
+    setPhotos(withUrls);
+    setLoading(false);
+  };
+
+  useEffect(() => { refresh(); }, []);
+
+  const uploadPhoto = async (file) => {
+    const { data: { user } } = await sb.auth.getUser();
+    const blob = await compressImage(file);
+    const path = `${user.id}/${Date.now()}.jpg`;
+    await sb.storage.from("progress-photos").upload(path, blob, { contentType: "image/jpeg" });
+    await sb.from("photos").insert({ photo_date: todayISO(), storage_path: path });
+    await refresh();
+  };
+
+  const deletePhoto = async (photo) => {
+    await sb.storage.from("progress-photos").remove([photo.path]);
+    await sb.from("photos").delete().eq("id", photo.id);
+    await refresh();
+  };
+
+  return { photos, loading, uploadPhoto, deletePhoto };
+};
+
+const MiniChart = ({ data, col }) => {
   if (data.length < 2) return <div style={{fontSize:"var(--fs-10)",color:"#4b5563",padding:"14px",textAlign:"center"}}>Añade al menos 2 registros para ver la gráfica</div>;
   const values = data.map(d => d.value);
   const min = Math.min(...values), max = Math.max(...values), range = (max - min) || 1;
@@ -1106,37 +1198,40 @@ const painRecommendation = (entry) => {
   return { color:"#4ade80", text:"Buena señal. Puedes mantener o progresar ligeramente la próxima sesión." };
 };
 
-function ObjetivosTab({ col }) {
-  const [weightLog, setWeightLog] = usePersistentState("fp_weight_log", []);
-  const [waistLog, setWaistLog] = usePersistentState("fp_waist_log", []);
-  const [painLog, setPainLog] = usePersistentState("fp_pain_log", []);
-  const [photos, setPhotos] = usePersistentState("fp_photos", []);
+const ObjetivosTab = ({ col }) => {
+  const { rows: metricsRows, upsertToday } = useBodyMetrics();
+  const { photos, uploadPhoto, deletePhoto } = usePhotos();
   const [kgInput, setKgInput] = useState("");
   const [cmInput, setCmInput] = useState("");
   const [dolorPre, setDolorPre] = useState(3);
   const [dolorPost, setDolorPost] = useState(3);
+
+  // body_metrics guarda una fila por día (peso+cintura+dolor juntos); aquí se
+  // deriva la vista que necesita cada gráfica/ficha a partir de esas filas.
+  const weightLog = metricsRows.filter(r => r.weight_kg != null).map(r => ({ date: r.metric_date, value: Number(r.weight_kg) }));
+  const waistLog = metricsRows.filter(r => r.waist_cm != null).map(r => ({ date: r.metric_date, value: Number(r.waist_cm) }));
+  const painLog = metricsRows.filter(r => r.pain_pre != null || r.pain_post != null).map(r => ({ date: r.metric_date, pre: r.pain_pre, post: r.pain_post })).reverse();
 
   const currentWeight = weightLog.length ? weightLog[weightLog.length-1].value : PROFILE.pesoInicialKg;
 
   const isInvalidNumber = (v) => !v || Number(v) <= 0;
   const addWeight = () => {
     if (isInvalidNumber(kgInput)) return;
-    setWeightLog(prev => [...prev, { date: todayISO(), value: Number(kgInput) }].slice(-100));
+    upsertToday({ weight_kg: Number(kgInput) });
     setKgInput("");
   };
   const addWaist = () => {
     if (isInvalidNumber(cmInput)) return;
-    setWaistLog(prev => [...prev, { date: todayISO(), value: Number(cmInput) }].slice(-100));
+    upsertToday({ waist_cm: Number(cmInput) });
     setCmInput("");
   };
   const addPain = () => {
-    setPainLog(prev => [{ date: todayISO(), pre: Number(dolorPre), post: Number(dolorPost) }, ...prev].slice(0,100));
+    upsertToday({ pain_pre: Number(dolorPre), pain_post: Number(dolorPost) });
   };
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const dataUrl = await compressImage(file);
-    setPhotos(prev => [{ date: todayISO(), src: dataUrl }, ...prev].slice(0,6));
+    await uploadPhoto(file);
     e.target.value = "";
   };
 
@@ -1208,26 +1303,27 @@ function ObjetivosTab({ col }) {
         </label>
         {photos.length > 0 && (
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"6px",marginTop:"10px"}}>
-            {photos.map((p,i)=>(
-              <div key={i} style={{borderRadius:"4px",overflow:"hidden",border:"1px solid #222"}}>
-                <img src={p.src} alt={`Progreso ${p.date}`} style={{width:"100%",display:"block"}}/>
+            {photos.map((p)=>(
+              <div key={p.id} style={{borderRadius:"4px",overflow:"hidden",border:"1px solid #222"}}>
+                <img src={p.url} alt={`Progreso ${p.date}`} style={{width:"100%",aspectRatio:"1",objectFit:"cover",display:"block"}}/>
                 <div style={{fontSize:"var(--fs-8)",color:"#6b7280",padding:"3px",textAlign:"center",background:"#0a0a0a"}}>{p.date}</div>
+                <button onClick={()=>deletePhoto(p)} style={{width:"100%",padding:"3px",background:"#1a0a0a",border:"none",borderTop:"1px solid #222",color:"#ef4444",fontSize:"var(--fs-8)",cursor:"pointer",fontFamily:"inherit"}}>Eliminar</button>
               </div>
             ))}
           </div>
         )}
-        <div style={{fontSize:"var(--fs-9)",color:"#4b5563",marginTop:"8px"}}>Se guardan las últimas 6 en este navegador.</div>
+        <div style={{fontSize:"var(--fs-9)",color:"#4b5563",marginTop:"8px"}}>Se guardan las últimas {PHOTOS_LIMIT}, privadas — solo tú puedes verlas.</div>
       </div>
 
       <div style={{padding:"10px 12px",background:"#0a0a0a",border:"1px solid #222",borderRadius:"4px",fontSize:"var(--fs-10)",color:"#6b7280",lineHeight:"1.6"}}>
-        💡 Todo esto se guarda en este navegador (localStorage), sin servidor. En GitHub Pages persiste sin problema. Si abres el archivo con doble clic en vez de una URL, algunos navegadores pueden no guardarlo — usa la versión publicada para no perder datos.
+        💡 Peso, cintura, dolor y fotos ya viajan con tu cuenta — entra desde el móvil o el ordenador y ves lo mismo en todos lados.
       </div>
     </div>
   );
 }
 
 // ─── INICIO: DASHBOARD ───────────────────────────────────────────────────────
-function StatTile({ label, value, sub, col }) {
+const StatTile = ({ label, value, sub, col }) => {
   return (
     <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
       <div style={{fontSize:"var(--fs-8)",color:"#4b5563",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"5px"}}>{label}</div>
@@ -1239,26 +1335,29 @@ function StatTile({ label, value, sub, col }) {
 
 const computeStreak = (trainedDays) => {
   const set = new Set(trainedDays);
-  let streak = 0;
-  const cursor = new Date();
-  while (set.has(cursor.toISOString().slice(0,10))) {
-    streak++;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return streak;
+  const lastYear = Array.from({ length: 365 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    return d.toISOString().slice(0,10);
+  });
+  const firstGap = lastYear.findIndex((date) => !set.has(date));
+  return firstGap === -1 ? lastYear.length : firstGap;
 };
 
-function InicioTab({ col, phase, setTab }) {
-  const [planStart] = usePersistentState("fp_plan_start", todayISO());
-  const [weightLog] = usePersistentState("fp_weight_log", []);
-  const [trainedDays, setTrainedDays] = usePersistentState("fp_trained_days", []);
-  const [turno] = usePersistentState("fp_turno_entreno", "manana");
+const InicioTab = ({ col, phase, setTab }) => {
+  const { settings } = useProfileSettings();
+  const { rows: metricsRows } = useBodyMetrics();
+  const { dates: trainedDays, markToday: markTrainedToday } = useTrainedDays();
+
+  const planStart = settings?.plan_start_date || todayISO();
+  const turno = settings?.turno_entreno || "manana";
 
   const elapsedDays = Math.max(0, daysBetween(planStart, todayISO()));
   const weekNumber = Math.min(24, Math.floor(elapsedDays/7) + 1);
   const pctCompleted = Math.min(100, Math.round((weekNumber/24)*100));
 
-  const currentWeight = weightLog.length ? weightLog[weightLog.length-1].value : PROFILE.pesoInicialKg;
+  const weightRows = metricsRows.filter(r => r.weight_kg != null);
+  const currentWeight = weightRows.length ? Number(weightRows[weightRows.length-1].weight_kg) : PROFILE.pesoInicialKg;
   const imc = calcIMC(currentWeight, PROFILE.alturaCm);
   const nextMilestone = milestones.find(m => currentWeight > m.kg) || milestones[milestones.length-1];
 
@@ -1269,7 +1368,6 @@ function InicioTab({ col, phase, setTab }) {
   const nextSupp = schedule.filter(s=>s.tipo==="suplemento").find(s => s.hora > nowHM) || schedule.filter(s=>s.tipo==="suplemento")[0];
 
   const isTrainedToday = trainedDays.includes(todayISO());
-  const markTrainedToday = () => { if (!isTrainedToday) setTrainedDays(prev => [...prev, todayISO()]); };
   const streak = computeStreak(trainedDays);
 
   const daysToConsulta = daysBetween(todayISO(), PROFILE.consultaMedica);
@@ -1302,7 +1400,71 @@ function InicioTab({ col, phase, setTab }) {
   );
 }
 
-function App() {
+// ─── AUTENTICACIÓN ────────────────────────────────────────────────────────────
+const authInputStyle = {
+  width:"100%", padding:"11px 12px", marginBottom:"10px", background:"#0a0a0a",
+  border:"1px solid #262626", borderRadius:"5px", color:"#e5e7eb",
+  fontFamily:"inherit", fontSize:"14px",
+};
+
+const SplashLoading = () => {
+  return (
+    <div style={{minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#090909"}}>
+      <div style={{width:"22px", height:"22px", border:"2px solid #00d4aa", borderTopColor:"transparent", borderRadius:"50%", animation:"spin 0.8s linear infinite"}}/>
+    </div>
+  );
+}
+
+const LoginScreen = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const errorMessages = {
+    "Invalid login credentials": "Email o contraseña incorrectos.",
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) setError(errorMessages[error.message] || error.message);
+  };
+
+  return (
+    <div style={{minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#090909", padding:"20px"}}>
+      <form onSubmit={handleSubmit} style={{width:"100%", maxWidth:"340px", background:"#111", border:"1px solid #1f1f1f", borderRadius:"8px", padding:"28px 24px"}}>
+        <div style={{fontSize:"20px", fontWeight:"900", color:"#fff", letterSpacing:"1px"}}>PLAN DEFINITIVO</div>
+        <div style={{fontSize:"12px", color:"#6b7280", marginBottom:"22px"}}>Inicia sesión para ver tu plan</div>
+        <input type="email" required autoFocus placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} style={authInputStyle}/>
+        <input type="password" required placeholder="Contraseña" value={password} onChange={e=>setPassword(e.target.value)} style={authInputStyle}/>
+        {error && <div style={{color:"#ef4444", fontSize:"12px", marginBottom:"10px", lineHeight:"1.5"}}>{error}</div>}
+        <button type="submit" disabled={loading} style={{width:"100%", padding:"12px", background:loading?"#0a1a15":"#00d4aa20", border:"1px solid #00d4aa60", color:"#00d4aa", borderRadius:"5px", cursor:loading?"default":"pointer", fontFamily:"inherit", fontWeight:"700", fontSize:"13px"}}>
+          {loading ? "Entrando…" : "Entrar"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+const AuthGate = () => {
+  const [session, setSession] = useState(undefined); // undefined=cargando · null=sin sesión · objeto=logueado
+
+  useEffect(() => {
+    sb.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: listener } = sb.auth.onAuthStateChange((_event, newSession) => setSession(newSession));
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  if (session === undefined) return <SplashLoading/>;
+  if (!session) return <LoginScreen/>;
+  return <App session={session}/>;
+}
+
+const App = ({ session }) => {
   const [activePhase, setActivePhase] = useState(1);
   const [activeDay, setActiveDay] = useState(0);
   const [tab, setTab] = useState("inicio");
@@ -1317,6 +1479,7 @@ function App() {
     <div className="app-inner" style={{minHeight:"100vh",background:"#090909",color:"#e5e7eb",fontFamily:"'Barlow Condensed','Arial Narrow',Arial,sans-serif"}}>
       <div style={{background:"#111",borderBottom:`2px solid ${col}30`,padding:"16px 20px 12px",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,right:0,width:"140px",height:"100%",background:`linear-gradient(135deg,transparent 40%,${col}10 100%)`}}/>
+        <button onClick={()=>sb.auth.signOut()} style={{position:"absolute",top:"14px",right:"14px",padding:"5px 10px",background:"transparent",border:"1px solid #262626",color:"#6b7280",borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontSize:"9px",letterSpacing:"1px",textTransform:"uppercase",zIndex:1}}>Cerrar sesión</button>
         <div style={{fontSize:"var(--fs-10)",letterSpacing:"4px",color:"#4b5563",textTransform:"uppercase"}}>Fernando #CalvoMalvado · Enduro MTB + Calistenia</div>
         <div style={{fontSize:"var(--fs-26)",fontWeight:"900",letterSpacing:"2px",color:"#fff",marginTop:"2px"}}>PLAN DEFINITIVO</div>
         <div style={{fontSize:"var(--fs-12)",color:"#6b7280",marginTop:"2px"}}>1,78m · 86kg · 24 semanas · Masa muscular + pérdida de grasa · Cadera protegida · Preparación enduro</div>
@@ -1436,7 +1599,7 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+ReactDOM.createRoot(document.getElementById("root")).render(<AuthGate/>);
 
 </script>
 </body>
