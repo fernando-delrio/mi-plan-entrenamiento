@@ -699,7 +699,7 @@ const imcCategoria = (imc) => {
   if (imc < 18.5) return "Bajo peso";
   if (imc < 25) return "Normal";
   if (imc < 30) return "Sobrepeso";
-  return "Obesidad";
+  return "Por encima del rango";
 };
 
 // ─── HORARIO DE SUPLEMENTOS (real, con horas) ───────────────────────────────
@@ -777,8 +777,26 @@ const milestones = [
 const PROFILE_LAURA = { nombre:"Laura", edad:36, alturaCm:170, pesoInicialKg:96 };
 
 const phases_laura = [
-  { id:1, name:"PLAN SEMANAL", sub:"Fuerza + bici + core postparto", weeks:"Continuo", color:"#c2694f", desc:"Sin fases: es una plantilla semanal que se repite y se ajusta según cómo te encuentres. 2 días con tu entrenador (fuerza general) + 4 días en casa centrados en bici y core seguro para la diástasis.", progresionNota:"Cada 2 semanas: si la bici de Zona 2 se queda corta, añade 5 min antes de subir intensidad. En fuerza en casa, sube reps antes que peso. En core, sube segundos de aguante antes que dificultad — siempre sin abombamiento." },
+  { id:1, name:"FASE 1", sub:"Adaptación — reconexión de core y hábito", weeks:"Semanas 1–4", color:"#c2694f", desc:"Primeras 4 semanas: aprender bien la respiración 360°, activar el transverso abdominal y coger el ritmo de bici + fuerza en casa. Cargas ligeras, foco total en técnica y ausencia de abombamiento — no en volumen.", progresionNota:"Sem 1–2: aprende la respiración 360° y el patrón de cada ejercicio antes que nada. Sem 3: si todo va sin abombamiento, añade 5 min a la bici del lunes. Sem 4: primera autoprueba de diástasis para tener tu punto de partida real." },
+  { id:2, name:"FASE 2", sub:"Consolidación — más resistencia y fuerza", weeks:"Semanas 5–10", color:"#d98c3f", desc:"6 semanas construyendo sobre la base: más minutos de bici, más reps en fuerza de casa, core más constante. Sigue mandando la misma regla: sin abombamiento, sin fugas.", progresionNota:"Sem 5–6: sube reps en la fuerza de casa (mismo peso). Sem 7–8: si vas sobrada, añade una serie. Sem 9–10: revisa la autoprueba de diástasis — si mejora claramente, prepara el salto a Fase 3." },
+  { id:3, name:"FASE 3", sub:"Intensificación moderada", weeks:"Semanas 11–16", color:"#4f9d8c", desc:"6 semanas de más intensidad controlada: bici más larga y con más tempo, fuerza de casa con más carga, progresión del core hacia planchas si no hay abombamiento. El cuerpo ya lleva 3 meses de base — toca exigir un poco más.", progresionNota:"Sem 11–12: sube el peso en fuerza de casa donde llegues sobrada a las reps. Sem 13–14: prueba plancha inclinada corta si el core lo permite. Sem 15–16: consolida antes de entrar en la fase final." },
+  { id:4, name:"FASE 4", sub:"Consolidación y autonomía", weeks:"Semanas 17–24", color:"#4f7bd9", desc:"Las 8 semanas finales del bloque: volumen ya maduro en bici y fuerza, rutina asentada en el día a día con los peques. El objetivo ya no es solo progresar, es que este ritmo se sostenga solo a partir de aquí.", progresionNota:"Sem 17–19: mantén el volumen más alto que hayas tocado en Fase 3, sin forzar más allá. Sem 20–22: ajusta según cómo va la vuelta al trabajo o rutina si aplica. Sem 23–24: test final — peso, cintura, autoprueba de diástasis y decides tu siguiente objetivo." },
 ];
+
+// Día de entrenador externo + bici opcional después (misma fuerza dirigida por
+// el entrenador; la bici se añade aprovechando que ya está fuera de casa y en
+// marcha, en vez de exigir un día nuevo — sin competir con la fuerza porque va
+// después, no antes). bikeMinutes sube por fase.
+const externalTrainerDay = (bikeMinutes) => ({
+  title:"ENTRENADOR FUNCIONAL (EXTERNO) + BICI SUAVE", tipo:"💪 Fuerza externa + 🚴 Bici", duration:`Según tu clase + ${bikeMinutes} min opcionales`,
+  warmup:"El que haga tu entrenador",
+  exercises:[
+    { name:"Sesión con tu entrenador funcional", sets:"—", reps:"—", rest:"—", note:"Fuerza general dirigida por tu entrenador.", muscles:"Fuerza general · Dirigido externamente" },
+    { name:"Ciclismo indoor zona 2 nivel 3 (después del entrenador)", sets:"—", reps:`${bikeMinutes} min`, rest:"—", note:"Opcional: si te quedan piernas y tiempo al salir de la clase, súbete a la bici muy suave. Aprovechas que ya estás fuera de casa y en marcha. Si ese día no llegas, no pasa nada — no es obligatorio", muscles:"Sistema aeróbico · Quema de grasa extra sin sumar un día nuevo" },
+  ],
+  cooldown:"El que indique tu entrenador + 2 min bici muy suave si la haces",
+  hip_note:"💡 Si algo genera abombamiento o molestia pélvica, coméntaselo a tu entrenador. La bici es opcional — prioridad siempre a llegar bien a mañana.",
+});
 
 const dd_laura = {
   phase1: {
@@ -795,15 +813,7 @@ const dd_laura = {
       hip_note:"✅ Sesión segura para diástasis: columna neutra todo el rato, cero presión intraabdominal.",
       nutrition:"🥗 Desayuno con proteína antes de la bici si entrenas con hambre real (lactancia).",
     },
-    Martes: {
-      title:"ENTRENADOR FUNCIONAL (EXTERNO)", tipo:"💪 Fuerza externa", duration:"Según tu clase",
-      warmup:"El que haga tu entrenador",
-      exercises:[
-        { name:"Sesión con tu entrenador funcional", sets:"—", reps:"—", rest:"—", note:"Fuerza general dirigida por tu entrenador. No añadas nada más hoy en casa — es tu día de descanso de la app", muscles:"Fuerza general · Dirigido externamente" },
-      ],
-      cooldown:"El que indique tu entrenador",
-      hip_note:"💡 Si algo de la sesión te genera abombamiento o molestia pélvica, coméntaselo a tu entrenador y ajustamos el resto de la semana.",
-    },
+    Martes: externalTrainerDay(15),
     Miércoles: {
       title:"FUERZA EN CASA — CADERA Y GLÚTEO", tipo:"💪 Fuerza casa", duration:"30–35 min",
       warmup:"5 min de movilidad de cadera y respiración 360°",
@@ -818,15 +828,7 @@ const dd_laura = {
       hip_note:"✅ Único día de fuerza en casa — complementa a tu entrenador, no lo duplica. Patrón de cadera priorizado por su valor para la sensibilidad a la insulina.",
       nutrition:"🥩 Proteína en la comida siguiente al entreno.",
     },
-    Jueves: {
-      title:"ENTRENADOR FUNCIONAL (EXTERNO)", tipo:"💪 Fuerza externa", duration:"Según tu clase",
-      warmup:"El que haga tu entrenador",
-      exercises:[
-        { name:"Sesión con tu entrenador funcional", sets:"—", reps:"—", rest:"—", note:"Fuerza general dirigida por tu entrenador.", muscles:"Fuerza general · Dirigido externamente" },
-      ],
-      cooldown:"El que indique tu entrenador",
-      hip_note:"💡 Mismo criterio que el martes: cualquier molestia rara, nos lo dices.",
-    },
+    Jueves: externalTrainerDay(15),
     Viernes: {
       title:"BICI TEMPO SUAVE + SUELO PÉLVICO", tipo:"🚴 Tempo + Core", duration:"30–35 min",
       warmup:"5 min nivel 1–2",
@@ -862,10 +864,201 @@ const dd_laura = {
       nutrition:"🌙 Come sin restricción hoy. Tu cuerpo y tu producción de leche lo agradecen.",
     },
   },
+  phase2: {
+    Lunes: {
+      title:"BICI ZONA 2 + CORE POSTPARTO", tipo:"🚴 Zona 2 + Core", duration:"40–45 min",
+      warmup:"5 min bici nivel 1–2 muy suave",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 3–4", sets:"—", reps:"30–35 min", rest:"—", note:"Ritmo conversacional. 5–10 min más que en Fase 1 — el cuerpo ya tiene base", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Respiración 360° + activación TA", sets:"2", reps:"8 respiraciones", rest:"30s", note:"Sigue siendo la base, aunque ya la domines", muscles:"Transverso abdominal · Suelo pélvico" },
+        { name:"Dead Bug con mancuerna", sets:"3", reps:"10 c/lado", rest:"45s", note:"Más reps que en Fase 1. Si notas abombamiento, vuelve a 8 reps", muscles:"Core profundo · Control lumbo-pélvico" },
+        { name:"Bird Dog con mancuerna", sets:"3", reps:"10 c/lado", rest:"45s", note:"Añade una pausa de 1s arriba en cada repetición", muscles:"Glúteo · Lumbar · Core anti-rotación" },
+      ],
+      cooldown:"Estiramiento suave de piernas y espalda 5 min",
+      hip_note:"✅ Sesión segura para diástasis: columna neutra todo el rato.",
+      nutrition:"🥗 Desayuno con proteína antes de la bici si entrenas con hambre real (lactancia).",
+    },
+    Martes: externalTrainerDay(18),
+    Miércoles: {
+      title:"FUERZA EN CASA — CADERA Y GLÚTEO", tipo:"💪 Fuerza casa", duration:"35–40 min",
+      warmup:"5 min de movilidad de cadera y respiración 360°",
+      exercises:[
+        { name:"Puente de glúteo con mancuerna", sets:"3", reps:"15", rest:"60s", note:"Más reps que en Fase 1. Aprieta el glúteo arriba 1s", muscles:"Glúteo · Isquiotibiales · Cadera" },
+        { name:"Peso muerto rumano con mancuernas", sets:"3", reps:"12", rest:"75s", note:"Espalda recta, cadera atrás. Si la técnica se mantiene perfecta, la próxima semana sube el peso", muscles:"Glúteo · Isquiotibiales · Zona lumbar" },
+        { name:"Remo con banda de pie", sets:"3", reps:"15", rest:"60s", note:"Tira los codos atrás apretando entre los omóplatos", muscles:"Espalda · Postura" },
+        { name:"Press de hombro con mancuernas ligero", sets:"3", reps:"12", rest:"60s", note:"Exhala al empujar arriba, nunca aguantes el aire", muscles:"Hombro · Core (estabilidad)" },
+        { name:"Pallof Press con banda", sets:"3", reps:"12 c/lado", rest:"45s", note:"De pie, sin dejar que el tronco gire", muscles:"Core anti-rotación · Oblicuos" },
+      ],
+      cooldown:"Estiramiento de cadera y espalda 5 min",
+      hip_note:"✅ Complementa a tu entrenador, no lo duplica. Si las reps de arriba salen sobradas 2 semanas seguidas, sube peso y baja a las reps de Fase 1.",
+      nutrition:"🥩 Proteína en la comida siguiente al entreno.",
+    },
+    Jueves: externalTrainerDay(18),
+    Viernes: {
+      title:"BICI TEMPO + SUELO PÉLVICO", tipo:"🚴 Tempo + Core", duration:"35–40 min",
+      warmup:"5 min nivel 1–2",
+      exercises:[
+        { name:"Ciclismo tempo nivel 5–6", sets:"4", reps:"5 min", rest:"2 min nivel 2", note:"Un minuto más por bloque que en Fase 1. Nunca al máximo", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Respiración 360° + activación TA", sets:"2", reps:"8 respiraciones", rest:"30s", note:"Base antes de cualquier ejercicio de suelo pélvico", muscles:"Transverso abdominal · Suelo pélvico" },
+        { name:"Kegel funcional de pie", sets:"3", reps:"12", rest:"30s", note:"Contrae 3–5s, suelta despacio. Fugas al toser/saltar = baja intensidad de bici esta semana", muscles:"Suelo pélvico" },
+        { name:"Almeja con banda (clamshell)", sets:"3", reps:"15 c/lado", rest:"45s", note:"Tumbada de lado, abre la rodilla de arriba", muscles:"Glúteo medio · Cadera" },
+      ],
+      cooldown:"Estiramiento suave 5 min",
+      hip_note:"⚠️ Regla de oro sin cambios: abombamiento o pérdidas de orina = para o regresa el ejercicio.",
+    },
+    Sábado: {
+      title:"BICI LARGA O RECUPERACIÓN + CORE", tipo:"🚴 Zona 2 / Activa", duration:"30–45 min (ajustable)",
+      warmup:"5 min nivel 1",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 3–4", sets:"—", reps:"25–35 min", rest:"—", note:"Sigue siendo la sesión flexible: si vienes cansada, baja minutos en vez de saltártela entera", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Dead Bug con mancuerna", sets:"2", reps:"10 c/lado", rest:"45s", note:"Circuito de cierre de semana", muscles:"Core profundo" },
+        { name:"Bird Dog con mancuerna", sets:"2", reps:"10 c/lado", rest:"45s", note:"—", muscles:"Glúteo · Lumbar" },
+        { name:"Puente de glúteo isométrico", sets:"2", reps:"40s aguante", rest:"45s", note:"Aprieta arriba, respira sin aguantar el aire", muscles:"Glúteo · Cadera" },
+      ],
+      cooldown:"Estiramiento completo 5–8 min",
+      hip_note:"💡 La sesión que más se puede recortar en una semana difícil — nunca el domingo.",
+    },
+    Domingo: {
+      title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min", isRestDay:true,
+      warmup:"—",
+      exercises:[
+        { name:"Descanso total semanal", sets:"—", reps:"—", rest:"—", note:"El descanso sigue siendo parte del plan, no una excepción.", muscles:"Recuperación" },
+      ],
+      cooldown:"—",
+      hip_note:"💡 Descanso innegociable.",
+      nutrition:"🌙 Come sin restricción hoy.",
+    },
+  },
+  phase3: {
+    Lunes: {
+      title:"BICI ZONA 2 + CORE POSTPARTO", tipo:"🚴 Zona 2 + Core", duration:"45–50 min",
+      warmup:"5 min bici nivel 1–2",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 4", sets:"—", reps:"35–40 min", rest:"—", note:"Ritmo conversacional pero ya con más base — nota cómo cuesta menos que en Fase 1", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Dead Bug con mancuerna", sets:"3", reps:"12 c/lado", rest:"45s", note:"Si sigue sin abombamiento, prueba con una mancuerna algo más pesada", muscles:"Core profundo · Control lumbo-pélvico" },
+        { name:"Bird Dog con mancuerna", sets:"3", reps:"12 c/lado", rest:"45s", note:"Pausa de 1–2s arriba en cada repetición", muscles:"Glúteo · Lumbar · Core anti-rotación" },
+        { name:"Plancha inclinada (manos en banco)", sets:"2", reps:"15–20s", rest:"45s", note:"Solo si llevas semanas sin abombamiento en ningún ejercicio de core. Si dudas, quédate en Dead Bug/Bird Dog otra semana más", muscles:"Core global · Progresión controlada" },
+      ],
+      cooldown:"Estiramiento suave de piernas y espalda 5 min",
+      hip_note:"✅ La plancha inclinada es la primera progresión real de core — solo si no hay abombamiento en nada de lo anterior.",
+      nutrition:"🥗 Desayuno con proteína antes de la bici si entrenas con hambre real (lactancia).",
+    },
+    Martes: externalTrainerDay(20),
+    Miércoles: {
+      title:"FUERZA EN CASA — CADERA, GLÚTEO Y PIERNA", tipo:"💪 Fuerza casa", duration:"35–40 min",
+      warmup:"5 min de movilidad de cadera y respiración 360°",
+      exercises:[
+        { name:"Puente de glúteo con mancuerna", sets:"4", reps:"15", rest:"60s", note:"Una serie más que en Fase 2", muscles:"Glúteo · Isquiotibiales · Cadera" },
+        { name:"Peso muerto rumano con mancuernas", sets:"3", reps:"12", rest:"75s", note:"Sube el peso si la técnica sigue siendo perfecta a 12 reps", muscles:"Glúteo · Isquiotibiales · Zona lumbar" },
+        { name:"Sentadilla goblet con mancuerna", sets:"3", reps:"12", rest:"75s", note:"Mancuerna pegada al pecho, baja hasta donde controles la técnica sin molestia. Segundo patrón de pierna de la fase", muscles:"Cuádriceps · Glúteo · Core" },
+        { name:"Remo con banda de pie", sets:"3", reps:"15", rest:"60s", note:"Tira los codos atrás apretando entre los omóplatos", muscles:"Espalda · Postura" },
+        { name:"Pallof Press con banda", sets:"3", reps:"12 c/lado", rest:"45s", note:"De pie, sin dejar que el tronco gire", muscles:"Core anti-rotación · Oblicuos" },
+      ],
+      cooldown:"Estiramiento de cadera y espalda 5 min",
+      hip_note:"✅ Se añade sentadilla goblet: más estímulo de pierna completa para seguir con la sensibilidad a la insulina como prioridad.",
+      nutrition:"🥩 Proteína en la comida siguiente al entreno.",
+    },
+    Jueves: externalTrainerDay(20),
+    Viernes: {
+      title:"BICI TEMPO + SUELO PÉLVICO", tipo:"🚴 Tempo + Core", duration:"40–45 min",
+      warmup:"5 min nivel 1–2",
+      exercises:[
+        { name:"Ciclismo tempo nivel 5–6", sets:"5", reps:"5 min", rest:"2 min nivel 2", note:"Una ronda más que en Fase 2. Nunca al máximo", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Kegel funcional de pie", sets:"3", reps:"12", rest:"30s", note:"Contrae 3–5s, suelta despacio", muscles:"Suelo pélvico" },
+        { name:"Almeja con banda (clamshell)", sets:"3", reps:"15 c/lado", rest:"45s", note:"Tumbada de lado, abre la rodilla de arriba", muscles:"Glúteo medio · Cadera" },
+      ],
+      cooldown:"Estiramiento suave 5 min",
+      hip_note:"⚠️ Regla de oro sin cambios: abombamiento o pérdidas de orina = para o regresa el ejercicio.",
+    },
+    Sábado: {
+      title:"BICI LARGA O RECUPERACIÓN + CORE", tipo:"🚴 Zona 2 / Activa", duration:"30–45 min (ajustable)",
+      warmup:"5 min nivel 1",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 4", sets:"—", reps:"30–40 min", rest:"—", note:"Sesión flexible: recórtala antes de saltártela si la semana aprieta", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Dead Bug con mancuerna", sets:"2", reps:"12 c/lado", rest:"45s", note:"Circuito de cierre de semana", muscles:"Core profundo" },
+        { name:"Puente de glúteo isométrico", sets:"2", reps:"45s aguante", rest:"45s", note:"Aprieta arriba, respira sin aguantar el aire", muscles:"Glúteo · Cadera" },
+      ],
+      cooldown:"Estiramiento completo 5–8 min",
+      hip_note:"💡 La sesión que más se puede recortar en una semana difícil — nunca el domingo.",
+    },
+    Domingo: {
+      title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min", isRestDay:true,
+      warmup:"—",
+      exercises:[
+        { name:"Descanso total semanal", sets:"—", reps:"—", rest:"—", note:"El descanso sigue siendo parte del plan.", muscles:"Recuperación" },
+      ],
+      cooldown:"—",
+      hip_note:"💡 Descanso innegociable.",
+      nutrition:"🌙 Come sin restricción hoy.",
+    },
+  },
+  phase4: {
+    Lunes: {
+      title:"BICI ZONA 2 + CORE POSTPARTO", tipo:"🚴 Zona 2 + Core", duration:"45–50 min",
+      warmup:"5 min bici nivel 1–2",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 4", sets:"—", reps:"35–40 min", rest:"—", note:"Mantén el volumen de Fase 3 — esta fase consolida, no dispara el volumen más", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Dead Bug con mancuerna", sets:"3", reps:"12 c/lado", rest:"45s", note:"Rutina ya asentada", muscles:"Core profundo · Control lumbo-pélvico" },
+        { name:"Bird Dog con mancuerna", sets:"3", reps:"12 c/lado", rest:"45s", note:"—", muscles:"Glúteo · Lumbar · Core anti-rotación" },
+        { name:"Plancha inclinada (manos en banco)", sets:"3", reps:"20–25s", rest:"45s", note:"Si sigue sin abombamiento, sube 5s cada 2 semanas", muscles:"Core global · Progresión controlada" },
+      ],
+      cooldown:"Estiramiento suave de piernas y espalda 5 min",
+      hip_note:"✅ Última fase: consolidar lo ganado, no perseguir más volumen a toda costa.",
+      nutrition:"🥗 Desayuno con proteína antes de la bici si entrenas con hambre real (lactancia).",
+    },
+    Martes: externalTrainerDay(22),
+    Miércoles: {
+      title:"FUERZA EN CASA — CADERA, GLÚTEO Y PIERNA", tipo:"💪 Fuerza casa", duration:"35–40 min",
+      warmup:"5 min de movilidad de cadera y respiración 360°",
+      exercises:[
+        { name:"Puente de glúteo con mancuerna", sets:"4", reps:"15", rest:"60s", note:"Rutina madura — mantén técnica perfecta antes que subir más peso", muscles:"Glúteo · Isquiotibiales · Cadera" },
+        { name:"Peso muerto rumano con mancuernas", sets:"4", reps:"12", rest:"75s", note:"Una serie más que en Fase 3 si te sientes con margen", muscles:"Glúteo · Isquiotibiales · Zona lumbar" },
+        { name:"Sentadilla goblet con mancuerna", sets:"3", reps:"12–15", rest:"75s", note:"Mancuerna pegada al pecho, rango que controles sin molestia", muscles:"Cuádriceps · Glúteo · Core" },
+        { name:"Remo con banda de pie", sets:"3", reps:"15", rest:"60s", note:"Tira los codos atrás apretando entre los omóplatos", muscles:"Espalda · Postura" },
+        { name:"Pallof Press con banda", sets:"3", reps:"12 c/lado", rest:"45s", note:"De pie, sin dejar que el tronco gire", muscles:"Core anti-rotación · Oblicuos" },
+      ],
+      cooldown:"Estiramiento de cadera y espalda 5 min",
+      hip_note:"✅ Objetivo de esta fase: que esta rutina se sostenga sola, sin necesitar cada vez más para notar el efecto.",
+      nutrition:"🥩 Proteína en la comida siguiente al entreno.",
+    },
+    Jueves: externalTrainerDay(22),
+    Viernes: {
+      title:"BICI TEMPO + SUELO PÉLVICO", tipo:"🚴 Tempo + Core", duration:"40–45 min",
+      warmup:"5 min nivel 1–2",
+      exercises:[
+        { name:"Ciclismo tempo nivel 5–6", sets:"5", reps:"5 min", rest:"2 min nivel 2", note:"Mantén el nivel de Fase 3, con buena técnica de pedaleo", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Kegel funcional de pie", sets:"3", reps:"12", rest:"30s", note:"Ya debería sentirse un gesto natural, no un ejercicio aislado", muscles:"Suelo pélvico" },
+        { name:"Almeja con banda (clamshell)", sets:"3", reps:"15 c/lado", rest:"45s", note:"Tumbada de lado, abre la rodilla de arriba", muscles:"Glúteo medio · Cadera" },
+      ],
+      cooldown:"Estiramiento suave 5 min",
+      hip_note:"⚠️ Regla de oro sin cambios, para siempre: abombamiento o pérdidas de orina = para o regresa el ejercicio.",
+    },
+    Sábado: {
+      title:"BICI LARGA O RECUPERACIÓN + CORE", tipo:"🚴 Zona 2 / Activa", duration:"30–45 min (ajustable)",
+      warmup:"5 min nivel 1",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 4", sets:"—", reps:"30–40 min", rest:"—", note:"Sesión flexible hasta el final del bloque", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Dead Bug con mancuerna", sets:"2", reps:"12 c/lado", rest:"45s", note:"Circuito de cierre de semana", muscles:"Core profundo" },
+        { name:"Puente de glúteo isométrico", sets:"2", reps:"45s aguante", rest:"45s", note:"Aprieta arriba, respira sin aguantar el aire", muscles:"Glúteo · Cadera" },
+      ],
+      cooldown:"Estiramiento completo 5–8 min",
+      hip_note:"💡 Sigue siendo la sesión más recortable en una semana difícil.",
+    },
+    Domingo: {
+      title:"DESCANSO TOTAL — CIERRE DEL BLOQUE 24 SEMANAS", tipo:"😴 Recuperación", duration:"0 min", isRestDay:true,
+      warmup:"—",
+      exercises:[
+        { name:"Descanso total semanal", sets:"—", reps:"—", rest:"—", note:"Al cierre del bloque: mide peso, cintura, repite la autoprueba de diástasis y decide tu siguiente objetivo con calma.", muscles:"Recuperación · Evaluación" },
+      ],
+      cooldown:"—",
+      hip_note:"🏆 24 semanas es mucho tiempo con dos peques pequeños — llegues donde llegues, ya has construido un hábito real.",
+      nutrition:"🌙 Come sin restricción hoy.",
+    },
+  },
 };
 
 const nutricionTips_laura = [
-  { icon:"⚖️", title:"Déficit moderado", text:"~300–400 kcal/día, no más. Sigues dando el pecho — un déficit agresivo puede bajar tu producción de leche y tu energía. Si notas menos leche o más cansancio de lo normal, sube 150–200 kcal." },
+  { icon:"⚖️", title:"Déficit moderado, ritmo seguro", text:"~300–400 kcal/día. La evidencia en lactancia marca un máximo seguro de unos 0,5kg por semana — más rápido que eso puede bajar tu producción de leche. Si notas menos leche o más cansancio de lo normal, sube 150–200 kcal." },
   { icon:"🥩", title:"Proteína diaria", text:"1,6–2,0g por kg de tu peso actual. Ayuda a ganar músculo en déficit, a la saciedad, y cubre el extra que necesita la lactancia." },
   { icon:"🌾", title:"Fibra, doble motivo", text:"25–30g/día. Da saciedad en déficit Y frena la subida de glucosa después de comer — relevante para ti por la diabetes gestacional." },
   { icon:"💪", title:"Fuerza para prevenir diabetes", text:"El entrenamiento de fuerza mejora la sensibilidad a la insulina de verdad — es la razón principal por la que tus 2 días de fuerza (más el de casa) importan a largo plazo, no solo para estética." },
@@ -883,12 +1076,16 @@ const milestones_laura = [
 ];
 
 const tests2_laura = [
-  { semana:"Sem 4", test:"Autoprueba de diástasis: ¿cuántos dedos de separación?", objetivo:"Registra el número para comparar con semanas siguientes" },
+  { semana:"Sem 4", test:"Autoprueba de diástasis: ¿cuántos dedos de separación?", objetivo:"Registra el número — es tu punto de partida real, no hay nota buena ni mala" },
   { semana:"Sem 4", test:"¿Cuánto aguantas en bici Zona 2 sin parar?", objetivo:"Mínimo 20 min seguidos" },
   { semana:"Sem 8", test:"¿Notas fugas al toser/saltar/reír?", objetivo:"Idealmente ninguna — si persisten, coméntalo con tu fisio de suelo pélvico" },
   { semana:"Sem 8", test:"Bici Zona 2, ¿cuánto tiempo?", objetivo:"Mínimo 30 min seguidos" },
-  { semana:"Sem 12", test:"Peso medio semanal + cintura", objetivo:"Progreso hacia tu siguiente hito" },
-  { semana:"Sem 12", test:"Puente de glúteo / peso muerto rumano", objetivo:"Más peso o más reps limpias que en la semana 1" },
+  { semana:"Sem 10", test:"Peso medio semanal + cintura + autoprueba de diástasis", objetivo:"Progreso hacia tu siguiente hito, cierre de Fase 2" },
+  { semana:"Sem 10", test:"Puente de glúteo / peso muerto rumano", objetivo:"Más peso o más reps limpias que en la semana 1" },
+  { semana:"Sem 16", test:"¿Aguantas la plancha inclinada sin abombamiento?", objetivo:"Si sí, prepárate para más tiempo en Fase 4" },
+  { semana:"Sem 16", test:"Bici tempo, ¿cuántas rondas de 5 min?", objetivo:"5 rondas sostenidas, sensación controlada" },
+  { semana:"Sem 20", test:"Sentadilla goblet / peso muerto rumano", objetivo:"Progreso claro de peso o reps desde Fase 3" },
+  { semana:"Sem 24", test:"Test final: peso medio, cintura, autoprueba de diástasis", objetivo:"Compara con la semana 1 — decide tu siguiente objetivo" },
 ];
 
 const progresionGeneral_laura = [
@@ -1297,7 +1494,7 @@ const PROFILES = {
   laura: {
     key:"laura",
     profile: PROFILE_LAURA,
-    totalWeeks: null,
+    totalWeeks: 24,
     phases: phases_laura, dd: dd_laura,
     nutricionTips: nutricionTips_laura, milestones: milestones_laura, tests2: tests2_laura,
     progresionGeneral: progresionGeneral_laura, progresionModalidades: progresionModalidades_laura,
@@ -1329,8 +1526,10 @@ const PROFILES = {
     buildDashboardTiles: (ctx) => [
       { label:"Peso actual", value:`${ctx.currentWeight} kg`, sub:`Objetivo: ${ctx.nextMilestone.kg} kg` },
       { label:"IMC", value: ctx.imc.toFixed(1), sub: ctx.imcCategoria },
+      { label:"Fase actual", value: ctx.phase.name, sub: ctx.phase.sub },
       { label:"Racha entrenando", value:`${ctx.streak} día${ctx.streak===1?"":"s"}`, sub: ctx.isTrainedToday?"Hoy ya registrado ✅":"Aún no marcado hoy" },
       { label:"Próximo test", value: ctx.nextTest.semana, sub: ctx.nextTest.test },
+      { label:"Programa completado", value:`${ctx.pctCompleted}%`, sub:`${ctx.weekNumber} de ${ctx.totalWeeks} semanas` },
     ],
   },
 };
