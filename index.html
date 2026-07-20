@@ -170,12 +170,12 @@ const getYTEmbed = (name) => {
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
 const phases = [
-  { id:1, name:"FASE 1", sub:"Adaptación + Activar metabolismo", weeks:"Semanas 1–4", color:"#00d4aa", desc:"Aprende los movimientos con técnica perfecta. El cuerpo se despierta tras el parón. Empezamos a quemar grasa con la bici en zona 2. Sin ego con los pesos." },
-  { id:2, name:"FASE 2", sub:"Hipertrofia + Quema de grasa activa", weeks:"Semanas 5–8", color:"#f59e0b", desc:"Aquí empieza la recomposición real. Más volumen, más intensidad en bici, circuito metabólico. La barriga empieza a irse y el músculo aparece." },
-  { id:3, name:"FASE 3", sub:"Intensificación + Rendimiento Enduro", weeks:"Semanas 9–12", color:"#ef4444", desc:"Máxima intensidad. HIIT de verdad, calistenia avanzada, fondo enduro serio. Al final de esta fase estás listo para cualquier ruta." },
-  { id:4, name:"FASE 4", sub:"Bloque 2: Masa limpia + deficit", weeks:"Semanas 13-16", color:"#a855f7", desc:"Segundo bloque. Mantienes el deficit moderado, subes proteina y haces fuerza pesada con volumen medido. Objetivo: mas musculo visible, menos cintura y cero locuras con la cadera." },
-  { id:5, name:"FASE 5", sub:"Bloque 2: Potencia enduro", weeks:"Semanas 17-20", color:"#38bdf8", desc:"Aqui la bici se vuelve mas especifica: subidas, sprints, agarre, core y tolerancia al lactato. Sigues perdiendo grasa, pero sin matar la recuperacion." },
-  { id:6, name:"FASE 6", sub:"Bloque 2: Puesta a punto", weeks:"Semanas 21-24", color:"#22c55e", desc:"Ultimas 4 semanas: rendimiento real de enduro, salidas largas, fuerza de mantenimiento y test final. Llegas mas ligero, mas fuerte y con mejor motor." },
+  { id:1, name:"FASE 1", sub:"Adaptación + Activar metabolismo", weeks:"Semanas 1–4", color:"#00d4aa", desc:"Aprende los movimientos con técnica perfecta. El cuerpo se despierta tras el parón. Empezamos a quemar grasa con la bici en zona 2. Sin ego con los pesos.", progresionNota:"Sem 1–2: aprende técnica, no el peso. Sem 3: añade 1 serie. Sem 4: sube peso donde llegues a 15 reps fácil." },
+  { id:2, name:"FASE 2", sub:"Hipertrofia + Quema de grasa activa", weeks:"Semanas 5–8", color:"#f59e0b", desc:"Aquí empieza la recomposición real. Más volumen, más intensidad en bici, circuito metabólico. La barriga empieza a irse y el músculo aparece.", progresionNota:"Sem 5–6: volumen máximo. Sem 7: añade peso en paralelas y dominadas. Sem 8: test de máximas reps." },
+  { id:3, name:"FASE 3", sub:"Intensificación + Rendimiento Enduro", weeks:"Semanas 9–12", color:"#ef4444", desc:"Máxima intensidad. HIIT de verdad, calistenia avanzada, fondo enduro serio. Al final de esta fase estás listo para cualquier ruta.", progresionNota:"Sem 9–10: pesos máximos. Sem 11: muscle-up o negativas explosivas. Sem 12: test total del plan." },
+  { id:4, name:"FASE 4", sub:"Bloque 2: Masa limpia + deficit", weeks:"Semanas 13-16", color:"#a855f7", desc:"Segundo bloque. Mantienes el deficit moderado, subes proteina y haces fuerza pesada con volumen medido. Objetivo: mas musculo visible, menos cintura y cero locuras con la cadera.", progresionNota:"Sem 13–14: fuerza pesada y zona 2 larga. Sem 15: sube una serie en básicos. Sem 16: mide cintura, peso medio y rendimiento." },
+  { id:5, name:"FASE 5", sub:"Bloque 2: Potencia enduro", weeks:"Semanas 17-20", color:"#38bdf8", desc:"Aqui la bici se vuelve mas especifica: subidas, sprints, agarre, core y tolerancia al lactato. Sigues perdiendo grasa, pero sin matar la recuperacion.", progresionNota:"Sem 17–18: subidas y sprints controlados. Sem 19: salida o simulación larga. Sem 20: test de 90 min y ajuste de calorías." },
+  { id:6, name:"FASE 6", sub:"Bloque 2: Puesta a punto", weeks:"Semanas 21-24", color:"#22c55e", desc:"Ultimas 4 semanas: rendimiento real de enduro, salidas largas, fuerza de mantenimiento y test final. Llegas mas ligero, mas fuerte y con mejor motor.", progresionNota:"Sem 21–22: afina sin acumular fatiga. Sem 23: reduce volumen un 20%. Sem 24: test final enduro, fotos, cintura y nuevo objetivo." },
 ];
 
 const DAYS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
@@ -263,7 +263,7 @@ const dd = {
       nutrition:"🍌 Antes come carbohidratos: plátano, avena, tostadas.",
     },
     Domingo: {
-      title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min de ejercicio",
+      title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min de ejercicio", isRestDay:true,
       warmup:"—",
       exercises:[
         { name:"Descanso activo y movilidad suave", sets:"—", reps:"10–15 min opcional", rest:"—", note:"Estiramientos suaves o paseo. Sin intensidad", muscles:"Recuperación y adaptación muscular" },
@@ -357,7 +357,7 @@ const dd = {
       nutrition:"🍌 Come bien antes: avena + plátano + café. Post: arroz con pollo.",
     },
     Domingo: {
-      title:"DESCANSO ACTIVO", tipo:"😴 Recuperación", duration:"20–30 min opcional",
+      title:"DESCANSO ACTIVO", tipo:"😴 Recuperación", duration:"20–30 min opcional", isRestDay:true,
       warmup:"—",
       exercises:[
         { name:"Movilidad de cadera y espalda suave", sets:"—", reps:"20–30 min", rest:"—", note:"YouTube: Hip Mobility for Athletes Athlean-X. Con cuidado del choque", muscles:"Cadera · Flexores · Movilidad articular" },
@@ -447,7 +447,7 @@ const dd = {
       nutrition:"🍌🍌 Desayuno grande. Post: arroz + proteína.",
     },
     Domingo: {
-      title:"DESCANSO TOTAL 🏆", tipo:"😴 Recuperación", duration:"0 min",
+      title:"DESCANSO TOTAL 🏆", tipo:"😴 Recuperación", duration:"0 min", isRestDay:true,
       warmup:"—",
       exercises:[
         { name:"Descanso y recuperación total", sets:"—", reps:"—", rest:"—", note:"12 semanas completadas. Come bien, hidrátate y duerme.", muscles:"🏆 Recuperación total merecida" },
@@ -503,7 +503,7 @@ const dd = {
       ],
       cooldown:"Estiramiento completo", hip_note:"⚠️ En descensos técnicos la cadera puede protestar. Escúchala.", music:"🏔️ En la salida real no necesitas música, tienes el trail.", nutrition:"🍌🍌 Carbohidratos antes, gel o plátano durante, proteína + carbos después. No hagas déficit agresivo el sábado.",
     },
-    Domingo: { title:"DESCANSO — SIEMPRE", tipo:"😴 Recuperación", duration:"0 min", warmup:"—",
+    Domingo: { title:"DESCANSO — SIEMPRE", tipo:"😴 Recuperación", duration:"0 min", isRestDay:true, warmup:"—",
       exercises:[
         { name:"Descanso total semanal — para siempre", sets:"—", reps:"—", rest:"—", note:"El domingo de descanso es para siempre. No lo negocies nunca.", muscles:"Recuperación · Sostenibilidad a largo plazo" },
       ],
@@ -559,7 +559,7 @@ const dd = {
       ],
       cooldown:"Estiramiento completo 15 min", hip_note:"💡 Baja técnico, no kamikaze. La cadera manda.", nutrition:"🍌🍌 Carbos antes y durante. Post: proteína + arroz/patata/pasta.",
     },
-    Domingo: { title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min", warmup:"—",
+    Domingo: { title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min", isRestDay:true, warmup:"—",
       exercises:[
         { name:"Descanso y recuperación total", sets:"—", reps:"—", rest:"—", note:"Sin esto no hay músculo ni pérdida de grasa sostenible.", muscles:"Recuperación" },
       ],
@@ -613,7 +613,7 @@ const dd = {
       ],
       cooldown:"15 min estiramiento", hip_note:"💡 Evalúa la cadera 24h después: si no empeora, vas por buen camino.", nutrition:"🍌🍌 Desayuno con carbos. Durante: agua y sales. Después: comida grande limpia.",
     },
-    Domingo: { title:"CIERRE DEL BLOQUE 24 SEMANAS", tipo:"😴 Descanso", duration:"0 min", warmup:"—",
+    Domingo: { title:"CIERRE DEL BLOQUE 24 SEMANAS", tipo:"😴 Descanso", duration:"0 min", isRestDay:true, warmup:"—",
       exercises:[
         { name:"Descanso total semanal — para siempre", sets:"—", reps:"—", rest:"—", note:"Mide peso, cintura, fotos, dominadas y sensación en bici. Decide siguiente objetivo.", muscles:"Recuperación · Evaluación" },
       ],
@@ -622,7 +622,7 @@ const dd = {
   },
 };
 
-const getKey = (id) => ["phase1","phase2","phase3","phase4","phase5","phase6"][id-1];
+const getKey = (id) => `phase${id}`;
 
 const todayISO = () => new Date().toISOString().slice(0,10);
 const daysBetween = (a,b) => Math.floor((new Date(b) - new Date(a)) / 86400000);
@@ -773,6 +773,185 @@ const milestones = [
   { kg:75, label:"75 kg", checks:["Composición de atleta recreativo","Motor de enduro listo para rutas largas","Dolor articular mínimo en el día a día"] },
 ];
 
+// ─── PERFIL DE LAURA ─────────────────────────────────────────────────────────
+const PROFILE_LAURA = { nombre:"Laura", edad:36, alturaCm:170, pesoInicialKg:96 };
+
+const phases_laura = [
+  { id:1, name:"PLAN SEMANAL", sub:"Fuerza + bici + core postparto", weeks:"Continuo", color:"#c2694f", desc:"Sin fases: es una plantilla semanal que se repite y se ajusta según cómo te encuentres. 2 días con tu entrenador (fuerza general) + 4 días en casa centrados en bici y core seguro para la diástasis.", progresionNota:"Cada 2 semanas: si la bici de Zona 2 se queda corta, añade 5 min antes de subir intensidad. En fuerza en casa, sube reps antes que peso. En core, sube segundos de aguante antes que dificultad — siempre sin abombamiento." },
+];
+
+const dd_laura = {
+  phase1: {
+    Lunes: {
+      title:"BICI ZONA 2 + CORE POSTPARTO", tipo:"🚴 Zona 2 + Core", duration:"35–40 min",
+      warmup:"5 min bici nivel 1–2 muy suave",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 3–4", sets:"—", reps:"25–30 min", rest:"—", note:"Ritmo conversacional, el motor real de la pérdida de grasa. Sube 5 min cada 1–2 semanas antes que la intensidad", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Respiración 360° + activación TA", sets:"2", reps:"8 respiraciones", rest:"30s", note:"Tumbada, rodillas dobladas. Inspira expandiendo costillas, espira llevando el ombligo suave hacia la columna. Base de todo el trabajo de core de hoy", muscles:"Transverso abdominal · Suelo pélvico" },
+        { name:"Dead Bug con mancuerna", sets:"3", reps:"8 c/lado", rest:"45s", note:"Espalda baja pegada al suelo todo el rato. Baja brazo y pierna contraria muy despacio. Si notas abombamiento en el centro del abdomen, reduce el rango", muscles:"Core profundo · Control lumbo-pélvico" },
+        { name:"Bird Dog con mancuerna", sets:"3", reps:"8 c/lado", rest:"45s", note:"A cuatro patas, extiende brazo y pierna contraria sin que la cadera rote", muscles:"Glúteo · Lumbar · Core anti-rotación" },
+      ],
+      cooldown:"Estiramiento suave de piernas y espalda 5 min",
+      hip_note:"✅ Sesión segura para diástasis: columna neutra todo el rato, cero presión intraabdominal.",
+      nutrition:"🥗 Desayuno con proteína antes de la bici si entrenas con hambre real (lactancia).",
+    },
+    Martes: {
+      title:"ENTRENADOR FUNCIONAL (EXTERNO)", tipo:"💪 Fuerza externa", duration:"Según tu clase",
+      warmup:"El que haga tu entrenador",
+      exercises:[
+        { name:"Sesión con tu entrenador funcional", sets:"—", reps:"—", rest:"—", note:"Fuerza general dirigida por tu entrenador. No añadas nada más hoy en casa — es tu día de descanso de la app", muscles:"Fuerza general · Dirigido externamente" },
+      ],
+      cooldown:"El que indique tu entrenador",
+      hip_note:"💡 Si algo de la sesión te genera abombamiento o molestia pélvica, coméntaselo a tu entrenador y ajustamos el resto de la semana.",
+    },
+    Miércoles: {
+      title:"FUERZA EN CASA — CADERA Y GLÚTEO", tipo:"💪 Fuerza casa", duration:"30–35 min",
+      warmup:"5 min de movilidad de cadera y respiración 360°",
+      exercises:[
+        { name:"Puente de glúteo con mancuerna", sets:"3", reps:"12", rest:"60s", note:"Mancuerna apoyada en la cadera. Aprieta el glúteo arriba 1s. El patrón que más ayuda a la sensibilidad a la insulina", muscles:"Glúteo · Isquiotibiales · Cadera" },
+        { name:"Peso muerto rumano con mancuernas", sets:"3", reps:"10", rest:"75s", note:"Espalda recta, empuja la cadera atrás, mancuernas pegadas a las piernas. Sin redondear la zona lumbar", muscles:"Glúteo · Isquiotibiales · Zona lumbar" },
+        { name:"Remo con banda de pie", sets:"3", reps:"12", rest:"60s", note:"Banda anclada a una puerta, tira los codos atrás apretando entre los omóplatos. Contrarresta la postura de cargar al bebé", muscles:"Espalda · Postura" },
+        { name:"Press de hombro con mancuernas ligero", sets:"3", reps:"10", rest:"60s", note:"Peso ligero, controlado. Exhala al empujar arriba, nunca aguantes el aire", muscles:"Hombro · Core (estabilidad)" },
+        { name:"Pallof Press con banda", sets:"3", reps:"10 c/lado", rest:"45s", note:"De pie, banda al lateral, empuja al frente sin dejar que el tronco gire", muscles:"Core anti-rotación · Oblicuos" },
+      ],
+      cooldown:"Estiramiento de cadera y espalda 5 min",
+      hip_note:"✅ Único día de fuerza en casa — complementa a tu entrenador, no lo duplica. Patrón de cadera priorizado por su valor para la sensibilidad a la insulina.",
+      nutrition:"🥩 Proteína en la comida siguiente al entreno.",
+    },
+    Jueves: {
+      title:"ENTRENADOR FUNCIONAL (EXTERNO)", tipo:"💪 Fuerza externa", duration:"Según tu clase",
+      warmup:"El que haga tu entrenador",
+      exercises:[
+        { name:"Sesión con tu entrenador funcional", sets:"—", reps:"—", rest:"—", note:"Fuerza general dirigida por tu entrenador.", muscles:"Fuerza general · Dirigido externamente" },
+      ],
+      cooldown:"El que indique tu entrenador",
+      hip_note:"💡 Mismo criterio que el martes: cualquier molestia rara, nos lo dices.",
+    },
+    Viernes: {
+      title:"BICI TEMPO SUAVE + SUELO PÉLVICO", tipo:"🚴 Tempo + Core", duration:"30–35 min",
+      warmup:"5 min nivel 1–2",
+      exercises:[
+        { name:"Ciclismo tempo nivel 5–6", sets:"4", reps:"4 min", rest:"2 min nivel 2", note:"Nunca al máximo — un esfuerzo que notas pero podrías sostener bastante más. Sube minutos antes que nivel", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Respiración 360° + activación TA", sets:"2", reps:"8 respiraciones", rest:"30s", note:"Base antes de cualquier ejercicio de suelo pélvico", muscles:"Transverso abdominal · Suelo pélvico" },
+        { name:"Kegel funcional de pie", sets:"3", reps:"10", rest:"30s", note:"Contrae el suelo pélvico como cortando el pis, 3–5s, suelta despacio. Si notas fugas al toser/saltar/reír, baja la intensidad de bici esta semana", muscles:"Suelo pélvico" },
+        { name:"Almeja con banda (clamshell)", sets:"3", reps:"12 c/lado", rest:"45s", note:"Tumbada de lado, rodillas dobladas, pies juntos, abre la rodilla de arriba", muscles:"Glúteo medio · Cadera" },
+      ],
+      cooldown:"Estiramiento suave 5 min",
+      hip_note:"⚠️ Regla de oro: abombamiento en el abdomen o pérdidas de orina = para o regresa el ejercicio. Fatiga sin abombamiento = vas bien.",
+    },
+    Sábado: {
+      title:"BICI LARGA O RECUPERACIÓN + CORE", tipo:"🚴 Zona 2 / Activa", duration:"25–40 min (ajustable)",
+      warmup:"5 min nivel 1",
+      exercises:[
+        { name:"Ciclismo indoor zona 2 nivel 3–4", sets:"—", reps:"20–30 min", rest:"—", note:"La sesión flexible de la semana: si vienes cansada por los peques, baja a 15–20 min suaves en vez de saltártela entera", muscles:"Sistema aeróbico · Quema de grasa" },
+        { name:"Dead Bug con mancuerna", sets:"2", reps:"8 c/lado", rest:"45s", note:"Circuito de core corto de cierre de semana", muscles:"Core profundo" },
+        { name:"Bird Dog con mancuerna", sets:"2", reps:"8 c/lado", rest:"45s", note:"—", muscles:"Glúteo · Lumbar" },
+        { name:"Puente de glúteo isométrico", sets:"2", reps:"30s aguante", rest:"45s", note:"Aprieta el glúteo arriba, respira sin aguantar el aire", muscles:"Glúteo · Cadera" },
+      ],
+      cooldown:"Estiramiento completo 5–8 min",
+      hip_note:"💡 Esta es la sesión que más se puede recortar en una semana difícil — nunca el domingo de descanso.",
+    },
+    Domingo: {
+      title:"DESCANSO TOTAL", tipo:"😴 Recuperación", duration:"0 min", isRestDay:true,
+      warmup:"—",
+      exercises:[
+        { name:"Descanso total semanal", sets:"—", reps:"—", rest:"—", note:"Con dos peques y lactancia, el descanso no es opcional — es parte del plan, no una excepción.", muscles:"Recuperación" },
+      ],
+      cooldown:"—",
+      hip_note:"💡 Descanso innegociable. El cuerpo se recupera y repara aquí, no solo entrenando.",
+      nutrition:"🌙 Come sin restricción hoy. Tu cuerpo y tu producción de leche lo agradecen.",
+    },
+  },
+};
+
+const nutricionTips_laura = [
+  { icon:"⚖️", title:"Déficit moderado", text:"~300–400 kcal/día, no más. Sigues dando el pecho — un déficit agresivo puede bajar tu producción de leche y tu energía. Si notas menos leche o más cansancio de lo normal, sube 150–200 kcal." },
+  { icon:"🥩", title:"Proteína diaria", text:"1,6–2,0g por kg de tu peso actual. Ayuda a ganar músculo en déficit, a la saciedad, y cubre el extra que necesita la lactancia." },
+  { icon:"🌾", title:"Fibra, doble motivo", text:"25–30g/día. Da saciedad en déficit Y frena la subida de glucosa después de comer — relevante para ti por la diabetes gestacional." },
+  { icon:"💪", title:"Fuerza para prevenir diabetes", text:"El entrenamiento de fuerza mejora la sensibilidad a la insulina de verdad — es la razón principal por la que tus 2 días de fuerza (más el de casa) importan a largo plazo, no solo para estética." },
+  { icon:"🎯", title:"Sobre \"bajar la barriga\"", text:"La grasa se pierde de forma general, no solo en la tripa — la bici es la palanca real ahí. El trabajo de core no quema grasa localizada, pero sí cierra/mejora la diástasis, y eso SÍ cambia visiblemente el abdomen. Son dos cosas distintas, las dos reales." },
+  { icon:"💧", title:"Hidratación y lactancia", text:"Bebe más de lo que crees si sigues dando el pecho, sobre todo en los días de bici. La sed no siempre avisa a tiempo." },
+  { icon:"😴", title:"Sueño (lo que se pueda)", text:"Con dos peques pequeños, dormir 7–8h seguidas no siempre es realista — prioriza el descanso cuando puedas, sin exigirte más de lo que el cuerpo puede dar en esta etapa." },
+  { icon:"🍽️", title:"Comidas sencillas > perfectas", text:"Con dos niños pequeños, lo que se sostiene en el tiempo gana a lo perfecto. Proteína + verdura + carbohidrato en cada comida, sin complicarte más." },
+];
+
+const milestones_laura = [
+  { kg:96, label:"Inicio del plan", checks:["Punto de partida: 96kg","Aprendes la rutina de bici + core seguro","Te familiarizas con la respiración 360°"] },
+  { kg:90, label:"90 kg", checks:["Más energía en el día a día con los peques","Menos tensión en la zona abdominal","Ropa más suelta"] },
+  { kg:85, label:"85 kg", checks:["Core notablemente más firme y estable","Mejor tolerancia a la bici (más minutos sin fatiga)","Fuerza más notable en cadera/glúteo"] },
+  { kg:80, label:"80 kg", checks:["Diástasis mejorada de forma clara (a valorar con tu fisio)","Cintura baja de forma visible","Buena base para subir intensidad si quieres"] },
+];
+
+const tests2_laura = [
+  { semana:"Sem 4", test:"Autoprueba de diástasis: ¿cuántos dedos de separación?", objetivo:"Registra el número para comparar con semanas siguientes" },
+  { semana:"Sem 4", test:"¿Cuánto aguantas en bici Zona 2 sin parar?", objetivo:"Mínimo 20 min seguidos" },
+  { semana:"Sem 8", test:"¿Notas fugas al toser/saltar/reír?", objetivo:"Idealmente ninguna — si persisten, coméntalo con tu fisio de suelo pélvico" },
+  { semana:"Sem 8", test:"Bici Zona 2, ¿cuánto tiempo?", objetivo:"Mínimo 30 min seguidos" },
+  { semana:"Sem 12", test:"Peso medio semanal + cintura", objetivo:"Progreso hacia tu siguiente hito" },
+  { semana:"Sem 12", test:"Puente de glúteo / peso muerto rumano", objetivo:"Más peso o más reps limpias que en la semana 1" },
+];
+
+const progresionGeneral_laura = [
+  { icon:"🎯", titulo:"Progresión con prudencia postparto", texto:"Sube reps antes que peso, y peso antes que dificultad del ejercicio. Con diástasis, el objetivo es control y ausencia de abombamiento, no cargar rápido." },
+  { icon:"🛑", titulo:"Si una semana no puedes con todo", texto:"Recorta primero la sesión del sábado (la flexible), luego el viernes. El lunes (bici + core base) y el domingo de descanso no se tocan — son la base del plan." },
+  { icon:"🤰", titulo:"Señal de STOP inmediata", texto:"Abombamiento visible en el abdomen, sensación de \"coning\", o pérdidas de orina en cualquier ejercicio = para esa serie y baja el rango la próxima vez. No es fallar, es la forma correcta de progresar en diástasis." },
+];
+const progresionModalidades_laura = [
+  { modalidad:"Bici Zona 2", regla:"Sube primero minutos (+5 min cada 1–2 semanas) antes que nivel de resistencia." },
+  { modalidad:"Fuerza en casa (mancuernas/banda)", regla:"Sube reps hasta el techo del rango, dos sesiones seguidas, antes de subir peso." },
+  { modalidad:"Core (Dead Bug / Bird Dog)", regla:"Progresa el rango de movimiento antes que añadir peso — y solo si no hay abombamiento." },
+  { modalidad:"Suelo pélvico", regla:"Progresa el tiempo de contracción del Kegel (de 3s a 5s) antes que las repeticiones." },
+];
+
+const exerciseReview_laura = [
+  { ejercicio:"Crunches / Sit-ups", riesgo:"Flexión repetida de tronco que empuja la pared abdominal hacia fuera — el gesto que más agrava una diástasis abierta.", alternativa:"Dead Bug con mancuerna", porQue:"Controla el core en un rango pequeño, tumbada, sin flexión de tronco ni presión hacia fuera." },
+  { ejercicio:"Plancha frontal completa (con abombamiento visible)", riesgo:"Carga axial mantenida sobre una pared abdominal que aún no tiene toda su tensión — el \"doming\" en el centro indica compensación.", alternativa:"Plancha inclinada (manos en banco) o Pallof Press", porQue:"Mismo trabajo de estabilidad con mucha menos carga sobre el centro, hasta que la plancha completa no genere abombamiento." },
+  { ejercicio:"Elevaciones de piernas dobles / ab wheel", riesgo:"Palanca larga y pesada tirando de la pared abdominal hacia fuera, con la zona lumbar despegada del suelo.", alternativa:"Bird Dog con mancuerna", porQue:"Mismo reto de control de tronco, cadera neutra, cero flexión cargada." },
+  { ejercicio:"Levantar peso pesado aguantando el aire (Valsalva)", riesgo:"Aguantar la respiración bajo carga dispara la presión intraabdominal hacia la pared que estás intentando cerrar.", alternativa:"Exhala en el esfuerzo (\"sopla antes de empujar\")", porQue:"Mantiene la presión controlada y protege el core y el suelo pélvico." },
+];
+
+const alternativeExercises_laura = [
+  { name:"Dead Bug con mancuerna", sets:"3", reps:"8–10 c/lado", rest:"45s", note:"Espalda baja pegada al suelo. Baja brazo y pierna contraria muy despacio — para en cuanto notes que la zona lumbar quiere despegarse", muscles:"Core profundo · Transverso abdominal" },
+  { name:"Bird Dog con mancuerna", sets:"3", reps:"8–10 c/lado", rest:"45s", note:"A cuatro patas, cadera y hombros nivelados, sin rotar al extender", muscles:"Glúteo · Lumbar · Core anti-rotación" },
+  { name:"Pallof Press con banda", sets:"3", reps:"10–12 c/lado", rest:"45s", note:"De pie, banda al lateral, empuja al frente sin que el tronco gire", muscles:"Core anti-rotación · Oblicuos" },
+  { name:"Kegel funcional de pie", sets:"3", reps:"10", rest:"30s", note:"Contrae el suelo pélvico 3–5s como cortando el pis, suelta despacio. Coactiva de forma natural con la respiración 360°", muscles:"Suelo pélvico" },
+];
+
+const safetyExercises_laura = [
+  { name:"Respiración 360° + activación TA", sets:"3", reps:"8 respiraciones", rest:"30s", note:"La base de todo. Inspira expandiendo costillas en todas direcciones, espira llevando el ombligo suave hacia la columna", muscles:"Transverso abdominal · Suelo pélvico" },
+  { name:"Puente de glúteo isométrico", sets:"3", reps:"30–45s aguante", rest:"60s", note:"Tumbada, rodillas dobladas, peso en los talones. Aprieta el glúteo arriba sin aguantar el aire", muscles:"Glúteo mayor · Cadera" },
+  { name:"Almeja con banda (clamshell)", sets:"3", reps:"12 c/lado", rest:"45s", note:"Tumbada de lado, rodillas dobladas, pies juntos. Abre la rodilla de arriba como una almeja", muscles:"Glúteo medio · Cadera" },
+  { name:"Autoprueba de diástasis", sets:"—", reps:"1 vez cada 2–3 semanas", rest:"—", note:"Tumbada, rodillas dobladas, 2–3 dedos sobre la línea media a la altura del ombligo. Eleva ligeramente cabeza y hombros y siente el ancho/profundidad del hueco. Herramienta de seguimiento, no sustituye la valoración de tu fisio", muscles:"Autoevaluación · Seguimiento" },
+];
+
+const dailyScheduleAM_laura = [
+  { hora:"07:00", tipo:"despertar", item:"Despertar", detalle:"Con los peques, la hora real manda — esto es orientativo." },
+  { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Proteína + carbohidrato. Si das el pecho, no te saltes esta comida." },
+  { hora:"09:30", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día (bici, fuerza en casa, o tu entrenador funcional)." },
+  { hora:"10:30", tipo:"comida", item:"Después del entreno", detalle:"Proteína + fruta, sobre todo si vienes de la bici." },
+  { hora:"14:00", tipo:"comida", item:"Comida", detalle:"Proteína + verdura + carbohidrato." },
+  { hora:"18:00", tipo:"movimiento", item:"Paseo con los peques", detalle:"Cuenta como movimiento suave, no hace falta que sea \"ejercicio\" aparte." },
+  { hora:"21:00", tipo:"comida", item:"Cena", detalle:"Proteína + verdura, ligera." },
+  { hora:"22:30", tipo:"dormir", item:"Dormir (lo que se pueda)", detalle:"Con lactancia y peques pequeños, prioriza descansar cuando puedas." },
+];
+const dailyScheduleTarde_laura = [
+  { hora:"07:00", tipo:"despertar", item:"Despertar", detalle:"Orientativo — manda el horario de los peques." },
+  { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Proteína + carbohidrato." },
+  { hora:"14:00", tipo:"comida", item:"Comida", detalle:"Con algo más de carbohidrato si entrenas por la tarde." },
+  { hora:"17:30", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día. Deja pasar un par de horas desde la comida grande." },
+  { hora:"18:30", tipo:"comida", item:"Después del entreno", detalle:"Proteína + algo de carbohidrato." },
+  { hora:"21:00", tipo:"comida", item:"Cena", detalle:"Proteína + verdura." },
+  { hora:"22:30", tipo:"dormir", item:"Dormir (lo que se pueda)", detalle:"Prioriza descansar cuando puedas." },
+];
+const restDaySchedule_laura = [
+  { hora:"07:00", tipo:"despertar", item:"Despertar", detalle:"Orientativo." },
+  { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Igual que cualquier día — misma proteína, sin restricción." },
+  { hora:"14:00", tipo:"comida", item:"Comida", detalle:"Proteína + verdura + carbohidrato." },
+  { hora:"18:00", tipo:"movimiento", item:"Paseo suave (opcional)", detalle:"Solo si te apetece, sin que sea entreno." },
+  { hora:"21:00", tipo:"comida", item:"Cena", detalle:"Sin restricción hoy." },
+  { hora:"22:30", tipo:"dormir", item:"Dormir (lo que se pueda)", detalle:"El domingo de descanso es innegociable." },
+];
+
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 
 
@@ -816,6 +995,7 @@ const DeployGuide = ({col}) => {
 
 // ─── EXERCISE VIDEO + AI CARD ─────────────────────────────────────────────────
 const ExCard = ({ex, i, col}) => {
+  const { key: profileKey, copy } = useProfileBundle();
   const [open, setOpen] = useState(false);
   const [panel, setPanel] = useState(null);
   const [aiData, setAiData] = useState(null);
@@ -826,7 +1006,7 @@ const ExCard = ({ex, i, col}) => {
     if (!aiData && !loading) {
       setLoading(true);
       try {
-        const { data, error } = await sb.functions.invoke("exercise-tutorial", { body: { exerciseName: ex.name } });
+        const { data, error } = await sb.functions.invoke("exercise-tutorial", { body: { exerciseName: ex.name, profileKey } });
         if (error) throw error;
         setAiData(data);
       } catch(e) { setAiData(null); }
@@ -895,9 +1075,9 @@ const ExCard = ({ex, i, col}) => {
                       <div key={idx} style={{fontSize:"var(--fs-10)",color:"#9ca3af",marginBottom:"3px",paddingLeft:"8px",borderLeft:"2px solid #ef444430"}}>✗ {e}</div>
                     ))}
                   </div>}
-                  {aiData.cadera&&<div style={{background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",padding:"8px 10px"}}>
-                    <div style={{fontSize:"var(--fs-9)",color:"#93c5fd",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>🦴 TU CADERA</div>
-                    <div style={{fontSize:"var(--fs-10)",color:"#93c5fd",lineHeight:"1.5"}}>{aiData.cadera}</div>
+                  {aiData.nota_salud&&<div style={{background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",padding:"8px 10px"}}>
+                    <div style={{fontSize:"var(--fs-9)",color:"#93c5fd",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"3px"}}>{copy.aiHealthNoteLabel}</div>
+                    <div style={{fontSize:"var(--fs-10)",color:"#93c5fd",lineHeight:"1.5"}}>{aiData.nota_salud}</div>
                   </div>}
                 </div>
               )}
@@ -967,37 +1147,42 @@ const caderaExercises = [
 ];
 
 const ExtrasTab = ({col}) => {
+  const { hasSupplements, suplementosDetalle, scheduleAM, scheduleTarde, exerciseReview, alternativeExercises, safetyExercises, copy } = useProfileBundle();
   const { settings, updateSettings } = useProfileSettings();
   const turno = settings?.turno_entreno || "manana";
   const setTurno = (v) => updateSettings({ turno_entreno: v });
-  const schedule = turno === "manana" ? supplementScheduleAM : supplementScheduleTarde;
+  const schedule = turno === "manana" ? scheduleAM : scheduleTarde;
 
   return (
     <div style={{padding:"14px"}}>
-      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>HORARIO REAL DE SUPLEMENTOS Y COMIDAS</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>{hasSupplements ? "HORARIO REAL DE SUPLEMENTOS Y COMIDAS" : "HORARIO DEL DÍA"}</div>
       <div style={{display:"flex",gap:"6px",marginBottom:"12px"}}>
         <button onClick={()=>setTurno("manana")} style={{flex:1,padding:"8px",background:turno==="manana"?`${col}20`:"#111",border:`1px solid ${turno==="manana"?col+"60":"#1f1f1f"}`,color:turno==="manana"?col:"#6b7280",borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-11)"}}>☀️ Entreno mañana</button>
         <button onClick={()=>setTurno("tarde")} style={{flex:1,padding:"8px",background:turno==="tarde"?`${col}20`:"#111",border:`1px solid ${turno==="tarde"?col+"60":"#1f1f1f"}`,color:turno==="tarde"?col:"#6b7280",borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-11)"}}>🌇 Entreno tarde</button>
       </div>
       {schedule.map((s,i)=><ScheduleRow key={i} s={s} col={col}/>)}
 
-      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>💊 LOS 5 SUPLEMENTOS: POR QUÉ, CÓMO Y PRECAUCIONES</div>
-      <div className="grid2">
-      {suplementosDetalle.map((s,i)=>(
-        <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
-          <div style={{fontSize:"var(--fs-13)",fontWeight:"700",color:"#f3f4f6",marginBottom:"6px"}}>{s.icon} {s.nombre}</div>
-          <div style={{fontSize:"var(--fs-10)",color:"#9ca3af",lineHeight:"1.6",marginBottom:"4px"}}><span style={{color:"#4ade80",fontWeight:"700"}}>Por qué: </span>{s.porQue}</div>
-          <div style={{fontSize:"var(--fs-10)",color:"#9ca3af",lineHeight:"1.6",marginBottom:"4px"}}><span style={{color:"#60a5fa",fontWeight:"700"}}>Combínalo con: </span>{s.combinar}</div>
-          <div style={{fontSize:"var(--fs-10)",color:"#f87171",lineHeight:"1.6"}}><span style={{fontWeight:"700"}}>Precaución: </span>{s.precaucion}</div>
-        </div>
-      ))}
-      </div>
+      {hasSupplements && (
+        <>
+          <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>💊 LOS 5 SUPLEMENTOS: POR QUÉ, CÓMO Y PRECAUCIONES</div>
+          <div className="grid2">
+          {suplementosDetalle.map((s,i)=>(
+            <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
+              <div style={{fontSize:"var(--fs-13)",fontWeight:"700",color:"#f3f4f6",marginBottom:"6px"}}>{s.icon} {s.nombre}</div>
+              <div style={{fontSize:"var(--fs-10)",color:"#9ca3af",lineHeight:"1.6",marginBottom:"4px"}}><span style={{color:"#4ade80",fontWeight:"700"}}>Por qué: </span>{s.porQue}</div>
+              <div style={{fontSize:"var(--fs-10)",color:"#9ca3af",lineHeight:"1.6",marginBottom:"4px"}}><span style={{color:"#60a5fa",fontWeight:"700"}}>Combínalo con: </span>{s.combinar}</div>
+              <div style={{fontSize:"var(--fs-10)",color:"#f87171",lineHeight:"1.6"}}><span style={{fontWeight:"700"}}>Precaución: </span>{s.precaucion}</div>
+            </div>
+          ))}
+          </div>
+        </>
+      )}
 
-      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>🔬 REVISIÓN DE EJERCICIOS DE CADERA</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>{copy.exerciseReviewTitle}</div>
       <div style={{fontSize:"var(--fs-11)",color:"#93c5fd",marginBottom:"10px",lineHeight:"1.65",padding:"10px 12px",background:"#080e1a",borderRadius:"4px",border:"1px solid #1d3a6a35"}}>
-        Con choque femoroacetabular + artrosis, la flexión de cadera profunda y cargada (rodillas al pecho, cuerpo colgando) es el gesto que más repite el pinzamiento. No se eliminan estos ejercicios: se sustituyen por otros con el mismo reto de core pero cadera neutra. Si tras la consulta del 28 de diciembre te dan luz verde, puedes reintroducirlos progresivamente.
+        {copy.exerciseReviewIntro}
       </div>
-      {hipExerciseReview.map((r,i)=>(
+      {exerciseReview.map((r,i)=>(
         <div key={i} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"6px"}}>
           <div style={{fontSize:"var(--fs-12)",fontWeight:"700",color:"#f3f4f6",marginBottom:"4px"}}>⚠️ {r.ejercicio}</div>
           <div style={{fontSize:"var(--fs-10)",color:"#9ca3af",lineHeight:"1.6",marginBottom:"4px"}}><span style={{color:"#f87171",fontWeight:"700"}}>Riesgo: </span>{r.riesgo}</div>
@@ -1005,21 +1190,20 @@ const ExtrasTab = ({col}) => {
           <div style={{fontSize:"var(--fs-10)",color:"#9ca3af",lineHeight:"1.6"}}><span style={{color:col,fontWeight:"700"}}>Por qué funciona igual: </span>{r.porQue}</div>
         </div>
       ))}
-      <div style={{fontSize:"var(--fs-10)",color:"#4b5563",textTransform:"uppercase",letterSpacing:"1px",margin:"14px 0 6px"}}>Los 4 ejercicios de sustitución</div>
-      {alternativaExercises.map((ex,i)=>(
+      <div style={{fontSize:"var(--fs-10)",color:"#4b5563",textTransform:"uppercase",letterSpacing:"1px",margin:"14px 0 6px"}}>Ejercicios de sustitución</div>
+      {alternativeExercises.map((ex,i)=>(
         <ExCard key={i} ex={ex} i={i} col={col}/>
       ))}
 
-      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>🦴 BLINDAJE DE CADERA — 2–3× POR SEMANA</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>{copy.safetyTitle}</div>
       <div style={{fontSize:"var(--fs-11)",color:"#93c5fd",marginBottom:"10px",lineHeight:"1.65",padding:"10px 12px",background:"#080e1a",borderRadius:"4px",border:"1px solid #1d3a6a35"}}>
-        El músculo es tu mejor faja: glúteos y cuádriceps fuertes descargan la cabeza del fémur y reducen la fricción diaria.
-        <strong> Regla de oro: dolor agudo en la articulación = STOP · quemazón muscular = OK.</strong> Hazlos tras el entreno de fuerza o en días de descanso.
+        {copy.safetyIntro}
       </div>
-      {caderaExercises.map((ex,i)=>(
+      {safetyExercises.map((ex,i)=>(
         <ExCard key={i} ex={ex} i={i} col={col}/>
       ))}
       <div style={{marginTop:"10px",padding:"10px 12px",background:"#0a0a0a",borderRadius:"4px",border:"1px solid #222",fontSize:"var(--fs-11)",color:"#9ca3af",lineHeight:"1.6"}}>
-        🔥❄️ <strong style={{color:"#e5e7eb"}}>Calor antes, hielo después:</strong> 10 min de calor seco en la cadera antes de entrenar afloja la cápsula. 15–20 min de hielo (con paño, nunca directo) al terminar corta la inflamación del día.
+        {copy.safetyFooterTip}
       </div>
     </div>
   );
@@ -1055,7 +1239,107 @@ const restDaySchedule = [
   { hora:"23:30", tipo:"dormir", item:"Dormir", detalle:"7–8h. El domingo de descanso es sagrado, no se negocia." },
 ];
 
+// ─── PERFILES: mapa de contenido por usuario ────────────────────────────────
+// Va aquí (y no más arriba) porque referencia const que se declaran antes de
+// este punto (nutricionTips, alternativaExercises, caderaExercises,
+// restDaySchedule...) — en JS los `const` de nivel superior no tienen hoisting.
+const PROFILE_KEY_BY_EMAIL = {
+  "fernandogondelrio@gmail.com": "fernando",
+  "lauracantongon@gmail.com": "laura",
+};
+
+const PROFILES = {
+  fernando: {
+    key:"fernando",
+    profile: PROFILE,
+    totalWeeks: 24,
+    phases, dd, nutricionTips, milestones, tests2,
+    progresionGeneral, progresionModalidades,
+    exerciseReview: hipExerciseReview,
+    alternativeExercises: alternativaExercises,
+    safetyExercises: caderaExercises,
+    hasSupplements: true,
+    suplementosDetalle,
+    scheduleAM: supplementScheduleAM,
+    scheduleTarde: supplementScheduleTarde,
+    restSchedule: restDaySchedule,
+    copy: {
+      headerEyebrow: "Fernando #CalvoMalvado · Enduro MTB + Calistenia",
+      headerSubtitle: "1,78m · 86kg · 24 semanas · Masa muscular + pérdida de grasa · Cadera protegida · Preparación enduro",
+      nutricionSectionTitle: "NUTRICIÓN PARA RECOMPOSICIÓN",
+      nutricionIntro: "Recomposición = perder grasa + ganar músculo a la vez. Clave: déficit calórico controlado, proteína alta, fuerza pesada y carbohidratos bien colocados para rendir en enduro.",
+      milestonesTitle: "HITOS DE PESO — DE 86KG AL OBJETIVO",
+      painSectionTitle: "DOLOR DE CADERA (0–10)",
+      painHighText: "Dolor alto tras entrenar. Para la actividad que lo causó, hielo 15–20 min, y si se repite dos sesiones seguidas coméntalo antes de la consulta del 28 de diciembre.",
+      painWorsenedText: "El entreno empeoró la cadera claramente. Revisa qué ejercicio lo causó y reduce carga o rango la próxima vez.",
+      painModerateText: "Molestia moderada. Reduce volumen la próxima sesión y prioriza los ejercicios de blindaje de cadera.",
+      exerciseReviewTitle: "🔬 REVISIÓN DE EJERCICIOS DE CADERA",
+      exerciseReviewIntro: "Con choque femoroacetabular + artrosis, la flexión de cadera profunda y cargada (rodillas al pecho, cuerpo colgando) es el gesto que más repite el pinzamiento. No se eliminan estos ejercicios: se sustituyen por otros con el mismo reto de core pero cadera neutra. Si tras la consulta del 28 de diciembre te dan luz verde, puedes reintroducirlos progresivamente.",
+      safetyTitle: "🦴 BLINDAJE DE CADERA — 2–3× POR SEMANA",
+      safetyIntro: "El músculo es tu mejor faja: glúteos y cuádriceps fuertes descargan la cabeza del fémur y reducen la fricción diaria. Regla de oro: dolor agudo en la articulación = STOP · quemazón muscular = OK. Hazlos tras el entreno de fuerza o en días de descanso.",
+      safetyFooterTip: "🔥❄️ Calor antes, hielo después: 10 min de calor seco en la cadera antes de entrenar afloja la cápsula. 15–20 min de hielo (con paño, nunca directo) al terminar corta la inflamación del día.",
+      aiHealthNoteLabel: "🦴 TU CADERA",
+    },
+    buildDashboardTiles: (ctx) => {
+      const daysToConsulta = daysBetween(todayISO(), PROFILE.consultaMedica);
+      return [
+        { label:"Peso actual", value:`${ctx.currentWeight} kg`, sub:`Objetivo: ${ctx.nextMilestone.kg} kg` },
+        { label:"IMC", value: ctx.imc.toFixed(1), sub: ctx.imcCategoria },
+        { label:"Fase actual", value: ctx.phase.name, sub: ctx.phase.sub },
+        { label:"Racha entrenando", value:`${ctx.streak} día${ctx.streak===1?"":"s"}`, sub: ctx.isTrainedToday?"Hoy ya registrado ✅":"Aún no marcado hoy" },
+        { label:"Próximo test", value: ctx.nextTest.semana, sub: ctx.nextTest.test },
+        { label:"Próximo suplemento", value: ctx.nextSupp?.hora || "—", sub: ctx.nextSupp ? ctx.nextSupp.item : "" },
+        { label:"Programa completado", value:`${ctx.pctCompleted}%`, sub:`${ctx.weekNumber} de ${ctx.totalWeeks} semanas` },
+        { label:"Consulta médica cadera", value: daysToConsulta >= 0 ? `${daysToConsulta} días` : "Pasada", sub:"28 de diciembre" },
+      ];
+    },
+  },
+  laura: {
+    key:"laura",
+    profile: PROFILE_LAURA,
+    totalWeeks: null,
+    phases: phases_laura, dd: dd_laura,
+    nutricionTips: nutricionTips_laura, milestones: milestones_laura, tests2: tests2_laura,
+    progresionGeneral: progresionGeneral_laura, progresionModalidades: progresionModalidades_laura,
+    exerciseReview: exerciseReview_laura,
+    alternativeExercises: alternativeExercises_laura,
+    safetyExercises: safetyExercises_laura,
+    hasSupplements: false,
+    suplementosDetalle: null,
+    scheduleAM: dailyScheduleAM_laura,
+    scheduleTarde: dailyScheduleTarde_laura,
+    restSchedule: restDaySchedule_laura,
+    copy: {
+      headerEyebrow: "Laura · Fuerza + Bici + Recuperación Postparto",
+      headerSubtitle: "1,70m · 96kg · Postparto · Core y suelo pélvico protegidos · Prevención de diabetes",
+      nutricionSectionTitle: "NUTRICIÓN PARA RECOMPOSICIÓN POSTPARTO",
+      nutricionIntro: "Recomposición = perder grasa + ganar músculo a la vez, con déficit moderado por la lactancia y foco en sensibilidad a la insulina.",
+      milestonesTitle: "HITOS DE PESO — DE 96KG AL OBJETIVO",
+      painSectionTitle: "MOLESTIA / TENSIÓN TRAS ENTRENAR (0–10)",
+      painHighText: "Molestia alta. Para la actividad que la causó y valóralo con tu fisio de suelo pélvico si se repite.",
+      painWorsenedText: "El entreno empeoró claramente la sensación. Revisa qué ejercicio lo causó y reduce carga o rango la próxima vez.",
+      painModerateText: "Molestia moderada. Reduce volumen la próxima sesión y prioriza los ejercicios de base de core y suelo pélvico.",
+      exerciseReviewTitle: "🔬 EJERCICIOS A EVITAR MIENTRAS HAYA DIÁSTASIS",
+      exerciseReviewIntro: "Con diástasis abdominal, la flexión de tronco cargada y la presión intraabdominal alta son lo que más dificulta que cierre. No es para siempre — según lo que confirme tu fisio, se pueden reintroducir progresivamente.",
+      safetyTitle: "🤰 BASE DE CORE Y SUELO PÉLVICO — CASI TODOS LOS DÍAS",
+      safetyIntro: "El transverso abdominal y el suelo pélvico son tu mejor apoyo ahora mismo — trabajarlos poco y a menudo vale más que una sesión larga aislada.",
+      safetyFooterTip: "🫁 Antes de cualquier ejercicio de core: respiración 360°. Es la base de todo lo demás, no un calentamiento opcional.",
+      aiHealthNoteLabel: "🤰 TU RECUPERACIÓN POSTPARTO",
+    },
+    buildDashboardTiles: (ctx) => [
+      { label:"Peso actual", value:`${ctx.currentWeight} kg`, sub:`Objetivo: ${ctx.nextMilestone.kg} kg` },
+      { label:"IMC", value: ctx.imc.toFixed(1), sub: ctx.imcCategoria },
+      { label:"Racha entrenando", value:`${ctx.streak} día${ctx.streak===1?"":"s"}`, sub: ctx.isTrainedToday?"Hoy ya registrado ✅":"Aún no marcado hoy" },
+      { label:"Próximo test", value: ctx.nextTest.semana, sub: ctx.nextTest.test },
+    ],
+  },
+};
+
+const ProfileBundleContext = React.createContext(null);
+const useProfileBundle = () => React.useContext(ProfileBundleContext);
+
 const HorarioTab = ({ col, phaseKey }) => {
+  const { dd, scheduleAM, scheduleTarde, restSchedule } = useProfileBundle();
   const todayIdx = (new Date().getDay() + 6) % 7; // lunes=0 ... domingo=6
   const [selDay, setSelDay] = useState(todayIdx);
   const { settings, updateSettings } = useProfileSettings();
@@ -1063,9 +1347,9 @@ const HorarioTab = ({ col, phaseKey }) => {
   const setTurno = (v) => updateSettings({ turno_entreno: v });
   const dayName = DAYS[selDay];
   const day = dd[phaseKey][dayName];
-  const isRest = dayName === "Domingo";
-  const baseSchedule = turno === "manana" ? supplementScheduleAM : supplementScheduleTarde;
-  const schedule = isRest ? restDaySchedule : baseSchedule.map(s => s.tipo === "entreno" ? { ...s, item: day.title, detalle: `${day.tipo} · ${day.duration}` } : s);
+  const isRest = !!day.isRestDay;
+  const baseSchedule = turno === "manana" ? scheduleAM : scheduleTarde;
+  const schedule = isRest ? restSchedule : baseSchedule.map(s => s.tipo === "entreno" ? { ...s, item: day.title, detalle: `${day.tipo} · ${day.duration}` } : s);
 
   return (
     <div style={{padding:"14px"}}>
@@ -1094,6 +1378,7 @@ const HorarioTab = ({ col, phaseKey }) => {
 
 // ─── PROGRESIÓN ──────────────────────────────────────────────────────────────
 const ProgresionTab = ({ col }) => {
+  const { progresionGeneral, progresionModalidades } = useProfileBundle();
   return (
     <div style={{padding:"14px"}}>
       <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>CUÁNDO SUBIR PESO, REPS O SERIES</div>
@@ -1190,15 +1475,16 @@ const MiniChart = ({ data, col }) => {
   );
 }
 
-const painRecommendation = (entry) => {
+const painRecommendation = (entry, copy) => {
   if (!entry) return null;
-  if (entry.post >= 7) return { color:"#ef4444", text:"Dolor alto tras entrenar. Para la actividad que lo causó, hielo 15–20 min, y si se repite dos sesiones seguidas coméntalo antes de la consulta del 28 de diciembre." };
-  if (entry.post - entry.pre >= 3) return { color:"#f59e0b", text:"El entreno empeoró la cadera claramente. Revisa qué ejercicio lo causó y reduce carga o rango la próxima vez." };
-  if (entry.post >= 4) return { color:"#f59e0b", text:"Molestia moderada. Reduce volumen la próxima sesión y prioriza los ejercicios de blindaje de cadera." };
+  if (entry.post >= 7) return { color:"#ef4444", text: copy.painHighText };
+  if (entry.post - entry.pre >= 3) return { color:"#f59e0b", text: copy.painWorsenedText };
+  if (entry.post >= 4) return { color:"#f59e0b", text: copy.painModerateText };
   return { color:"#4ade80", text:"Buena señal. Puedes mantener o progresar ligeramente la próxima sesión." };
 };
 
 const ObjetivosTab = ({ col }) => {
+  const { profile: PROFILE, milestones, copy } = useProfileBundle();
   const { rows: metricsRows, upsertToday } = useBodyMetrics();
   const { photos, uploadPhoto, deletePhoto } = usePhotos();
   const [kgInput, setKgInput] = useState("");
@@ -1236,12 +1522,12 @@ const ObjetivosTab = ({ col }) => {
   };
 
   const lastPain = painLog[0];
-  const rec = painRecommendation(lastPain);
+  const rec = painRecommendation(lastPain, copy);
   const nextMilestone = milestones.find(m => currentWeight > m.kg) || milestones[milestones.length-1];
 
   return (
     <div style={{padding:"14px"}}>
-      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>HITOS DE PESO — DE 86KG AL OBJETIVO</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>{copy.milestonesTitle}</div>
       {milestones.map((m,i) => {
         const reached = currentWeight <= m.kg;
         const isNext = m.kg === nextMilestone.kg && !reached;
@@ -1276,7 +1562,7 @@ const ObjetivosTab = ({ col }) => {
         </div>
       </div>
 
-      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>🦴 DOLOR DE CADERA (0–10)</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>{copy.painSectionTitle}</div>
       <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"10px"}}>
         <div style={{display:"flex",gap:"10px",marginBottom:"10px"}}>
           <label style={{flex:1,fontSize:"var(--fs-10)",color:"#9ca3af"}}>Antes de entrenar: <strong style={{color:"#f3f4f6"}}>{dolorPre}</strong>
@@ -1345,6 +1631,8 @@ const computeStreak = (trainedDays) => {
 };
 
 const InicioTab = ({ col, phase, setTab }) => {
+  const bundle = useProfileBundle();
+  const { profile: PROFILE, milestones, tests2, totalWeeks, hasSupplements, scheduleAM, scheduleTarde } = bundle;
   const { settings } = useProfileSettings();
   const { rows: metricsRows } = useBodyMetrics();
   const { dates: trainedDays, markToday: markTrainedToday } = useTrainedDays();
@@ -1353,8 +1641,8 @@ const InicioTab = ({ col, phase, setTab }) => {
   const turno = settings?.turno_entreno || "manana";
 
   const elapsedDays = Math.max(0, daysBetween(planStart, todayISO()));
-  const weekNumber = Math.min(24, Math.floor(elapsedDays/7) + 1);
-  const pctCompleted = Math.min(100, Math.round((weekNumber/24)*100));
+  const weekNumber = totalWeeks ? Math.min(totalWeeks, Math.floor(elapsedDays/7) + 1) : Math.floor(elapsedDays/7) + 1;
+  const pctCompleted = totalWeeks ? Math.min(100, Math.round((weekNumber/totalWeeks)*100)) : null;
 
   const weightRows = metricsRows.filter(r => r.weight_kg != null);
   const currentWeight = weightRows.length ? Number(weightRows[weightRows.length-1].weight_kg) : PROFILE.pesoInicialKg;
@@ -1363,27 +1651,20 @@ const InicioTab = ({ col, phase, setTab }) => {
 
   const nextTest = tests2.find(t => parseInt(t.semana.replace(/\D/g,""),10) >= weekNumber) || tests2[tests2.length-1];
 
-  const schedule = turno === "manana" ? supplementScheduleAM : supplementScheduleTarde;
+  const schedule = turno === "manana" ? scheduleAM : scheduleTarde;
   const nowHM = new Date().toTimeString().slice(0,5);
-  const nextSupp = schedule.filter(s=>s.tipo==="suplemento").find(s => s.hora > nowHM) || schedule.filter(s=>s.tipo==="suplemento")[0];
+  const nextSupp = hasSupplements ? (schedule.filter(s=>s.tipo==="suplemento").find(s => s.hora > nowHM) || schedule.filter(s=>s.tipo==="suplemento")[0]) : null;
 
   const isTrainedToday = trainedDays.includes(todayISO());
   const streak = computeStreak(trainedDays);
 
-  const daysToConsulta = daysBetween(todayISO(), PROFILE.consultaMedica);
+  const tiles = bundle.buildDashboardTiles({ currentWeight, imc, imcCategoria: imcCategoria(imc), phase, streak, isTrainedToday, nextTest, nextSupp, pctCompleted, weekNumber, totalWeeks, nextMilestone });
 
   return (
     <div style={{padding:"14px"}}>
-      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>HOLA {PROFILE.nombre.toUpperCase()} — SEMANA {weekNumber} DE 24</div>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>HOLA {PROFILE.nombre.toUpperCase()} — SEMANA {weekNumber}{totalWeeks ? ` DE ${totalWeeks}` : ""}</div>
       <div className="grid2">
-        <StatTile label="Peso actual" value={`${currentWeight} kg`} sub={`Objetivo: ${nextMilestone.kg} kg`} col={col}/>
-        <StatTile label="IMC" value={imc.toFixed(1)} sub={imcCategoria(imc)} col={col}/>
-        <StatTile label="Fase actual" value={phase.name} sub={phase.sub} col={col}/>
-        <StatTile label="Racha entrenando" value={`${streak} día${streak===1?"":"s"}`} sub={isTrainedToday?"Hoy ya registrado ✅":"Aún no marcado hoy"} col={col}/>
-        <StatTile label="Próximo test" value={nextTest.semana} sub={nextTest.test} col={col}/>
-        <StatTile label="Próximo suplemento" value={nextSupp?.hora || "—"} sub={nextSupp ? `${nextSupp.item}` : ""} col={col}/>
-        <StatTile label="Programa completado" value={`${pctCompleted}%`} sub={`${weekNumber} de 24 semanas`} col={col}/>
-        <StatTile label="Consulta médica cadera" value={daysToConsulta >= 0 ? `${daysToConsulta} días` : "Pasada"} sub="28 de diciembre" col={col}/>
+        {tiles.map((t,i)=><StatTile key={i} label={t.label} value={t.value} sub={t.sub} col={col}/>)}
       </div>
       <button onClick={markTrainedToday} disabled={isTrainedToday} style={{width:"100%",padding:"12px",marginTop:"6px",background:isTrainedToday?"#0a1a0a":`${col}20`,border:`1px solid ${isTrainedToday?"#14532450":col+"60"}`,color:isTrainedToday?"#4ade80":col,borderRadius:"6px",cursor:isTrainedToday?"default":"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-12)"}}>
         {isTrainedToday ? "✅ Hoy ya está registrado" : "✓ Marcar hoy como entrenado"}
@@ -1450,6 +1731,19 @@ const LoginScreen = () => {
   );
 }
 
+const UnknownAccountScreen = ({ email }) => (
+  <div style={{minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#090909", padding:"20px"}}>
+    <div style={{width:"100%", maxWidth:"360px", background:"#111", border:"1px solid #1f1f1f", borderRadius:"8px", padding:"28px 24px", textAlign:"center"}}>
+      <div style={{fontSize:"28px", marginBottom:"10px"}}>🔒</div>
+      <div style={{fontSize:"16px", fontWeight:"900", color:"#fff", marginBottom:"8px"}}>Cuenta no configurada</div>
+      <div style={{fontSize:"12px", color:"#9ca3af", lineHeight:"1.6", marginBottom:"16px"}}>La cuenta <strong style={{color:"#e5e7eb"}}>{email}</strong> existe en Supabase pero no tiene un plan asignado en la app. Contacta al administrador para que la añada.</div>
+      <button onClick={()=>sb.auth.signOut()} style={{padding:"10px 16px", background:"transparent", border:"1px solid #262626", color:"#6b7280", borderRadius:"5px", cursor:"pointer", fontFamily:"inherit", fontSize:"12px"}}>Cerrar sesión</button>
+    </div>
+  </div>
+);
+
+const resolveProfileKey = (email) => PROFILE_KEY_BY_EMAIL[(email || "").trim().toLowerCase()];
+
 const AuthGate = () => {
   const [session, setSession] = useState(undefined); // undefined=cargando · null=sin sesión · objeto=logueado
 
@@ -1461,10 +1755,20 @@ const AuthGate = () => {
 
   if (session === undefined) return <SplashLoading/>;
   if (!session) return <LoginScreen/>;
-  return <App session={session}/>;
+
+  const profileKey = resolveProfileKey(session.user.email);
+  const bundle = PROFILES[profileKey];
+  if (!bundle) return <UnknownAccountScreen email={session.user.email}/>;
+
+  return (
+    <ProfileBundleContext.Provider value={bundle}>
+      <App session={session}/>
+    </ProfileBundleContext.Provider>
+  );
 }
 
 const App = ({ session }) => {
+  const { phases, dd, nutricionTips, tests2, copy } = useProfileBundle();
   const [activePhase, setActivePhase] = useState(1);
   const [activeDay, setActiveDay] = useState(0);
   const [tab, setTab] = useState("inicio");
@@ -1480,9 +1784,9 @@ const App = ({ session }) => {
       <div style={{background:"#111",borderBottom:`2px solid ${col}30`,padding:"16px 20px 12px",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,right:0,width:"140px",height:"100%",background:`linear-gradient(135deg,transparent 40%,${col}10 100%)`}}/>
         <button onClick={()=>sb.auth.signOut()} style={{position:"absolute",top:"14px",right:"14px",padding:"5px 10px",background:"transparent",border:"1px solid #262626",color:"#6b7280",borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontSize:"9px",letterSpacing:"1px",textTransform:"uppercase",zIndex:1}}>Cerrar sesión</button>
-        <div style={{fontSize:"var(--fs-10)",letterSpacing:"4px",color:"#4b5563",textTransform:"uppercase"}}>Fernando #CalvoMalvado · Enduro MTB + Calistenia</div>
+        <div style={{fontSize:"var(--fs-10)",letterSpacing:"4px",color:"#4b5563",textTransform:"uppercase"}}>{copy.headerEyebrow}</div>
         <div style={{fontSize:"var(--fs-26)",fontWeight:"900",letterSpacing:"2px",color:"#fff",marginTop:"2px"}}>PLAN DEFINITIVO</div>
-        <div style={{fontSize:"var(--fs-12)",color:"#6b7280",marginTop:"2px"}}>1,78m · 86kg · 24 semanas · Masa muscular + pérdida de grasa · Cadera protegida · Preparación enduro</div>
+        <div style={{fontSize:"var(--fs-12)",color:"#6b7280",marginTop:"2px"}}>{copy.headerSubtitle}</div>
       </div>
 
       <div style={{display:"flex",background:"#0d0d0d",borderBottom:"1px solid #1a1a1a",overflowX:"auto",scrollbarWidth:"none"}}>
@@ -1501,9 +1805,9 @@ const App = ({ session }) => {
 
       {tab==="nutricion"&&(
         <div style={{padding:"14px"}}>
-          <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>NUTRICIÓN PARA RECOMPOSICIÓN</div>
+          <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>{copy.nutricionSectionTitle}</div>
           <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
-            Recomposición = perder grasa + ganar músculo a la vez. Clave: déficit calórico controlado, proteína alta, fuerza pesada y carbohidratos bien colocados para rendir en enduro.
+            {copy.nutricionIntro}
           </div>
           <div className="grid2">
           {nutricionTips.map((t,i)=>(
@@ -1585,12 +1889,7 @@ const App = ({ session }) => {
             {day.nutrition&&<div style={{background:"#080f08",border:"1px solid #14532430",borderRadius:"4px",padding:"9px 12px",marginBottom:"6px",fontSize:"var(--fs-11)",color:"#86efac"}}>{day.nutrition}</div>}
             <div style={{marginTop:"10px",padding:"10px 12px",background:"#080808",borderRadius:"4px",border:"1px solid #111",fontSize:"var(--fs-10)",color:"#374151"}}>
               <div style={{color:"#1f2937",textTransform:"uppercase",letterSpacing:"2px",fontSize:"var(--fs-9)",marginBottom:"4px"}}>PROGRESIÓN {phase.name}</div>
-              {activePhase===1&&"Sem 1–2: aprende técnica, no el peso. Sem 3: añade 1 serie. Sem 4: sube peso donde llegues a 15 reps fácil."}
-              {activePhase===2&&"Sem 5–6: volumen máximo. Sem 7: añade peso en paralelas y dominadas. Sem 8: test de máximas reps."}
-              {activePhase===3&&"Sem 9–10: pesos máximos. Sem 11: muscle-up o negativas explosivas. Sem 12: test total del plan."}
-              {activePhase===4&&"Sem 13–14: fuerza pesada y zona 2 larga. Sem 15: sube una serie en básicos. Sem 16: mide cintura, peso medio y rendimiento."}
-              {activePhase===5&&"Sem 17–18: subidas y sprints controlados. Sem 19: salida o simulación larga. Sem 20: test de 90 min y ajuste de calorías."}
-              {activePhase===6&&"Sem 21–22: afina sin acumular fatiga. Sem 23: reduce volumen un 20%. Sem 24: test final enduro, fotos, cintura y nuevo objetivo."}
+              {phase.progresionNota}
             </div>
           </div>
         </>
