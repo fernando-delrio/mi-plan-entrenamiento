@@ -683,13 +683,16 @@ const useTrainedDays = () => {
     load();
   }, []);
 
-  const markToday = async () => {
-    if (dates.includes(todayISO())) return;
-    await sb.from("trained_days").insert({ training_date: todayISO() });
-    setDates((prev) => [...prev, todayISO()]);
+  // markDate acepta cualquier fecha (no solo hoy) para poder registrar a
+  // posteriori un día que se olvidó marcar — el historial no debe perder
+  // sesiones solo porque el "marcar" se hizo un día tarde.
+  const markDate = async (date = todayISO()) => {
+    if (dates.includes(date)) return;
+    await sb.from("trained_days").insert({ training_date: date });
+    setDates((prev) => [...prev, date]);
   };
 
-  return { dates, markToday };
+  return { dates, markDate };
 };
 
 // ─── PERFIL ─────────────────────────────────────────────────────────────────
@@ -702,42 +705,53 @@ const imcCategoria = (imc) => {
   return "Por encima del rango";
 };
 
-// ─── HORARIO DE SUPLEMENTOS (real, con horas) ───────────────────────────────
+// ─── HORARIO DE SUPLEMENTOS (real, con horas, con evidencia detrás) ─────────
 // Regla de separación: el Psyllium es fibra soluble — si se toma junto a otros
 // suplementos o medicación, puede arrastrarlos y reducir su absorción. Por eso
-// va siempre solo, con mucha agua, separado al menos 1–2h de cualquier otra cosa.
+// va siempre solo, con mucha agua, con al menos 60 min de separación (la
+// evidencia recomienda 1–2h para medicación; 60 min es el mínimo práctico que
+// cabe en el horario de Fernando antes de dormir).
+// Berberina: 15–30 min antes de comer (o junto a la comida) — con alimento se
+// absorbe hasta 5× mejor y da muchas menos molestias gástricas que en ayunas.
+// Creatina: la ventaja de tomarla post-entreno frente a pre-entreno es mínima
+// (mejor sensibilidad a la insulina, poco más) — lo que satura el músculo es
+// la toma diaria constante, no el minuto exacto. Con 3g/día sin fase de carga,
+// el efecto en fuerza se nota a partir de 3–4 semanas.
+// Whey: la "ventana anabólica" de 30 min post-entreno es un mito superado —
+// la síntesis de proteína muscular sigue elevada 24–48h tras entrenar. Importa
+// mucho más el total diario de proteína que el minuto exacto de la toma.
 const supplementScheduleAM = [
   { hora:"07:30", tipo:"despertar", item:"Despertar", detalle:"1 vaso grande de agua nada más levantarte." },
-  { hora:"07:45", tipo:"suplemento", item:"Berberina", detalle:"500mg antes del desayuno. Ayuda a controlar glucosa y colesterol — tu objetivo explícito de mejorar el perfil lipídico." },
+  { hora:"07:45", tipo:"suplemento", item:"Berberina 500mg", detalle:"15 min antes de desayunar — con algo de comida cerca se absorbe mucho mejor y no te sienta mal al estómago." },
   { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Café con leche + queso fresco batido 0% + 30–40g avena + 10–15g crema de cacahuete." },
   { hora:"09:30", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día (fuerza, bici o core). En ayunas o con el desayuno ya asentado, como prefieras." },
-  { hora:"10:30", tipo:"suplemento", item:"Batido + Creatina", detalle:"25–30g Whey + 3g Creatina Creapure. La insulina del batido mete la creatina en el músculo." },
+  { hora:"10:30", tipo:"suplemento", item:"Batido de Whey + Creatina", detalle:"Juntos, un solo gesto — justo al terminar de entrenar, aunque si algún día lo tomas un poco antes o un poco después tampoco pasa nada." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato + verdura. Berberina también puede ir aquí si prefieres repartir la dosis." },
   { hora:"18:00", tipo:"movimiento", item:"Paseo", detalle:"15–20 min caminando suave. Nutre el cartílago (el líquido sinovial se mueve con el movimiento, no con el reposo)." },
-  { hora:"21:00", tipo:"suplemento", item:"Berberina", detalle:"500mg antes de cenar. Segunda dosis del día, con el estómago no vacío." },
-  { hora:"21:15", tipo:"comida", item:"Cena", detalle:"Proteína + verdura. Toma el Omega 3 Solgar Triple Strength con esta comida (con grasa se absorbe mejor)." },
-  { hora:"22:00", tipo:"suplemento", item:"Psyllium", detalle:"1 cucharada en un vaso grande de agua, sola. Mínimo 45–60 min después de la cena y de cualquier otro suplemento." },
+  { hora:"21:00", tipo:"suplemento", item:"Berberina 500mg (2ª dosis)", detalle:"Igual que por la mañana: 15 min antes de cenar." },
+  { hora:"21:15", tipo:"comida", item:"Cena + Omega 3", detalle:"El Omega 3 necesita grasa de la comida para absorberse bien, por eso va con la cena y no solo." },
+  { hora:"22:15", tipo:"suplemento", item:"Psyllium", detalle:"Solo, con un vaso grande de agua. El único que va aparte de todo — si se toma cerca de otro suplemento, la fibra puede \"atraparlo\" y que se aproveche peor." },
   { hora:"23:30", tipo:"dormir", item:"Dormir", detalle:"7–8h. El músculo crece y el cartílago se recupera mientras duermes." },
 ];
 const supplementScheduleTarde = [
   { hora:"07:30", tipo:"despertar", item:"Despertar", detalle:"1 vaso grande de agua nada más levantarte." },
-  { hora:"07:45", tipo:"suplemento", item:"Berberina", detalle:"500mg antes del desayuno." },
+  { hora:"07:45", tipo:"suplemento", item:"Berberina 500mg", detalle:"15 min antes de desayunar — con algo de comida cerca se absorbe mucho mejor y no te sienta mal al estómago." },
   { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Café con leche + queso fresco batido 0% + avena + crema de cacahuete." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato (más carbo hoy: es tu combustible para entrenar por la tarde)." },
   { hora:"18:00", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día. Deja pasar 2–3h desde la comida grande." },
-  { hora:"19:00", tipo:"suplemento", item:"Batido + Creatina", detalle:"25–30g Whey + 3g Creatina Creapure, nada más terminar." },
-  { hora:"21:00", tipo:"suplemento", item:"Berberina", detalle:"500mg antes de cenar." },
-  { hora:"21:15", tipo:"comida", item:"Cena", detalle:"Proteína + verdura. Omega 3 Solgar Triple Strength con esta comida." },
-  { hora:"22:00", tipo:"suplemento", item:"Psyllium", detalle:"1 cucharada en agua, sola, separada del resto. Mínimo 45–60 min tras la cena." },
+  { hora:"19:00", tipo:"suplemento", item:"Batido de Whey + Creatina", detalle:"Juntos, un solo gesto — justo al terminar de entrenar, aunque si algún día lo tomas un poco antes o un poco después tampoco pasa nada." },
+  { hora:"21:00", tipo:"suplemento", item:"Berberina 500mg (2ª dosis)", detalle:"Igual que por la mañana: 15 min antes de cenar." },
+  { hora:"21:15", tipo:"comida", item:"Cena + Omega 3", detalle:"El Omega 3 necesita grasa de la comida para absorberse bien, por eso va con la cena y no solo." },
+  { hora:"22:15", tipo:"suplemento", item:"Psyllium", detalle:"Solo, con un vaso grande de agua. El único que va aparte de todo — si se toma cerca de otro suplemento, la fibra puede \"atraparlo\" y que se aproveche peor." },
   { hora:"23:30", tipo:"dormir", item:"Dormir", detalle:"7–8h de sueño." },
 ];
 
 const suplementosDetalle = [
   { icon:"🐟", nombre:"Omega 3 Solgar Triple Strength", porQue:"Antiinflamatorio natural (EPA/DHA) con evidencia real en dolor articular y salud cardiovascular. Ayuda directamente a tu artrosis y a bajar el colesterol.", combinar:"Con la comida que más grasa tenga (cena) para absorberlo mejor.", precaucion:"Si tomas anticoagulantes, coméntalo en tu consulta del 28 de diciembre." },
-  { icon:"🌿", nombre:"Berberina Bandini", porQue:"Activa la AMPK: mejora la sensibilidad a la insulina y baja LDL/triglicéridos. Es tu herramienta específica para mejorar el colesterol, además de ayudar al déficit calórico.", combinar:"Siempre con o justo antes de una comida (puede dar molestias gástricas en ayunas).", precaucion:"Puede dar molestias digestivas los primeros días. Si tomases medicación para azúcar o tensión, coméntalo en tu consulta médica antes de combinarlo." },
-  { icon:"⚡", nombre:"Creatina Creapure", porQue:"El suplemento con más evidencia científica para fuerza y masa muscular. Más músculo = más protección para la cadera.", combinar:"Con el batido post-entreno (la insulina ayuda a que entre en el músculo). Todos los días, también en descanso.", precaucion:"Bebe mínimo 2,5–3L de agua al día. No necesita fase de carga." },
-  { icon:"🥛", nombre:"Proteína Whey", porQue:"Comida rápida en polvo para llegar a los 170–190g de proteína diaria que necesitas para ganar músculo en déficit.", combinar:"Con la creatina, nada más entrenar.", precaucion:"Cuenta como calorías reales. No es \"gratis\"." },
-  { icon:"🌾", nombre:"Psyllium", porQue:"Fibra soluble: da saciedad (ayuda a sostener el déficit calórico sin pasar hambre), regula el tránsito y baja el LDL — efecto sinérgico con la Berberina.", combinar:"Solo, con un vaso grande de agua.", precaucion:"⚠️ SEPARAR al menos 45–60 min de cualquier otro suplemento o medicación: la fibra puede arrastrar y reducir su absorción. Por eso va la última, antes de dormir." },
+  { icon:"🌿", nombre:"Berberina Bandini", porQue:"Activa la AMPK: mejora la sensibilidad a la insulina y baja LDL/triglicéridos. Es tu herramienta específica para mejorar el colesterol, además de ayudar al déficit calórico.", combinar:"15–30 min antes de comer, o justo con la primera comida — con alimento se absorbe hasta 5× mejor y da muchas menos molestias gástricas que en ayunas. Repartida en 2–3 tomas con comidas mantiene el nivel en sangre más estable que una sola dosis grande.", precaucion:"Puede dar molestias digestivas los primeros días. Si tomases medicación para azúcar o tensión, coméntalo en tu consulta médica antes de combinarlo." },
+  { icon:"⚡", nombre:"Creatina Creapure", porQue:"El suplemento con más evidencia científica para fuerza y masa muscular. Más músculo = más protección para la cadera. Notarás el efecto en fuerza/rendimiento a partir de 3–4 semanas de toma diaria constante (con tu dosis de 3g/día, sin fase de carga) — la creatina satura el músculo de forma progresiva, no es un efecto inmediato.", combinar:"Con el batido post-entreno (la insulina ayuda algo a que entre en el músculo), aunque la diferencia con tomarla antes del entreno es mínima. Todos los días, también en descanso — lo que satura el músculo es la constancia, no el momento exacto.", precaucion:"Bebe mínimo 2,5–3L de agua al día. No necesita fase de carga." },
+  { icon:"🥛", nombre:"Proteína Whey", porQue:"Comida rápida en polvo para llegar a los 170–190g de proteína diaria que necesitas para ganar músculo en déficit.", combinar:"Con la creatina, nada más entrenar — aunque no es obligatorio que sea justo al terminar: la síntesis de proteína muscular sigue elevada 24–48h después de entrenar. Lo que de verdad importa es llegar a tu total diario de proteína, no el minuto exacto de la toma.", precaucion:"Cuenta como calorías reales. No es \"gratis\"." },
+  { icon:"🌾", nombre:"Psyllium", porQue:"Fibra soluble: da saciedad (ayuda a sostener el déficit calórico sin pasar hambre), regula el tránsito y baja el LDL — efecto sinérgico con la Berberina.", combinar:"Solo, con un vaso grande de agua.", precaucion:"⚠️ SEPARAR al menos 60 min de cualquier otro suplemento o medicación (la evidencia general recomienda 1–2h): la fibra puede arrastrar y reducir su absorción. Por eso va la última, antes de dormir." },
 ];
 
 // ─── REVISIÓN DE EJERCICIOS DE CADERA (análisis fisioterapéutico) ───────────
@@ -1688,8 +1702,6 @@ const ObjetivosTab = ({ col }) => {
   const { photos, uploadPhoto, deletePhoto } = usePhotos();
   const [kgInput, setKgInput] = useState("");
   const [cmInput, setCmInput] = useState("");
-  const [dolorPre, setDolorPre] = useState(3);
-  const [dolorPost, setDolorPost] = useState(3);
 
   // body_metrics guarda una fila por día (peso+cintura+dolor juntos); aquí se
   // deriva la vista que necesita cada gráfica/ficha a partir de esas filas.
@@ -1709,9 +1721,6 @@ const ObjetivosTab = ({ col }) => {
     if (isInvalidNumber(cmInput)) return;
     upsertToday({ waist_cm: Number(cmInput) });
     setCmInput("");
-  };
-  const addPain = () => {
-    upsertToday({ pain_pre: Number(dolorPre), pain_post: Number(dolorPost) });
   };
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -1762,22 +1771,13 @@ const ObjetivosTab = ({ col }) => {
       </div>
 
       <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>{copy.painSectionTitle}</div>
-      <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"10px"}}>
-        <div style={{display:"flex",gap:"10px",marginBottom:"10px"}}>
-          <label style={{flex:1,fontSize:"var(--fs-10)",color:"#9ca3af"}}>Antes de entrenar: <strong style={{color:"#f3f4f6"}}>{dolorPre}</strong>
-            <input type="range" min="0" max="10" value={dolorPre} onChange={e=>setDolorPre(e.target.value)} style={{width:"100%"}}/>
-          </label>
-          <label style={{flex:1,fontSize:"var(--fs-10)",color:"#9ca3af"}}>Después: <strong style={{color:"#f3f4f6"}}>{dolorPost}</strong>
-            <input type="range" min="0" max="10" value={dolorPost} onChange={e=>setDolorPost(e.target.value)} style={{width:"100%"}}/>
-          </label>
-        </div>
-        <button onClick={addPain} style={{width:"100%",padding:"9px",background:`${col}20`,border:`1px solid ${col}60`,color:col,borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-11)"}}>Registrar dolor de hoy</button>
-      </div>
-      {rec && (
+      {rec ? (
         <div style={{background:`${rec.color}12`,border:`1px solid ${rec.color}50`,borderRadius:"6px",padding:"12px",marginBottom:"10px"}}>
           <div style={{fontSize:"var(--fs-10)",color:rec.color,fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"4px"}}>Última sesión: {lastPain.pre} → {lastPain.post}</div>
           <div style={{fontSize:"var(--fs-11)",color:"#d1d5db",lineHeight:"1.6"}}>{rec.text}</div>
         </div>
+      ) : (
+        <div style={{padding:"10px 12px",background:"#0a0a0a",border:"1px solid #222",borderRadius:"4px",fontSize:"var(--fs-10)",color:"#6b7280",lineHeight:"1.6",marginBottom:"10px"}}>Todavía no has registrado dolor. Se registra desde Inicio, en el mismo sitio donde marcas el entreno del día.</div>
       )}
 
       <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>📸 FOTOS DE PROGRESO</div>
@@ -1807,6 +1807,103 @@ const ObjetivosTab = ({ col }) => {
   );
 }
 
+// ─── HISTORIAL: qué días quedaron entrenados y con qué dolor ────────────────
+// Combina trained_days (marca sí/no por fecha) con body_metrics (dolor pre/post
+// por fecha) para que un día pasado no "desaparezca" solo porque no se marcó
+// el mismo día — se puede ver y también marcar a posteriori.
+const formatDateEs = (isoDate) => {
+  const [y, m, d] = isoDate.split("-");
+  return `${d}/${m}/${y}`;
+};
+
+const buildHistoryDays = (historyLength, trainedDays, metricsRows) => {
+  const trainedSet = new Set(trainedDays);
+  const metricsByDate = Object.fromEntries(metricsRows.map((r) => [r.metric_date, r]));
+  return Array.from({ length: historyLength }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const date = d.toISOString().slice(0, 10);
+    return {
+      date,
+      dayName: DAYS[(d.getDay() + 6) % 7],
+      trained: trainedSet.has(date),
+      metrics: metricsByDate[date] || null,
+    };
+  });
+};
+
+const HistorialRow = ({ h, col, markDate }) => {
+  const isToday = h.date === todayISO();
+  const hasPain = h.metrics && (h.metrics.pain_pre != null || h.metrics.pain_post != null);
+  const handleMark = () => markDate(h.date);
+
+  return (
+    <div style={{background:"#111",border:`1px solid ${isToday?col+"50":"#1f1f1f"}`,borderRadius:"6px",padding:"12px",marginBottom:"6px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"10px"}}>
+      <div>
+        <div style={{fontSize:"var(--fs-12)",fontWeight:"700",color:"#f3f4f6"}}>{DAY_EMOJI[h.dayName]} {h.dayName} · {formatDateEs(h.date)}{isToday?" (hoy)":""}</div>
+        {hasPain && <div style={{fontSize:"var(--fs-10)",color:"#9ca3af",marginTop:"3px"}}>Dolor: {h.metrics.pain_pre ?? "—"} → {h.metrics.pain_post ?? "—"}</div>}
+        {!hasPain && h.trained && <div style={{fontSize:"var(--fs-10)",color:"#6b7280",marginTop:"3px"}}>Sin dolor registrado ese día</div>}
+      </div>
+      {h.trained
+        ? <div style={{color:"#4ade80",fontWeight:"700",fontSize:"var(--fs-11)",whiteSpace:"nowrap"}}>✅ Entrenado</div>
+        : <button onClick={handleMark} style={{padding:"7px 10px",background:`${col}20`,border:`1px solid ${col}60`,color:col,borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-10)",whiteSpace:"nowrap"}}>Marcar</button>
+      }
+    </div>
+  );
+}
+
+const HistorialTab = ({ col }) => {
+  const { settings } = useProfileSettings();
+  const { rows: metricsRows } = useBodyMetrics();
+  const { dates: trainedDays, markDate } = useTrainedDays();
+
+  const planStart = settings?.plan_start_date || todayISO();
+  const daysSinceStart = Math.max(0, daysBetween(planStart, todayISO()));
+  const historyLength = Math.min(30, daysSinceStart + 1);
+  const historyDays = buildHistoryDays(historyLength, trainedDays, metricsRows);
+
+  return (
+    <div style={{padding:"14px"}}>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"10px"}}>HISTORIAL DE ENTRENOS</div>
+      <div style={{fontSize:"var(--fs-11)",color:"#9ca3af",marginBottom:"12px",lineHeight:"1.65",padding:"10px 12px",background:"#111",borderRadius:"4px",borderLeft:`3px solid ${col}`}}>
+        Últimos {historyLength} días. Si un día se quedó sin marcar, puedes registrarlo ahora aunque ya haya pasado — no hace falta que sea el mismo día.
+      </div>
+      {historyDays.map((h) => <HistorialRow key={h.date} h={h} col={col} markDate={markDate}/>)}
+    </div>
+  );
+}
+
+// ─── DOLOR RÁPIDO: mismo sitio donde se marca el entreno del día ────────────
+// Antes vivía solo en Objetivos — obligaba a cambiar de pestaña justo después
+// de marcar el entreno como hecho. Ahora es un componente propio que Inicio
+// monta junto al botón de "marcar entrenado", para que todo el registro del
+// día (actividad + dolor) sea un único gesto en un único sitio.
+const PainQuickLog = ({ col, copy }) => {
+  const { rows: metricsRows, upsertToday } = useBodyMetrics();
+  const [dolorPre, setDolorPre] = useState(3);
+  const [dolorPost, setDolorPost] = useState(3);
+
+  const todayMetrics = metricsRows.find((r) => r.metric_date === todayISO());
+  const alreadyLogged = !!todayMetrics && (todayMetrics.pain_pre != null || todayMetrics.pain_post != null);
+  const addPain = () => upsertToday({ pain_pre: Number(dolorPre), pain_post: Number(dolorPost) });
+
+  return (
+    <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginTop:"10px"}}>
+      <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",marginBottom:"8px"}}>{copy.painSectionTitle}</div>
+      {alreadyLogged && <div style={{fontSize:"var(--fs-10)",color:"#4ade80",marginBottom:"8px"}}>✅ Ya registrado hoy: {todayMetrics.pain_pre} → {todayMetrics.pain_post}</div>}
+      <div style={{display:"flex",gap:"10px",marginBottom:"10px"}}>
+        <label style={{flex:1,fontSize:"var(--fs-10)",color:"#9ca3af"}}>Antes de entrenar: <strong style={{color:"#f3f4f6"}}>{dolorPre}</strong>
+          <input type="range" min="0" max="10" value={dolorPre} onChange={e=>setDolorPre(e.target.value)} style={{width:"100%"}}/>
+        </label>
+        <label style={{flex:1,fontSize:"var(--fs-10)",color:"#9ca3af"}}>Después: <strong style={{color:"#f3f4f6"}}>{dolorPost}</strong>
+          <input type="range" min="0" max="10" value={dolorPost} onChange={e=>setDolorPost(e.target.value)} style={{width:"100%"}}/>
+        </label>
+      </div>
+      <button onClick={addPain} style={{width:"100%",padding:"9px",background:`${col}20`,border:`1px solid ${col}60`,color:col,borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-11)"}}>{alreadyLogged ? "Actualizar dolor de hoy" : "Registrar dolor de hoy"}</button>
+    </div>
+  );
+}
+
 // ─── INICIO: DASHBOARD ───────────────────────────────────────────────────────
 const StatTile = ({ label, value, sub, col }) => {
   return (
@@ -1831,10 +1928,11 @@ const computeStreak = (trainedDays) => {
 
 const InicioTab = ({ col, phase, setTab }) => {
   const bundle = useProfileBundle();
-  const { profile: PROFILE, milestones, tests2, totalWeeks, hasSupplements, scheduleAM, scheduleTarde } = bundle;
+  const { profile: PROFILE, milestones, tests2, totalWeeks, hasSupplements, scheduleAM, scheduleTarde, copy } = bundle;
   const { settings } = useProfileSettings();
   const { rows: metricsRows } = useBodyMetrics();
-  const { dates: trainedDays, markToday: markTrainedToday } = useTrainedDays();
+  const { dates: trainedDays, markDate } = useTrainedDays();
+  const markTrainedToday = () => markDate(todayISO());
 
   const planStart = settings?.plan_start_date || todayISO();
   const turno = settings?.turno_entreno || "manana";
@@ -1868,6 +1966,7 @@ const InicioTab = ({ col, phase, setTab }) => {
       <button onClick={markTrainedToday} disabled={isTrainedToday} style={{width:"100%",padding:"12px",marginTop:"6px",background:isTrainedToday?"#0a1a0a":`${col}20`,border:`1px solid ${isTrainedToday?"#14532450":col+"60"}`,color:isTrainedToday?"#4ade80":col,borderRadius:"6px",cursor:isTrainedToday?"default":"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-12)"}}>
         {isTrainedToday ? "✅ Hoy ya está registrado" : "✓ Marcar hoy como entrenado"}
       </button>
+      <PainQuickLog col={col} copy={copy}/>
       <div style={{marginTop:"14px",padding:"10px 12px",background:"#080e1a",border:"1px solid #1d3a6a35",borderRadius:"4px",fontSize:"var(--fs-10)",color:"#93c5fd",lineHeight:"1.6"}}>
         💡 La semana se calcula desde que empezaste el plan ({planStart}). Es orientativo: usa las pestañas Plan y Objetivos para el detalle real.
       </div>
@@ -1989,7 +2088,7 @@ const App = ({ session }) => {
       </div>
 
       <div style={{display:"flex",background:"#0d0d0d",borderBottom:"1px solid #1a1a1a",overflowX:"auto",scrollbarWidth:"none"}}>
-        {[["inicio","🏠 Inicio"],["plan","📋 Plan"],["horario","🗓️ Horario"],["progresion","📈 Progresión"],["objetivos","🎯 Objetivos"],["nutricion","🥗 Nutrición"],["extras","💊 Extras"],["test","📊 Tests"],["deploy","🌐 Publicar"]].map(([id,label])=>(
+        {[["inicio","🏠 Inicio"],["plan","📋 Plan"],["horario","🗓️ Horario"],["historial","📅 Historial"],["progresion","📈 Progresión"],["objetivos","🎯 Objetivos"],["nutricion","🥗 Nutrición"],["extras","💊 Extras"],["test","📊 Tests"],["deploy","🌐 Publicar"]].map(([id,label])=>(
           <button key={id} className="tab-btn" onClick={()=>setTab(id)} style={{flexShrink:0,padding:"10px 10px",background:"transparent",border:"none",borderBottom:tab===id?`2px solid ${col}`:"2px solid transparent",color:tab===id?col:"#6b7280",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-10)",letterSpacing:"0.5px",whiteSpace:"nowrap"}}>{label}</button>
         ))}
       </div>
@@ -1997,6 +2096,8 @@ const App = ({ session }) => {
       {tab==="inicio"&&<InicioTab col={col} phase={phase} setTab={setTab}/>}
 
       {tab==="horario"&&<HorarioTab col={col} phaseKey={phaseKey}/>}
+
+      {tab==="historial"&&<HistorialTab col={col}/>}
 
       {tab==="progresion"&&<ProgresionTab col={col}/>}
 
