@@ -181,3 +181,299 @@ sabe funcionar:
 Ninguna fase obliga a tocar el `index.html` de tu plan personal — puede
 seguir viviendo tal cual, como el "cliente cero" que demuestra que el
 concepto funciona.
+
+---
+
+## 6. Profundización: SaaS de "plantilla editable por entrenador" — app móvil + PC, coste mínimo
+
+> Todo lo que sigue es solo documentación — no toca `index.html` ni crea
+> ningún proyecto nuevo. Es la respuesta a "cómo sería esto en concreto,
+> como app de móvil y de PC, lo más barata posible".
+
+### 6.1 Qué es exactamente "una plantilla como la nuestra, editable"
+
+Hoy tu plan (fases, días, ejercicios, progresión) es código: los objetos
+`phases` y `dd` dentro de `index.html`. La versión SaaS necesita que ese
+mismo contenido sea **dato que un entrenador edita desde un formulario**, sin
+tocar una línea de código. Dos formas de modelarlo en Supabase:
+
+| Opción | Cómo es | Coste de construirlo |
+|---|---|---|
+| **Normalizado** (tablas `plan_templates` → `plan_phases` → `plan_days` → `plan_exercises`, con filas y claves foráneas) | Cada ejercicio es una fila con relaciones | Alto: cada pantalla del editor necesita CRUD anidado en 4 niveles, más migraciones por cada cambio de forma |
+| **JSONB por plantilla** (una fila en `plan_templates` con una columna `content jsonb` que contiene fases→días→ejercicios, igual de forma que hoy `phases`/`dd` en JS) | Un solo documento estructurado por plantilla | Bajo: el editor es un formulario que lee/escribe ese JSON; añadir un campo nuevo a un ejercicio no requiere migración |
+
+**Recomendación para un MVP barato: JSONB.** Pierdes la capacidad de hacer
+consultas SQL finas ("todos los ejercicios llamados Sentadilla en cualquier
+plantilla de cualquier entrenador"), pero eso no lo necesitas al principio, y
+te ahorras muchísimo tiempo de desarrollo — que es la parte más cara de
+verdad, más que cualquier factura de hosting. Puedes migrar a tablas
+normalizadas más adelante si el producto crece y esa consulta cruzada se
+vuelve necesaria.
+
+### 6.2 Cómo un entrenador "se la pasa" a un cliente, dentro de la app
+
+1. El entrenador pulsa "Nuevo cliente" e introduce su email.
+2. Una **Edge Function** (con la `service_role key`, que nunca toca el
+   navegador) llama a `supabase.auth.admin.inviteUserByEmail(email)`.
+   Supabase manda el email de invitación automáticamente — no hace falta
+   montar un servicio de correo aparte para esto.
+3. El cliente abre el enlace, pone su contraseña, y entra directo a la app.
+4. En vez de que la plantilla completa se comparta por referencia, se hace
+   una **copia** de ella en una tabla `client_plans` (con un `template_id`
+   apuntando a la plantilla de origen, por si el entrenador quiere saber de
+   dónde viene). Copiar en vez de referenciar permite que el entrenador
+   ajuste la plantilla maestra sin romper los planes ya asignados a clientes
+   activos — el mismo principio que ya usas tú: cuando a Fernando se le
+   sustituye un ejercicio de cadera, es una decisión específica para él, no
+   un cambio silencioso en un documento compartido.
+5. RLS clave: una tabla `clients` con `(user_id, trainer_id)`. El cliente
+   solo ve su propia fila (`user_id = auth.uid()`, igual que ya tienes hoy).
+   El entrenador necesita, además, una política de **solo lectura** sobre el
+   `body_metrics`/`trained_days` de sus propios clientes (para hacer
+   seguimiento), pero nunca de escritura — el dato lo registra el cliente,
+   no el entrenador.
+
+### 6.3 App de móvil y PC — cuál es la más barata (con cifras reales)
+
+Miré esto expresamente porque "barato" tiene una trampa: lo más barato en
+hosting no siempre es lo más barato en horas de desarrollo, y al revés.
+
+| Enfoque | Qué es | Coste de tienda | Coste de desarrollo | Cuándo tiene sentido |
+|---|---|---|---|---|
+| **PWA** (la misma web, instalable con "Añadir a pantalla de inicio") | Un único código React responsive, funciona en móvil y PC por igual | 0€ — no pasa por App Store ni Google Play | El más bajo: un ejemplo real de PWA con caché offline y notificaciones se construyó por **menos de 18.000$**, frente a un presupuesto de 75.000$ para la versión nativa equivalente | Para validar el producto con los primeros entrenadores, sin gastar en tiendas de apps |
+| **Capacitor** (envuelve la misma web en un shell nativo instalable desde las tiendas) | Reutiliza 80–90% del código web ya escrito | Apple Developer Program: **99$/año**. Google Play Console: **25$ pago único** | Bajo-medio: mismo código React, se añade una capa fina nativa | Cuando ya tienes entrenadores reales y quieres presencia/descubribilidad en las tiendas |
+| **React Native / Flutter** (código nativo aparte, no reutiliza tu web) | Un codebase distinto del panel web del entrenador | Mismos 99$/año + 25$ | Alto: for budgets under 50.000$ Capacitor es lo recomendado; React Native/Flutter solo compensa con más de 100.000$ de presupuesto o cuando el rendimiento nativo es crítico | No es tu caso — una app de planes de entrenamiento no necesita gráficos 3D ni sensores nativos avanzados |
+
+**Recomendación concreta:** empieza con **PWA** (mismo código para móvil y
+PC, cero coste de tienda) y, solo si el producto valida con entrenadores
+reales pagando, añade **Capacitor** encima del mismo código para publicarlo
+en App Store/Google Play — no antes, porque los 99$/año de Apple son un
+coste recurrente que no compensa pagar mientras estás validando la idea.
+
+### 6.4 Coste total estimado, mes a mes
+
+| Partida | Fase MVP (validar con pocos entrenadores) | Fase con apps en tienda |
+|---|---|---|
+| Hosting frontend | **0€** — Cloudflare Pages free tier: ancho de banda ilimitado, 500 builds/mes | igual, 0€ |
+| Backend (Supabase) | **0€** — free tier: 500MB BD, 50.000 usuarios activos/mes, 1GB storage, 5GB de tráfico | 25$/mes (plan Pro) en cuanto superes esos límites — con pocos entrenadores no hace falta todavía |
+| Dominio propio | ~10€/año (opcional, puedes usar el subdominio gratis de Cloudflare Pages al principio) | igual |
+| Apple Developer Program | — | 99$/año |
+| Google Play Console | — | 25$ pago único |
+| Emails de invitación | 0€ — incluidos en Supabase Auth | igual |
+| Cobro a entrenadores (Stripe) | 0€ fijo, solo comisión por transacción cuando factures | igual |
+
+**Total fase MVP: prácticamente 0€/mes.** Puedes tener el producto entero
+funcionando (web + móvil vía PWA) sin pagar nada hasta que crezca lo
+suficiente para superar el free tier de Supabase o quieras estar en las
+tiendas de apps.
+
+### 6.5 Qué NO hacer todavía, para que siga siendo barato
+
+- No pagues Apple/Google hasta que al menos un par de entrenadores reales
+  estén usando la PWA y quieran de verdad estar en la tienda.
+- No normalices la base de datos de planes en tablas separadas desde el
+  primer día — el JSONB por plantilla (sección 6.1) es más barato de
+  construir y suficiente para un MVP.
+- No montes un servicio de email de marketing aparte — los correos
+  transaccionales de invitación de Supabase Auth ya cubren ese caso.
+- No implementes cobro con Stripe hasta tener el primer entrenador dispuesto
+  a pagar — mientras tanto, no cuesta nada tenerlo en modo gratuito.
+
+### 6.6 Stack técnico completo (decidido 2026-07-21)
+
+React + Supabase ya estaban decididos. Para CSS, entre Bootstrap (componentes
+ya hechos, más rápido para el editor de plantillas) y Tailwind (consistente
+con el resto de tus proyectos, según tu `CLAUDE.md` general), **se eligió
+Tailwind** — prioriza reutilizar lo que ya sabes sobre ganar velocidad en
+esta parte concreta.
+
+| Pieza | Para qué | Coste |
+|---|---|---|
+| **React + Vite** | UI + build tool (dev server, build optimizado, code-splitting) | 0€ |
+| **Tailwind CSS** | Estilos, consistente con tus otros proyectos | 0€ |
+| **Supabase** | Auth + Postgres + Storage + Edge Functions — todo el backend | 0€ en fase MVP (ver 6.4) |
+| **React Router** | Navegación: login, panel del entrenador, editor de plantilla, vista del cliente, aceptar invitación | 0€ |
+| **Boxicons** | Iconos, ya está en `~/.claude/RECURSOS.md` | 0€ |
+| **Cloudflare Pages** | Hosting con deploy automático al hacer `git push` | 0€ |
+| **PWA** (manifest + service worker) | Instalable en móvil y PC desde el día 1, sin tienda | 0€ |
+| **Vitest + React Testing Library** | Testing, ya es la convención del `CLAUDE.md` general | 0€ |
+| **Capacitor** | Solo si se valida el producto y se quiere estar en App Store/Google Play (ver 6.3) | 99$/año (Apple) + 25$ una vez (Google) |
+| **Stripe** | Solo cuando haya un entrenador dispuesto a pagar (Fase 4 del roadmap) | 0€ fijo, comisión por cobro |
+
+**TypeScript — a valorar, no decidido:** este proyecto maneja roles, RLS y
+una plantilla en JSON con una forma concreta (fases→días→ejercicios), donde
+un error de tecleo en un campo es un bug silencioso que TypeScript detectaría
+al escribir el código. No es obligatorio, y añade una curva de aprendizaje
+extra mientras Fernando sigue aprendiendo JS/React a fondo — queda como
+mejora a considerar más adelante, no del día 1.
+
+Sources:
+- [Supabase Pricing in 2026: Plans, Free Tier Limits & Full Breakdown](https://uibakery.io/blog/supabase-pricing)
+- [Apple Developer Program Cost: The $99/Year Fee Explained (2026)](https://appbuilder24.com/blog/apple-developer-account-needed)
+- [Google Play Developer Fee 2026: $25 + 12-Tester Rule](https://www.iconikai.com/blog/google-play-developer-account-fee-2026)
+- [PWA vs Capacitor vs Native: Choosing an App Architecture in 2026](https://ourcodeworld.com/articles/read/3646/pwa-vs-capacitor-vs-native-2026)
+- [Cloudflare Pages vs Netlify vs Vercel: Static Site Hosting Compared (2026)](https://danubedata.ro/blog/cloudflare-pages-vs-netlify-vs-vercel-static-hosting-2026)
+
+---
+
+## 7. ¿Esto es un SaaS? Y cuál es la mejor manera de hacerlo funcional de verdad
+
+### 7.1 Sí, es un SaaS — y en concreto un "SaaS vertical"
+
+SaaS (Software as a Service) se define por cuatro rasgos, y este proyecto los
+cumple todos:
+
+| Rasgo del SaaS | ¿Lo cumple este proyecto? |
+|---|---|
+| **Multi-tenant** — una sola instancia de la app sirve a muchos clientes distintos, con los datos separados | Sí — muchos entrenadores comparten la misma app y base de datos, aislados por RLS (sección 6.2) |
+| **Suscripción** — se paga de forma recurrente por usar el software, no se compra una copia | Se añade en la Fase 4 (Stripe) — el modelo ya está pensado para esto desde el principio |
+| **Alojado en la nube, accesible por navegador** | Sí — Supabase + Cloudflare Pages, accesible como web y como PWA instalable |
+| **Mantenimiento centralizado** — el proveedor mantiene la app, el cliente no instala ni actualiza nada | Sí — tú mantienes un único código para todos los entrenadores, ninguno gestiona su propio servidor |
+
+Además, es un **SaaS vertical**: no es una herramienta genérica de gestión
+para cualquier negocio, sino una hecha específicamente para un nicho
+(entrenadores personales y sus planes de entrenamiento) — el mismo tipo de
+producto que Calendly es para reservas o Shopify para tiendas, pero aplicado
+a este sector. Merece la pena que conozcas el término porque es exactamente
+cómo se llamaría esto si lo describieras en una entrevista o a un inversor.
+
+### 7.2 El patrón de aislamiento de datos correcto (confirma la sección 6.2)
+
+Investigué las tres formas estándar de aislar datos entre clientes en un
+SaaS multi-tenant:
+
+| Patrón | Cómo es | Cuándo se usa |
+|---|---|---|
+| **RLS con esquema compartido** (lo que ya recomendamos en la sección 6.2) | Todas las filas en las mismas tablas, con un `trainer_id`/`user_id` y políticas RLS que filtran el acceso | El punto de partida estándar de la mayoría de SaaS — coste de infraestructura más bajo, una sola base de datos que mantener |
+| **Esquema por cliente** | Mismo servidor de base de datos, pero cada entrenador tiene su propio esquema | Cuando un cliente grande necesita más aislamiento del que da RLS |
+| **Base de datos por cliente** | Cada entrenador tiene su propia base de datos completa | Solo para clientes enterprise con requisitos regulatorios — máximo aislamiento, máximo coste |
+
+**Confirmado:** la recomendación de "RLS con esquema compartido" que ya
+propuse en la sección 6.2 es exactamente el patrón estándar con el que
+arrancan la mayoría de SaaS reales, y solo se pasa a los otros dos si en el
+futuro aparece un cliente grande que lo exija — no es algo que haya que
+resolver ahora.
+
+### 7.3 Cómo hacerlo "funcional de verdad" (no solo bien diseñado)
+
+Esto es lo que de verdad respondía a tu pregunta — la diferencia entre un
+proyecto con buena arquitectura y uno que **funciona** para un usuario real
+desde el primer día:
+
+1. **Construye un solo recorrido completo de principio a fin antes que nada
+   ("vertical slice"):** un entrenador crea una plantilla → invita a un
+   cliente → el cliente entra y ve su plan → el cliente marca un
+   entrenamiento como hecho. Ese recorrido entero, funcionando de verdad, es
+   más valioso al principio que tener 10 pantallas a medias. Encaja
+   directamente con tu roadmap de la sección 5: la Fase 2/3 debería producir
+   ese recorrido completo, no todas las piezas del producto a la vez.
+
+2. **"Simple" no significa "roto":** aunque el MVP tenga pocas funciones, sí
+   tiene que manejar errores obvios, guardar los datos de forma fiable,
+   proteger las cuentas (RLS + sin alta pública, que ya tenemos resuelto) y
+   explicar al usuario qué está pasando en cada pantalla. La seguridad básica
+   no es algo que se deja para "después del MVP" — ya la tenemos desde el
+   diseño.
+
+3. **Un "efecto wow", no diez funciones mediocres:** tienes ya algo que
+   ningún genérico de fitness tiene — la lógica de sustitución de ejercicios
+   por condición física (cadera, diástasis) que ya construiste para ti y
+   Laura. Si el editor de plantillas del entrenador incluye "marca este
+   ejercicio como de riesgo para tal condición y sugiere su alternativa", eso
+   es un diferenciador real frente a una app de plantillas genérica — no lo
+   pierdas al generalizar el producto.
+
+4. **No construyas todo antes de enseñárselo a alguien:** la validación
+   (hablar con 1-3 entrenadores reales, ver si de verdad lo usarían) importa
+   tanto como el código — no tiene sentido pulir el editor de plantillas
+   durante semanas sin que ningún entrenador real lo haya tocado todavía.
+
+5. **La métrica que de verdad importa al principio no es "cuántas funciones
+   tiene", es la tasa de activación:** de los entrenadores que prueban la
+   app, ¿qué porcentaje llega a completar el recorrido central (crear una
+   plantilla + invitar a su primer cliente) en las primeras 24h? Si eso pasa
+   con pocos usuarios, es una señal mucho más fiable que cualquier opinión
+   sobre si "está bien hecho".
+
+### 7.4 Qué significa esto para tu roadmap (sección 5)
+
+La Fase 2 ("prototipo de datos") y la Fase 3 ("editor de planes") de la
+sección 5 deberían fusionarse en la práctica en un único objetivo: **el
+recorrido completo funcionando con datos reales, aunque sea feo**, antes de
+pulir nada. El diseño bonito del editor puede esperar; que un entrenador real
+pueda de verdad invitar a un cliente y que ese cliente vea su plan, no.
+
+Sources:
+- [How to Build a SaaS MVP: Step-by-Step Guide 2026](https://acropolium.com/blog/build-saas-mvp/)
+- [SaaS MVP Development: Complete Startup Guide for 2026](https://codevelo.io/blog/saas-mvp-development)
+- [How to Design a Multi-Tenant SaaS Architecture](https://clerk.com/blog/how-to-design-multitenant-saas-architecture)
+- [Multi-tenant SaaS: RLS vs schema-per-tenant vs database-per-tenant](https://aliasghar.me/blog/multi-tenant-saas-data-isolation)
+- [What Is Software as a Service (SaaS)? | IBM](https://www.ibm.com/think/topics/saas)
+- [SaaS Multitenancy: Components, Pros and Cons and 5 Best Practices | Frontegg](https://frontegg.com/blog/saas-multitenancy)
+
+---
+
+## 8. Nombre elegido: Kinovia (kinovia.io) — posicionamiento y cómo validar antes de programar
+
+### 8.1 El nombre
+
+**Kinovia**, dominio **kinovia.io**. Comprobado antes de decidir:
+- **Sin conflicto de nicho** (a diferencia de "Kinesia", que sí lo tenía):
+  quien ya usa "Kinovia" es una productora audiovisual en Indonesia, un
+  salón de belleza en Bélgica y una plataforma "próximamente" en Camerún —
+  ninguno en fitness/salud, cero riesgo de confusión de marca en tu sector.
+- `kinovia.com`, `kinovia.net` y `kinovia.org` ya están registrados por esas
+  empresas — por eso el dominio real es `.io`. Esta comprobación viene de
+  búsqueda web, no de un registrador — **antes de comprarlo, confírmalo en
+  un registrador real (Namecheap, OVH, etc.)**.
+
+### 8.2 Posicionamiento — framework de April Dunford ("Obviously Awesome")
+
+Es el framework de referencia en positioning B2B/SaaS (usado con Google, IBM,
+Postman, Epic Games). Se construye de abajo arriba: no partes de "en qué
+categoría de mercado estoy", partes de tus mejores clientes potenciales y qué
+uso le darían. Aplicado a Kinovia:
+
+| Componente | Para Kinovia |
+|---|---|
+| **Alternativas competitivas** (qué usaría el entrenador si Kinovia no existiera) | Trainerize, TrueCoach, una plantilla de Excel/Google Sheets, o PDFs por WhatsApp |
+| **Atributos únicos** | El motor de sustitución de ejercicios **por condición física** (cadera, diástasis, rodilla...) integrado en el propio dato del plan — ninguna de las alternativas lo tiene como núcleo, es una nota manual en el mejor de los casos |
+| **Valor que eso habilita** | El entrenador puede aceptar clientes con lesiones/limitaciones reales sin necesitar ser fisioterapeuta y sin miedo a empeorarlos — hoy muchos entrenadores rechazan o improvisan con este perfil de cliente |
+| **Cliente ideal** | Entrenadores personales que ya trabajan (o quieren trabajar) con clientes con alguna limitación física real: postparto, artrosis, rehabilitación, clientes mayores — no coaches de solo rendimiento/culturismo |
+| **Categoría de mercado** | No "software genérico de gestión de entrenador" (categoría saturada, dominada por Trainerize) sino **"software de planificación segura para entrenadores con clientes con condición física"** — una categoría más pequeña, pero donde no compites de tú a tú contra jugadores con presupuestos de marketing enormes |
+
+### 8.3 Cómo validar esto ANTES de escribir código
+
+La investigación es clara en un punto: **el 85% de los SaaS fracasan por
+falta de validación, no por mala ingeniería** — la parte de "hablar con
+gente real" no es un trámite, es más importante que el código en esta fase.
+
+**El método (Mom Test, de Rob Fitzpatrick):** no preguntes "¿usarías una app
+que...?" (la gente siempre dice que sí por educación). Pregunta por su
+comportamiento pasado real: qué usan ahora, qué les frustra de verdad, si
+alguna vez han rechazado o complicado un cliente por su lesión, y qué
+pagarían por resolverlo — sin mencionar Kinovia todavía.
+
+**Objetivo concreto antes de tocar el editor de plantillas:**
+- Habla con **unos 15-20 entrenadores** que encajen con el perfil ideal
+  (sección 8.2) — aquí es donde tu ventaja de **"localmente me sería fácil
+  insertarla"** vale oro: el "founder-led outreach" (tú mismo hablando con
+  ellos, no un anuncio) es más efectivo al principio que cualquier campaña,
+  precisamente porque puedes ajustar el mensaje en la conversación.
+- Señal de validación real: si **10-15 de esos 20** confirman el problema y
+  pueden decir qué pagarían por resolverlo, hay demanda de verdad. Si son
+  menos de la mitad, el problema o la solución hay que replantearla antes de
+  construir nada.
+- Un empujón extra si consigues **3-5 que se comprometan a probarlo en
+  cuanto exista** (aunque sea gratis al principio) — eso es lo que confirma
+  que no es solo cortesía en la conversación.
+
+Este proceso lleva 2-3 semanas y no cuesta nada más que tu tiempo — encaja
+justo antes de la Fase 2 del roadmap (sección 5), no después.
+
+Sources:
+- [How to Validate Your B2B SaaS Idea for VC investment](https://www.forumvc.com/thought-pieces/how-to-validate-your-b2b-saas-idea-for-vc-investment-a-comprehensive-guide-for-founders)
+- [Customer Discovery: A SaaS Founder Playbook for 2026](https://saasfractionalcpo.com/blog/customer-discovery-guide/)
+- [How to get your first customer in B2B SaaS?](https://the7eagles.com/b2b-saas-how-to-get-first-customers/)
+- [5 Components of SaaS Positioning That Most Founders Skip (April Dunford)](https://saasclub.io/podcast/5-steps-saas-product-positioning-with-april-dunford-252/)
+- [April Dunford's Positioning Framework / Canvas / Worksheet](https://www.kathirvel.com/guide-april-dunford-positioning-framework/)
