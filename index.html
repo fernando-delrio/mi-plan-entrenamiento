@@ -152,6 +152,7 @@ const YT = {
   "Dead Bug con mancuerna": "dead bug exercise dumbbell core tutorial",
   "Bird Dog con mancuerna": "bird dog exercise dumbbell core tutorial",
   "Pallof Press con banda": "pallof press band anti rotation core tutorial",
+  "Press anti-rotación sentado con mancuerna": "seated single arm dumbbell anti rotation press tutorial",
   "Farmer Hold con mancuernas pesadas": "farmer carry hold heavy dumbbells tutorial",
   "Ciclismo HIIT corto bici 20s/40s suave": "beginner HIIT spin bike intervals 20 40",
   "Pájaros con mancuerna": "dumbbell reverse fly rear delt form tutorial",
@@ -234,7 +235,7 @@ const dd = {
       warmup:"5 min bici nivel 2 + movilidad general",
       exercises:[
         { name:"Ciclismo HIIT corto bici 20s/40s suave", sets:"6 rondas", reps:"20s fuerte / 40s suave", rest:"Incluido en la ronda", note:"Primera toma de contacto con HIIT. Nivel 6–7 en los 20s, sentado si prefieres proteger la cadera", muscles:"Sistema cardiovascular · Potencia · VO2max" },
-        { name:"Pallof Press con banda", sets:"3", reps:"12 c/lado", rest:"45s", note:"Banda anclada al lateral, empuja al frente sin dejar que el tronco gire. Cadera neutra, sin flexión", muscles:"Core anti-rotación · Oblicuos · Estabilidad de tronco" },
+        { name:"Press anti-rotación sentado con mancuerna", sets:"3", reps:"12 c/lado", rest:"45s", note:"Sentado en silla firme, mancuerna a un lado del pecho, empuja al frente sin dejar que el tronco gire ni se incline. Sustituye al Pallof Press cuando no hay banda: el peso descentrado exige el mismo trabajo anti-rotación, y sentado quitas del todo la carga de pie sobre la cadera", muscles:"Core anti-rotación · Oblicuos · Estabilidad de tronco" },
         { name:"Dead Bug con mancuerna", sets:"3", reps:"10 c/lado", rest:"45s", note:"Espalda baja pegada al suelo todo el rato. Baja brazo y pierna contraria muy lento", muscles:"Core profundo · Transverso abdominal · Control lumbo-pélvico" },
       ],
       cooldown:"5 min bici nivel 1 + estiramiento completo 5 min",
@@ -333,7 +334,7 @@ const dd = {
         { name:"Circuito metabólico avanzado – 5 rondas", sets:"5 rondas", reps:"0s entre ejercicios / 45s entre rondas", rest:"45s entre rondas", note:"Una ronda más que en fase 1 y menos descanso", muscles:"Cuerpo completo · Quema de grasa máxima" },
         { name:"Flexiones con manos en diamante", sets:"—", reps:"10", rest:"0s", note:"Manos juntas formando triángulo. Codos hacia atrás", muscles:"Tríceps · Pecho central" },
         { name:"Remo con mancuerna bilateral inclinado", sets:"—", reps:"12", rest:"0s", note:"Inclinado, dos mancuernas a la vez tirando codos atrás", muscles:"Dorsal · Trapecio · Bíceps" },
-        { name:"Pallof Press con banda", sets:"—", reps:"12 c/lado", rest:"0s", note:"Cadera neutra, empuja al frente sin girar el tronco. Sustituye al L-sit tuck de esta estación", muscles:"Core anti-rotación · Oblicuos" },
+        { name:"Press anti-rotación sentado con mancuerna", sets:"—", reps:"12 c/lado", rest:"0s", note:"Sentado en silla, mancuerna a un lado del pecho, sin dejar que el tronco gire. Sustituye al Pallof Press (y al L-sit tuck original) cuando no hay banda disponible", muscles:"Core anti-rotación · Oblicuos" },
         { name:"Press de hombro Arnold con mancuerna", sets:"—", reps:"10", rest:"0s", note:"Palmas hacia ti abajo, giras al subir hasta palmas afuera arriba", muscles:"Deltoides completo" },
         { name:"Curl martillo con mancuerna", sets:"—", reps:"12", rest:"45s (fin ronda)", note:"Palmas enfrentadas todo el tiempo como sujetando un martillo", muscles:"Braquiorradial · Bíceps · Antebrazo" },
       ],
@@ -429,7 +430,7 @@ const dd = {
       warmup:"—",
       exercises:[
         { name:"Ciclismo recuperación activa nivel 2", sets:"—", reps:"20 min", rest:"—", note:"Muy suave, ritmo Zona 2 bajo. Activa la circulación sin añadir fatiga: cuenta como tu primera Zona 2 de la semana", muscles:"Recuperación activa · Circulación · Base aeróbica" },
-        { name:"Movilidad de cadera y espalda", sets:"—", reps:"15 min", rest:"—", note:"YouTube: Hip Mobility for Athletes Athlean-X. Con cuidado de la cadera derecha", muscles:"Cadera · Espalda · Flexibilidad" },
+        { name:"Movilidad de cadera y espalda", sets:"—", reps:"15 min", rest:"—", note:"YouTube: Hip Mobility for Athletes Athlean-X. Con cuidado de las dos caderas — la izquierda es la que más duele", muscles:"Cadera · Espalda · Flexibilidad" },
       ],
       cooldown:"—",
       hip_note:"⚠️ Jueves de fase 3 es recuperación OBLIGATORIA. Sin negociar. No lo cambies por un HIIT aunque te sientas con fuerzas.",
@@ -736,9 +737,13 @@ const imcCategoria = (imc) => {
 // ─── HORARIO DE SUPLEMENTOS (real, con horas, con evidencia detrás) ─────────
 // Regla de separación: el Psyllium es fibra soluble — si se toma junto a otros
 // suplementos o medicación, puede arrastrarlos y reducir su absorción. Por eso
-// va siempre solo, con mucha agua, con al menos 60 min de separación (la
-// evidencia recomienda 1–2h para medicación; 60 min es el mínimo práctico que
-// cabe en el horario de Fernando antes de dormir).
+// va siempre solo, con mucha agua, separado ≥3h de la Berberina en ambas
+// direcciones (la evidencia recomienda 1–2h para medicación; aquí sobra
+// margen). Va ANTES DE COMER, no antes de dormir: un ensayo cruzado sobre
+// el momento de toma del Psyllium no encontró diferencia en el efecto sobre
+// el colesterol según la hora (Marlett & Fischer, 2003), así que se prioriza
+// el horario que da tiempo de sobra para beber el vaso de agua que necesita
+// sin prisa — en vez de forzarlo a las 22:15, justo antes de dormir.
 // Berberina: 15–30 min antes de comer (o junto a la comida) — con alimento se
 // absorbe hasta 5× mejor y da muchas menos molestias gástricas que en ayunas.
 // Creatina: la ventaja de tomarla post-entreno frente a pre-entreno es mínima
@@ -754,23 +759,23 @@ const supplementScheduleAM = [
   { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Café con leche + queso fresco batido 0% + 30–40g avena + 10–15g crema de cacahuete." },
   { hora:"09:30", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día (fuerza, bici o core). En ayunas o con el desayuno ya asentado, como prefieras." },
   { hora:"10:30", tipo:"suplemento", item:"Batido de Whey + Creatina", detalle:"Juntos, un solo gesto — justo al terminar de entrenar, aunque si algún día lo tomas un poco antes o un poco después tampoco pasa nada." },
+  { hora:"30 min antes", tipo:"suplemento", item:"Psyllium", detalle:"30 min antes de tu Comida, sea la hora que sea ese día (13:30, 14:00, 15:00...) — no hace falta clavar un reloj, con un vaso grande de agua (y otro trago más al rato). Va aquí y no antes de dormir: así tienes toda la tarde para beber el agua que necesitas, sin prisa. Separado por horas de la Berberina en ambos sentidos — de sobra para que ninguna arrastre a la otra." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato + verdura. Berberina también puede ir aquí si prefieres repartir la dosis." },
   { hora:"18:00", tipo:"movimiento", item:"Paseo", detalle:"15–20 min caminando suave. Nutre el cartílago (el líquido sinovial se mueve con el movimiento, no con el reposo)." },
   { hora:"21:00", tipo:"suplemento", item:"Berberina 500mg (2ª dosis)", detalle:"Igual que por la mañana: 15 min antes de cenar." },
   { hora:"21:15", tipo:"comida", item:"Cena + Omega 3", detalle:"El Omega 3 necesita grasa de la comida para absorberse bien, por eso va con la cena y no solo." },
-  { hora:"22:15", tipo:"suplemento", item:"Psyllium", detalle:"Solo, con un vaso grande de agua. El único que va aparte de todo — si se toma cerca de otro suplemento, la fibra puede \"atraparlo\" y que se aproveche peor." },
   { hora:"23:30", tipo:"dormir", item:"Dormir", detalle:"7–8h. El músculo crece y el cartílago se recupera mientras duermes." },
 ];
 const supplementScheduleTarde = [
   { hora:"07:30", tipo:"despertar", item:"Despertar", detalle:"1 vaso grande de agua nada más levantarte." },
   { hora:"07:45", tipo:"suplemento", item:"Berberina 500mg", detalle:"15 min antes de desayunar — con algo de comida cerca se absorbe mucho mejor y no te sienta mal al estómago." },
   { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Café con leche + queso fresco batido 0% + avena + crema de cacahuete." },
+  { hora:"30 min antes", tipo:"suplemento", item:"Psyllium", detalle:"30 min antes de tu Comida, sea la hora que sea ese día (13:30, 14:00, 15:00...) — no hace falta clavar un reloj, con un vaso grande de agua (y otro trago más al rato). Va aquí y no antes de dormir: así tienes toda la tarde para beber el agua que necesitas, sin prisa. Separado por horas de la Berberina en ambos sentidos — de sobra para que ninguna arrastre a la otra." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato (más carbo hoy: es tu combustible para entrenar por la tarde)." },
   { hora:"18:00", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día. Deja pasar 2–3h desde la comida grande." },
   { hora:"19:00", tipo:"suplemento", item:"Batido de Whey + Creatina", detalle:"Juntos, un solo gesto — justo al terminar de entrenar, aunque si algún día lo tomas un poco antes o un poco después tampoco pasa nada." },
   { hora:"21:00", tipo:"suplemento", item:"Berberina 500mg (2ª dosis)", detalle:"Igual que por la mañana: 15 min antes de cenar." },
   { hora:"21:15", tipo:"comida", item:"Cena + Omega 3", detalle:"El Omega 3 necesita grasa de la comida para absorberse bien, por eso va con la cena y no solo." },
-  { hora:"22:15", tipo:"suplemento", item:"Psyllium", detalle:"Solo, con un vaso grande de agua. El único que va aparte de todo — si se toma cerca de otro suplemento, la fibra puede \"atraparlo\" y que se aproveche peor." },
   { hora:"23:30", tipo:"dormir", item:"Dormir", detalle:"7–8h de sueño." },
 ];
 
@@ -779,7 +784,7 @@ const suplementosDetalle = [
   { icon:"🌿", nombre:"Berberina Bandini", porQue:"Activa la AMPK: mejora la sensibilidad a la insulina y baja LDL/triglicéridos. Es tu herramienta específica para mejorar el colesterol, además de ayudar al déficit calórico.", combinar:"15–30 min antes de comer, o justo con la primera comida — con alimento se absorbe hasta 5× mejor y da muchas menos molestias gástricas que en ayunas. Repartida en 2–3 tomas con comidas mantiene el nivel en sangre más estable que una sola dosis grande.", precaucion:"Puede dar molestias digestivas los primeros días. Si tomases medicación para azúcar o tensión, coméntalo en tu consulta médica antes de combinarlo." },
   { icon:"⚡", nombre:"Creatina Creapure", porQue:"El suplemento con más evidencia científica para fuerza y masa muscular. Más músculo = más protección para la cadera. Notarás el efecto en fuerza/rendimiento a partir de 3–4 semanas de toma diaria constante (con tu dosis de 3g/día, sin fase de carga) — la creatina satura el músculo de forma progresiva, no es un efecto inmediato.", combinar:"Con el batido post-entreno (la insulina ayuda algo a que entre en el músculo), aunque la diferencia con tomarla antes del entreno es mínima. Todos los días, también en descanso — lo que satura el músculo es la constancia, no el momento exacto.", precaucion:"Bebe mínimo 2,5–3L de agua al día. No necesita fase de carga." },
   { icon:"🥛", nombre:"Proteína Whey", porQue:"Comida rápida en polvo para llegar a los 170–190g de proteína diaria que necesitas para ganar músculo en déficit.", combinar:"Con la creatina, nada más entrenar — aunque no es obligatorio que sea justo al terminar: la síntesis de proteína muscular sigue elevada 24–48h después de entrenar. Lo que de verdad importa es llegar a tu total diario de proteína, no el minuto exacto de la toma.", precaucion:"Cuenta como calorías reales. No es \"gratis\"." },
-  { icon:"🌾", nombre:"Psyllium", porQue:"Fibra soluble: da saciedad (ayuda a sostener el déficit calórico sin pasar hambre), regula el tránsito y baja el LDL — efecto sinérgico con la Berberina.", combinar:"Solo, con un vaso grande de agua.", precaucion:"⚠️ SEPARAR al menos 60 min de cualquier otro suplemento o medicación (la evidencia general recomienda 1–2h): la fibra puede arrastrar y reducir su absorción. Por eso va la última, antes de dormir." },
+  { icon:"🌾", nombre:"Psyllium", porQue:"Fibra soluble: da saciedad (ayuda a sostener el déficit calórico sin pasar hambre), regula el tránsito y baja el LDL — efecto complementario a la Berberina (mecanismos distintos, no hay ensayo específico de la combinación).", combinar:"Solo, con un vaso grande de agua, ANTES de comer (no antes de dormir): un ensayo cruzado no encontró diferencia en el efecto sobre el colesterol según la hora de toma, así que se prioriza el horario donde hay tiempo de sobra para beber el agua que necesita, sin las prisas de la noche.", precaucion:"⚠️ SEPARAR al menos 60 min de cualquier otro suplemento o medicación (la evidencia general recomienda 1–2h; en el horario actual quedan varias horas de margen en ambos sentidos): la fibra puede arrastrar y reducir su absorción. Bebe el vaso de agua completo al tomarla — tomarla sin suficiente líquido puede hincharse y causar atragantamiento (aviso de la FDA)." },
 ];
 
 // ─── REVISIÓN DE EJERCICIOS DE CADERA (análisis fisioterapéutico) ───────────
@@ -1470,11 +1475,11 @@ const restDaySchedule = [
   { hora:"07:45", tipo:"suplemento", item:"Berberina", detalle:"500mg antes del desayuno, como cualquier día." },
   { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Igual que un día de entreno: proteína + avena + grasa medida." },
   { hora:"09:30", tipo:"suplemento", item:"Creatina (sin batido)", detalle:"3g de Creapure con el desayuno o cualquier comida. No se salta aunque no entrenes: funciona por saturación diaria." },
+  { hora:"30 min antes", tipo:"suplemento", item:"Psyllium", detalle:"1 cucharada en agua, 30 min antes de tu Comida —sea la hora que sea ese día—, no antes de dormir: te da toda la tarde para hidratarte con calma, sola y separada por horas de la Berberina." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato + verdura." },
   { hora:"18:00", tipo:"movimiento", item:"Paseo suave", detalle:"15–20 min caminando. Mantiene la cadera móvil sin cargarla — mejor que el sofá para el dolor crónico." },
   { hora:"21:00", tipo:"suplemento", item:"Berberina", detalle:"500mg antes de cenar." },
   { hora:"21:15", tipo:"comida", item:"Cena", detalle:"Proteína + verdura + Omega 3 Solgar con esta comida." },
-  { hora:"22:00", tipo:"suplemento", item:"Psyllium", detalle:"1 cucharada en agua, sola, separada del resto." },
   { hora:"23:30", tipo:"dormir", item:"Dormir", detalle:"7–8h. El domingo de descanso es sagrado, no se negocia." },
 ];
 
