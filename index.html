@@ -296,7 +296,7 @@ const dd = {
       ],
       cooldown:"Estiramiento pecho en pared + hombros cruzados 3 min",
       hip_note:"✅ Todo tren superior. Sin impacto cadera.",
-      nutrition:"💪 Objetivo: 172g de proteína diaria total (2g × 86kg).",
+      nutrition:"💪 Objetivo: 176g de proteína diaria total (2g × 88kg).",
     },
     Martes: {
       title:"HIIT BICI – Quema grasa máxima", tipo:"🚴 HIIT", duration:"40–45 min",
@@ -725,7 +725,7 @@ const useTrainedDays = () => {
 };
 
 // ─── PERFIL ─────────────────────────────────────────────────────────────────
-const PROFILE = { nombre:"Fernando", edad:38, alturaCm:178, pesoInicialKg:86, consultaMedica:"2026-12-28" };
+const PROFILE = { nombre:"Fernando", edad:38, alturaCm:178, pesoInicialKg:88, consultaMedica:"2026-12-28" };
 const calcIMC = (kg, alturaCm) => kg / ((alturaCm/100) ** 2);
 const imcCategoria = (imc) => {
   if (imc < 18.5) return "Bajo peso";
@@ -756,11 +756,12 @@ const imcCategoria = (imc) => {
 const supplementScheduleAM = [
   { hora:"07:30", tipo:"despertar", item:"Despertar", detalle:"1 vaso grande de agua nada más levantarte." },
   { hora:"07:45", tipo:"suplemento", item:"Berberina 500mg", detalle:"15 min antes de desayunar — con algo de comida cerca se absorbe mucho mejor y no te sienta mal al estómago." },
-  { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Café con leche + queso fresco batido 0% + 30–40g avena + 10–15g crema de cacahuete." },
+  { hora:"08:00", tipo:"comida", item:"Desayuno (ligero)", detalle:"Café con leche, sin el bowl completo — entrenas en poco más de una hora. El bowl (queso fresco desnatado 0% + manzana + avena + crema de cacahuete + nueces) hoy va de merienda, no de desayuno." },
   { hora:"09:30", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día (fuerza, bici o core). En ayunas o con el desayuno ya asentado, como prefieras." },
   { hora:"10:30", tipo:"suplemento", item:"Batido de Whey + Creatina", detalle:"Juntos, un solo gesto — justo al terminar de entrenar, aunque si algún día lo tomas un poco antes o un poco después tampoco pasa nada." },
-  { hora:"30 min antes", tipo:"suplemento", item:"Psyllium", detalle:"30 min antes de tu Comida, sea la hora que sea ese día (13:30, 14:00, 15:00...) — no hace falta clavar un reloj, con un vaso grande de agua (y otro trago más al rato). Va aquí y no antes de dormir: así tienes toda la tarde para beber el agua que necesitas, sin prisa. Separado por horas de la Berberina en ambos sentidos — de sobra para que ninguna arrastre a la otra." },
+  { hora:"13:00", tipo:"suplemento", item:"Psyllium", detalle:"Aprox. 30 min antes de tu Comida, sea la hora que sea ese día (13:30, 14:00, 15:00...) — no hace falta clavar un reloj, con un vaso grande de agua (y otro trago más al rato). Va aquí y no antes de dormir: así tienes toda la tarde para beber el agua que necesitas, sin prisa. Separado por horas de la Berberina en ambos sentidos — de sobra para que ninguna arrastre a la otra." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato + verdura. Berberina también puede ir aquí si prefieres repartir la dosis." },
+  { hora:"Media tarde", tipo:"comida", item:"Merienda (el bowl)", detalle:"Queso fresco desnatado 0% + 30–40g avena + manzana + 10–15g crema de cacahuete + 2 nueces enteras. Hoy va de merienda porque entrenaste por la mañana." },
   { hora:"18:00", tipo:"movimiento", item:"Paseo", detalle:"15–20 min caminando suave. Nutre el cartílago (el líquido sinovial se mueve con el movimiento, no con el reposo)." },
   { hora:"21:00", tipo:"suplemento", item:"Berberina 500mg (2ª dosis)", detalle:"Igual que por la mañana: 15 min antes de cenar." },
   { hora:"21:15", tipo:"comida", item:"Cena + Omega 3", detalle:"El Omega 3 necesita grasa de la comida para absorberse bien, por eso va con la cena y no solo." },
@@ -769,8 +770,8 @@ const supplementScheduleAM = [
 const supplementScheduleTarde = [
   { hora:"07:30", tipo:"despertar", item:"Despertar", detalle:"1 vaso grande de agua nada más levantarte." },
   { hora:"07:45", tipo:"suplemento", item:"Berberina 500mg", detalle:"15 min antes de desayunar — con algo de comida cerca se absorbe mucho mejor y no te sienta mal al estómago." },
-  { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Café con leche + queso fresco batido 0% + avena + crema de cacahuete." },
-  { hora:"30 min antes", tipo:"suplemento", item:"Psyllium", detalle:"30 min antes de tu Comida, sea la hora que sea ese día (13:30, 14:00, 15:00...) — no hace falta clavar un reloj, con un vaso grande de agua (y otro trago más al rato). Va aquí y no antes de dormir: así tienes toda la tarde para beber el agua que necesitas, sin prisa. Separado por horas de la Berberina en ambos sentidos — de sobra para que ninguna arrastre a la otra." },
+  { hora:"08:00", tipo:"comida", item:"Desayuno (el bowl)", detalle:"Café con leche + queso fresco desnatado 0% + 30–40g avena + manzana + 10–15g crema de cacahuete + 2 nueces enteras. Hoy va de desayuno porque entrenas por la tarde." },
+  { hora:"13:00", tipo:"suplemento", item:"Psyllium", detalle:"Aprox. 30 min antes de tu Comida, sea la hora que sea ese día (13:30, 14:00, 15:00...) — no hace falta clavar un reloj, con un vaso grande de agua (y otro trago más al rato). Va aquí y no antes de dormir: así tienes toda la tarde para beber el agua que necesitas, sin prisa. Separado por horas de la Berberina en ambos sentidos — de sobra para que ninguna arrastre a la otra." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato (más carbo hoy: es tu combustible para entrenar por la tarde)." },
   { hora:"18:00", tipo:"entreno", item:"Entrenamiento", detalle:"Sesión del día. Deja pasar 2–3h desde la comida grande." },
   { hora:"19:00", tipo:"suplemento", item:"Batido de Whey + Creatina", detalle:"Juntos, un solo gesto — justo al terminar de entrenar, aunque si algún día lo tomas un poco antes o un poco después tampoco pasa nada." },
@@ -813,7 +814,7 @@ const progresionModalidades = [
 
 // ─── OBJETIVOS: hitos de peso ───────────────────────────────────────────────
 const milestones = [
-  { kg:86, label:"Inicio del plan", checks:["Punto de partida: 86kg","Aprendes la técnica de cada ejercicio","Empiezas a notar la rutina de suplementos"] },
+  { kg:88, label:"Inicio del plan", checks:["Punto de partida: 88kg","Aprendes la técnica de cada ejercicio","Empiezas a notar la rutina de suplementos"] },
   { kg:82, label:"82 kg", checks:["Caminar notablemente mejor","Menos rigidez matinal en la cadera","Ropa más suelta, primeras señales visibles"] },
   { kg:80, label:"80 kg", checks:["Menos dolor al subir escaleras","Mejor fondo en bici (Zona 2 más larga sin fatiga)","Dominadas más fáciles","Cintura baja de forma clara"] },
   { kg:78, label:"78 kg", checks:["Definición visible en brazos y hombros","La cadera aguanta más tiempo de pie sin molestar","Fuerza real en dominadas y fondos con peso"] },
@@ -1347,8 +1348,10 @@ const ExCard = ({ex, i, col}) => {
 
 // ─── NUTRICIÓN ────────────────────────────────────────────────────────────────
 const nutricionTips = [
-  {icon:"🥩",title:"Proteína diaria",text:"172–190g al día (2–2,2g × 86kg). Distribuida en 4–5 comidas. El batido de Whey Prime post-entreno cuenta (~25g). Sin esto el músculo no crece aunque entrenes perfecto."},
-  {icon:"🎯",title:"Objetivo 24 semanas",text:"Semanas 1–12: recomposición rápida. Semanas 13–24: masa limpia, bajar cintura y convertir el motor en rendimiento enduro. Pésate 3 veces/semana y usa la media, no un día suelto."},
+  {icon:"🥩",title:"Proteína diaria",text:"176–194g al día (2–2,2g × 88kg). Distribuida en 4–5 comidas. El batido de Whey Prime post-entreno cuenta (~25g). Sin esto el músculo no crece aunque entrenes perfecto."},
+  {icon:"🎯",title:"Objetivo 24 semanas",text:"Semanas 1–12: recomposición rápida. Semanas 13–24: masa limpia, bajar cintura y convertir el motor en rendimiento enduro. Pésate 3 veces/semana, siempre en ayunas recién levantado, y usa la media — no un día suelto ni una pesada de noche."},
+  {icon:"📆",title:"Pesaje: viernes por la mañana, en ayunas",text:"Nunca el lunes: el fin de semana (más sal, más comida, menos entreno) infla la lectura del lunes con agua retenida, no con grasa real — es un efecto documentado (\"Heavy Monday\"). El viernes en ayunas es una de las mejores opciones de la semana y ya es tu día fijo. Objetivo realista de un viernes al siguiente: 0,5–0,9kg menos."},
+  {icon:"📏",title:"Más allá de la báscula",text:"El peso solo no distingue grasa de músculo/agua. La cintura (ya la registras en Objetivos) y las fotos son gratis y bastante fiables para ver la tendencia. Si quieres algo más: un caliper de pliegues (10-15€) o una báscula de bioimpedancia — esta última solo es fiable para ver tendencia, no el número exacto, y hay que medir siempre en las mismas condiciones (en ayunas, misma hora)."},
   {icon:"⚖️",title:"Velocidad de pérdida",text:"Rápido pero inteligente: 0,5–0,9kg por semana. Si bajas más de 1kg/semana dos semanas seguidas, sube 150–250 kcal para no perder músculo ni rendimiento."},
   {icon:"🥜",title:"Cantidades que engañan",text:"Crema de cacahuete: máximo 10–15g (cucharada de postre). Avena: 30–40g. Queso fresco batido: siempre 0% MG. Son la diferencia entre un desayuno de 450 kcal y uno de 800."},
   {icon:"🍚",title:"Carbohidratos",text:"No los elimines. Más carbos los días de spinning y sábado. Menos los días de descanso."},
@@ -1475,7 +1478,7 @@ const restDaySchedule = [
   { hora:"07:45", tipo:"suplemento", item:"Berberina", detalle:"500mg antes del desayuno, como cualquier día." },
   { hora:"08:00", tipo:"comida", item:"Desayuno", detalle:"Igual que un día de entreno: proteína + avena + grasa medida." },
   { hora:"09:30", tipo:"suplemento", item:"Creatina (sin batido)", detalle:"3g de Creapure con el desayuno o cualquier comida. No se salta aunque no entrenes: funciona por saturación diaria." },
-  { hora:"30 min antes", tipo:"suplemento", item:"Psyllium", detalle:"1 cucharada en agua, 30 min antes de tu Comida —sea la hora que sea ese día—, no antes de dormir: te da toda la tarde para hidratarte con calma, sola y separada por horas de la Berberina." },
+  { hora:"13:00", tipo:"suplemento", item:"Psyllium", detalle:"1 cucharada en agua, aprox. 30 min antes de tu Comida —sea la hora que sea ese día—, no antes de dormir: te da toda la tarde para hidratarte con calma, sola y separada por horas de la Berberina." },
   { hora:"13:30", tipo:"comida", item:"Comida", detalle:"Proteína + carbohidrato + verdura." },
   { hora:"18:00", tipo:"movimiento", item:"Paseo suave", detalle:"15–20 min caminando. Mantiene la cadera móvil sin cargarla — mejor que el sofá para el dolor crónico." },
   { hora:"21:00", tipo:"suplemento", item:"Berberina", detalle:"500mg antes de cenar." },
@@ -1509,7 +1512,7 @@ const PROFILES = {
     restSchedule: restDaySchedule,
     copy: {
       headerEyebrow: "Fernando #CalvoMalvado · Enduro MTB + Calistenia",
-      headerSubtitle: "1,78m · 86kg · 24 semanas · Masa muscular + pérdida de grasa · Cadera protegida · Preparación enduro",
+      headerSubtitle: "1,78m · 88kg · 24 semanas · Masa muscular + pérdida de grasa · Cadera protegida · Preparación enduro",
       nutricionSectionTitle: "NUTRICIÓN PARA RECOMPOSICIÓN",
       nutricionIntro: "Recomposición = perder grasa + ganar músculo a la vez. Clave: déficit calórico controlado, proteína alta, fuerza pesada y carbohidratos bien colocados para rendir en enduro.",
       milestonesTitle: "HITOS DE PESO — DE 86KG AL OBJETIVO",
@@ -1526,6 +1529,11 @@ const PROFILES = {
     },
     buildDashboardTiles: (ctx) => {
       const daysToConsulta = daysBetween(todayISO(), PROFILE.consultaMedica);
+      // Pesaje: cada viernes en ayunas (0=domingo...6=sábado en getDay(), viernes=5).
+      const dayOfWeek = new Date().getDay();
+      const daysToFriday = (5 - dayOfWeek + 7) % 7;
+      const targetLow = (ctx.currentWeight - 0.9).toFixed(1);
+      const targetHigh = (ctx.currentWeight - 0.5).toFixed(1);
       return [
         { label:"Peso actual", value:`${ctx.currentWeight} kg`, sub:`Objetivo: ${ctx.nextMilestone.kg} kg` },
         { label:"IMC", value: ctx.imc.toFixed(1), sub: ctx.imcCategoria },
@@ -1533,6 +1541,7 @@ const PROFILES = {
         { label:"Racha entrenando", value:`${ctx.streak} día${ctx.streak===1?"":"s"}`, sub: ctx.isTrainedToday?"Hoy ya registrado ✅":"Aún no marcado hoy" },
         { label:"Próximo test", value: ctx.nextTest.semana, sub: ctx.nextTest.test },
         { label:"Próximo suplemento", value: ctx.nextSupp?.hora || "—", sub: ctx.nextSupp ? ctx.nextSupp.item : "" },
+        { label:"Próximo pesaje (viernes, ayunas)", value: daysToFriday===0 ? "Hoy" : `${daysToFriday} día${daysToFriday===1?"":"s"}`, sub:`Objetivo: ${targetLow}–${targetHigh} kg` },
         { label:"Programa completado", value:`${ctx.pctCompleted}%`, sub:`${ctx.weekNumber} de ${ctx.totalWeeks} semanas` },
         { label:"Consulta médica cadera", value: daysToConsulta >= 0 ? `${daysToConsulta} días` : "Pasada", sub:"28 de diciembre" },
       ];
@@ -1784,6 +1793,9 @@ const ObjetivosTab = ({ col }) => {
       })}
 
       <div style={{fontSize:"var(--fs-9)",letterSpacing:"3px",color:"#4b5563",textTransform:"uppercase",margin:"18px 0 10px"}}>⚖️ PESO</div>
+      <div style={{padding:"10px 12px",background:"#0a0a0a",border:"1px solid #222",borderRadius:"4px",fontSize:"var(--fs-10)",color:"#9ca3af",lineHeight:"1.6",marginBottom:"10px"}}>
+        💡 Pesaje fijo: viernes por la mañana, en ayunas, después de ir al baño y antes de comer o beber — así cada lectura es comparable con la anterior. Es de las mejores opciones de la semana: el lunes casi siempre sale inflado por la sal/comida del fin de semana ("Heavy Monday"), no por grasa real. Una pesada de noche (como la de hoy, 87.75kg a las 21:53) puede marcar 1-2kg más que en ayunas — no la compares directamente con tu próximo viernes. Objetivo razonable de un viernes al siguiente: bajar 0,5–0,9kg (más rápido y arriesgas perder músculo).
+      </div>
       <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"10px"}}>
         <div style={{fontSize:"var(--fs-18)",fontWeight:"900",color:"#fff",marginBottom:"8px"}}>{currentWeight} kg</div>
         <MiniChart data={weightLog} col={col}/>
@@ -1797,6 +1809,15 @@ const ObjetivosTab = ({ col }) => {
       <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:"6px",padding:"12px",marginBottom:"10px"}}>
         <div style={{fontSize:"var(--fs-18)",fontWeight:"900",color:"#fff",marginBottom:"8px"}}>{waistLog.length ? waistLog[waistLog.length-1].value : "—"} cm</div>
         <MiniChart data={waistLog} col={col}/>
+        {waistLog.length > 0 && (() => {
+          const ratio = waistLog[waistLog.length-1].value / PROFILE.alturaCm;
+          const healthy = ratio < 0.5;
+          return (
+            <div style={{marginTop:"8px",fontSize:"var(--fs-10)",color: healthy ? "#4ade80" : "#f59e0b"}}>
+              Ratio cintura/altura: {ratio.toFixed(2)} — {healthy ? "dentro del rango saludable (<0,5)" : "por encima de 0,5, objetivo bajarlo"}. Más fiable que la báscula sola para estimar grasa visceral sin más aparatos.
+            </div>
+          );
+        })()}
         <div style={{display:"flex",gap:"6px",marginTop:"10px"}}>
           <input type="number" step="0.5" value={cmInput} onChange={e=>setCmInput(e.target.value)} placeholder="Cintura hoy (cm)" style={{flex:1,padding:"8px",background:"#0a0a0a",border:"1px solid #222",borderRadius:"4px",color:"#e5e7eb",fontFamily:"inherit",fontSize:"var(--fs-11)"}}/>
           <button onClick={addWaist} style={{padding:"8px 14px",background:`${col}20`,border:`1px solid ${col}60`,color:col,borderRadius:"4px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700",fontSize:"var(--fs-11)"}}>Guardar</button>
