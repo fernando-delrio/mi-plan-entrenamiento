@@ -1,0 +1,13 @@
+{
+  "name": "Plan Definitivo",
+  "short_name": "Plan Definitivo",
+  "description": "Plan de entrenamiento, nutrición y seguimiento de salud.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#090909",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
